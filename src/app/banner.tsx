@@ -5,17 +5,17 @@ export default function Banner() {
     return (
         <ImageBackground source={require('../../assets/images/Banner.png')}
             style={styles.banner}>
-            <View style={{alignItems: 'flex-end'}}>
-                <View style={{alignItems: 'center'}}>
+            <View style={{ alignItems: 'flex-end' }}>
+                <View style={{ alignItems: 'center' }}>
                     <Text style={styles.tituloBanner}>Síndrome de Burnout</Text>
-                <View style={{alignItems: 'center'}}>
-                <Text style={styles.subtituloBanner}>Rapidez, facilidade e segurança.</Text>
-                <Text style={styles.subtituloBanner}>Agende sua terapia online com um psicólogo</Text>
-                <TouchableOpacity onPress={() => { }} style={[styles.botaoEncontrarProfissional, {
-                          }]}>
+                    <View style={{ alignItems: 'center' }}>
+                        <Text style={styles.subtituloBanner}>Rapidez, facilidade e segurança.</Text>
+                        <Text style={styles.subtituloBanner}>Agende sua terapia online com um psicólogo</Text>
+                        <TouchableOpacity onPress={() => { }} style={[styles.botaoEncontrarProfissional, {
+                        }]}>
                             <Text style={styles.textoEncontrarProfissional}>Encontrar Profissional</Text>
-                          </TouchableOpacity>
-                </View>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         </ImageBackground>
@@ -45,21 +45,21 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 400,
     },
-     botaoEncontrarProfissional: {
+    botaoEncontrarProfissional: {
         marginTop: 25,
-    backgroundColor: '#336BF7',
-    width: 200,
-    height: 40,
-    borderRadius: 7,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
-  },
-  textoEncontrarProfissional: {
-    color: '#FFFFFF',
-    fontFamily: "Inria Sans",
-    fontSize: 16,
-    fontWeight: 400,
-  },
+        backgroundColor: '#336BF7',
+        width: 200,
+        height: 40,
+        borderRadius: 7,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+    },
+    textoEncontrarProfissional: {
+        color: '#FFFFFF',
+        fontFamily: "Inria Sans",
+        fontSize: 16,
+        fontWeight: 400,
+    },
 
 })

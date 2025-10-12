@@ -1,5 +1,8 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+
+const { width, height } = Dimensions.get('window');
 
 export default function Topo() {
   return (
@@ -9,13 +12,14 @@ export default function Topo() {
 
 
           <View style={{
+            display: 'flex',
             flexDirection: 'row',
             alignContent: 'center',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 10
           }}>
-            <Image style={styles.logo} source={require('../../assets/images/Logo.png')}/>
+            <Image style={styles.logo} source={require('../../assets/images/Logo.png')} />
             <View>
               <Text style={styles.textoLogo}>Renascer</Text>
               <Text style={styles.subtituloLogo}>Especialista em Burnout</Text>
@@ -23,7 +27,7 @@ export default function Topo() {
           </View>
 
 
-          <TouchableOpacity onPress={() =>{ }}>
+          <TouchableOpacity onPress={() => { }}>
             <View>
               <Text style={styles.textoComoFuncionaBlog} >Como Funciona</Text>
             </View>
@@ -65,12 +69,12 @@ export default function Topo() {
 
 
           <TouchableOpacity onPress={() => { }} style={[styles.botaoAgendamentoEntrar, {
-            width: 100,
+            width: width * 0.075,
           }]}>
             <Text style={styles.textoBotaoAgendamentoEntrar}>Entrar</Text>
           </TouchableOpacity>
 
-          
+
         </View>
       </View>
     </View>
@@ -79,22 +83,31 @@ export default function Topo() {
 
 const styles = StyleSheet.create({
   backgroundPagina: {
+    display: 'flex',
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    paddingLeft: width * 0.005,
+    paddingRight: width * 0.005, 
+    overflow: 'hidden',
   },
+
   topoPagina: {
+    display: 'flex',
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    overflow: 'hidden',
   },
 
   topoPaginaEsquerda: {
+    flex: 0.5,
     flexDirection: 'row',
     display: 'flex',
-    gap: 83,
-    padding: 20,
+    gap: width*0.05,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    overflow: 'hidden',
+
   },
   logo: {
     width: 40,
@@ -111,7 +124,8 @@ const styles = StyleSheet.create({
     color: '#000',
     fontFamily: 'Arial',
     fontSize: 16,
-    fontWeight: 400, marginRight: 35,
+    fontWeight: 400,
+    marginRight: 35,
     marginTop: -5
   },
   textoComoFuncionaBlog: {
@@ -119,39 +133,46 @@ const styles = StyleSheet.create({
     fontFamily: "Inria Sans",
     fontSize: 16,
     fontWeight: 400,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
 
   botaoExclusivo: {
     flexDirection: 'row',
     alignItems: 'center',
+    width: width * 0.065,
+    height: height * 0.06,
   },
   topoPaginaDireita: {
     flexDirection: 'row',
+    flex: 0.35,
     gap: 40,
-    marginRight: 80,
-    alignItems: 'flex-end',
+    marginRight: 50,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    overflow: 'hidden'
   },
   botaoAgendamentoEntrar: {
     flexDirection: 'row',
     backgroundColor: '#336BF7',
-    width: 170,
-    height: 33,
+    width: width * 0.11,
+    height: height * 0.06,
     borderRadius: 7,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
   },
   textoBotaoAgendamentoEntrar: {
-    padding: 5,
     color: '#FFFFFF',
     fontFamily: "Inria Sans",
     fontSize: 16,
   },
   botaoCriarConta: {
+    width: width * 0.06,
+    height: height * 0.06,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 10,
   },
   textoBotaoCriarConta: {
     color: '#336BF7',

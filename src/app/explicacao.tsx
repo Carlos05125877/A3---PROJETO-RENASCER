@@ -4,7 +4,8 @@ export default function Explicacao() {
     return (
         <View style={styles.content}>
                 <Text style={styles.explicacao}>
-                    Síndrome de Burnout ou Síndrome do Esgotamento Profissional
+                    <Text style={[styles.explicacao, {color: '#2DBE51'}]}>Síndrome de Burnout </Text> 
+                    ou <Text style={[styles.explicacao, {color: '#2DBE51'}]}>Síndrome do Esgotamento Profissional </Text>
                     é um distúrbio emocional com síndromes de exaustão extrema,
                     estresse e esgotamento físico resultante de situações de trabalho
                     desgastantes, que demandam muita competitividade ou responsabilidade.
@@ -17,6 +18,7 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         marginTop: 30,
+        marginBottom: 30,
         marginRight: 250,
         marginLeft: 250,
         justifyContent: 'center',
