@@ -1,8 +1,10 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useRouter } from 'expo-router';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-
 const { width, height } = Dimensions.get('window');
+
+const router = useRouter();
 
 export default function Topo() {
   return (
@@ -19,7 +21,7 @@ export default function Topo() {
             justifyContent: 'center',
             gap: 10
           }}>
-            <Image style={styles.logo} source={require('../../assets/images/Logo.png')} />
+            <Image style={styles.logo} source={require('../assets/images/Logo.png')} />
             <View>
               <Text style={styles.textoLogo}>Renascer</Text>
               <Text style={styles.subtituloLogo}>Especialista em Burnout</Text>
@@ -68,7 +70,7 @@ export default function Topo() {
           </TouchableOpacity>
 
 
-          <TouchableOpacity onPress={() => { }} style={[styles.botaoAgendamentoEntrar, {
+          <TouchableOpacity onPress={()=>router.push('/screens/login')} style={[styles.botaoAgendamentoEntrar, {
             width: width * 0.075,
           }]}>
             <Text style={styles.textoBotaoAgendamentoEntrar}>Entrar</Text>

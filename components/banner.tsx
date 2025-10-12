@@ -3,7 +3,7 @@ import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react
 
 export default function Banner() {
     return (
-        <ImageBackground source={require('../../assets/images/Banner.png')}
+        <ImageBackground source={require('../assets/images/Banner.png')}
             style={styles.banner}>
             <View style={{ alignItems: 'flex-end' }}>
                 <View style={{ alignItems: 'center' }}>
