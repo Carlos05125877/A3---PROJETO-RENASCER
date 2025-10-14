@@ -8,7 +8,7 @@ export default function Index() {
   return (
     <ScrollView>
     <View>
-    <View style={{marginTop: 10, marginBottom: 10}} >
+    <View style={{flex: 1, marginTop: 10, marginBottom: 10}} >
       <Topo/>
     </View>
     <View>
