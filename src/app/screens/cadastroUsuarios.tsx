@@ -1,3 +1,4 @@
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -6,9 +7,11 @@ import Topo from '../../../components/topo';
 
 
 
+
 export default function CadastroUsuarios() {
     const router = useRouter();
 
+    const [mostrarSenha, setmostrarSenha] = useState(true);
     const [nome, setNome] = useState('');
     const [cpf, setCpf] = useState('');
     const [telefone, setTelefone] = useState('');
@@ -133,8 +136,18 @@ export default function CadastroUsuarios() {
                                     onChangeText={setSenha}
                                     placeholder='Senha'
                                     placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={false}
+                                    secureTextEntry={mostrarSenha}
                                 />
+                                <TouchableOpacity onPress={() => { setmostrarSenha(!mostrarSenha) }}>
+                                    <View style={{ padding: 10, opacity: 0.5 }}>
+                                        {mostrarSenha ? (
+                                            <AntDesign name="eye-invisible" size={24} color="black" />
+                                        ) : (
+                                            <AntDesign name="eye" size={24} color="black" />
+                                        )}
+                                    </View>
+                                </TouchableOpacity>
+
 
                             </View>
                             <View style={styles.boxTextInput}>
@@ -143,8 +156,17 @@ export default function CadastroUsuarios() {
                                     onChangeText={setConfirmarSenha}
                                     placeholder='Confirmar Senha'
                                     placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={false}
+                                    secureTextEntry={mostrarSenha}
                                 />
+                                <TouchableOpacity onPress={() => { setmostrarSenha(!mostrarSenha) }}>
+                                    <View style={{ padding: 10, opacity: 0.5 }}>
+                                        {mostrarSenha ? (
+                                            <AntDesign name="eye-invisible" size={24} color="black" />
+                                        ) : (
+                                            <AntDesign name="eye" size={24} color="black" />
+                                        )}
+                                    </View>
+                                </TouchableOpacity>
 
                             </View>
                             <Text>{!senhaConfere ? '' : 'Senhas não conferem'}</Text>
@@ -174,7 +196,7 @@ export default function CadastroUsuarios() {
 
 
                 <View style={styles.areaBanner}>
-                    <Image style={{ width: 600, height: 600, alignContent: 'center', justifyContent: 'center' }}
+                    <Image  style={{ width: '100%', height: '100%', alignContent: 'center', justifyContent: 'center' }}
                         source={require('../../../assets/images/imagemCadastro.png')} />
 
                 </View>
@@ -202,7 +224,7 @@ const styles = StyleSheet.create({
         flex: 0.42,
         justifyContent: 'center',
         alignItems: 'center',
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     caixaCadastro: {
         width: '60%',
@@ -210,14 +232,11 @@ const styles = StyleSheet.create({
         gap: 30,
         alignItems: 'center',
         justifyContent: 'center',
-
     },
     areaBanner: {
-        backgroundColor: '#336BF7',
         flex: 0.58,
         justifyContent: 'center',
         alignItems: 'center',
-        overflow: 'hidden'
     },
     AreaTextoCadastro: {
         justifyContent: 'flex-start',
@@ -241,7 +260,6 @@ const styles = StyleSheet.create({
         borderStyle: 'solid',
         width: 375,
         height: 40,
-        overflow: 'hidden'
 
     },
 
@@ -252,12 +270,12 @@ const styles = StyleSheet.create({
         outlineWidth: 0,
         outlineColor: 'transparent',
         opacity: 1,
-        color: '#000000'
+        color: '#000000',
     },
     botoes: {
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 20 
+        gap: 20,
     },
     botaoCadastrar: {
         borderRadius: 7,
@@ -265,12 +283,12 @@ const styles = StyleSheet.create({
         height: 50,
         backgroundColor: '#336BF7',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     textoCadastrarCom: {
         fontFamily: 'Arial',
         opacity: 0.5,
-        fontSize: 20
+        fontSize: 20,
     },
     botaoGoogle: {
         backgroundColor: 'white',
@@ -282,7 +300,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     textoBotaoCadastrar: {
         color: '#FFF',

@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
     gap: '5%',
     alignItems: 'center',
     justifyContent: 'space-between',
+    overflow: 'hidden'
 
   },
   logo: {
@@ -201,13 +202,12 @@ const styles = StyleSheet.create({
     marginRight: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden'
 
   },
   botaoAgendamentoEntrar: {
     flexDirection: 'row',
     backgroundColor: '#336BF7',
-    width: '35%',
+    width: '30%',
     height: '10%',
     borderRadius: 7,
     justifyContent: 'center',
@@ -218,6 +218,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: "Inria Sans",
     fontSize: 16,
+    padding: 5
   },
   botaoCriarConta: {
     width: '15%',

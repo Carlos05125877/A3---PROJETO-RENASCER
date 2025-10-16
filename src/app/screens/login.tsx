@@ -70,7 +70,7 @@ export default function Login() {
         <View style={styles.areaLogin}>
           <View style={styles.caixaLogin}>
 
-            <View style={{ gap: 10 }}>
+            <View style={{ gap: 10 , alignItems: 'center'}}>
               <Text style={styles.TextoLogin}>Login</Text>
               <Text style={styles.TextoLoginInformeEmail}>Informe seu e-mail e senha abaixo:</Text>
             </View>
@@ -143,7 +143,7 @@ export default function Login() {
 
 
         <View style={styles.areaBanner}>
-          <Image style={{ width: 900, height: 950, marginTop: 50, marginRight: 50}} source={require('../../../assets/images/ImagemTelaLogin.png')} />
+          <Image style={{ width: '100%', height: '100%',}} source={require('../../../assets/images/ImagemTelaLogin.png')} />
 
         </View>
 
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   areaBanner: {
-    backgroundColor: '#336BF7',
+    backgroundColor: '#3c5cfc',
     flex: 0.58,
     justifyContent: 'center',
     alignItems: 'center',
