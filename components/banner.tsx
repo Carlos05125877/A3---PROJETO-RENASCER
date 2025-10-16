@@ -5,8 +5,8 @@ export default function Banner() {
     return (
         <ImageBackground source={require('../assets/images/Banner.png')}
             style={styles.banner}>
-            <View style={{ alignItems: 'flex-end' }}>
-                <View style={{ alignItems: 'center' }}>
+            <View style={{ alignItems: 'flex-end', overflow: 'hidden'  }}>
+                <View style={{ alignItems: 'center'}}>
                     <Text style={styles.tituloBanner}>Síndrome de Burnout</Text>
                     <View style={{ alignItems: 'center' }}>
                         <Text style={styles.subtituloBanner}>Rapidez, facilidade e segurança.</Text>

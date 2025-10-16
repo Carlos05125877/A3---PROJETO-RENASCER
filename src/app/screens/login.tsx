@@ -1,10 +1,12 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
+import { User } from 'firebase/auth';
 import { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Topo from '../../..//components/topo';
 import { signInComContaGoogle, signInComEmail } from '../../../back-end/Api';
 
+{/*-----------------------------------------------------------------------------------*/}
 
 export default function Login() {
   const [mostrarSenha, setmostrarSenha] = useState(true);
@@ -13,11 +15,19 @@ export default function Login() {
   const [senhaIncorreta, setsenhaIncorreta] = useState(false);
   const router = useRouter();
 
+ const verificarLogin = (usuario : User)=>{
+    if(usuario){
+      setsenhaIncorreta(false)
+      return true;
+    }
+     setsenhaIncorreta(true); 
+     return false;
+}
+
   const loginComGoogle = async () => {
     try {
       const user = await signInComContaGoogle();
-      if (user) {
-        setsenhaIncorreta(false);
+        if(verificarLogin(user)){
         router.push('/');
       }
     } catch (error: any) {
@@ -27,13 +37,13 @@ export default function Login() {
   }
 
 
-  let bloquearpopUp = false
-  const realizarLogin = async () => {
-    if(bloquearpopUp) return;
+  let bloquearBotaoGoogle = false
+  const loginComEmaileSenha= async () => {
+    if(bloquearBotaoGoogle) return;
     try {
-      bloquearpopUp = true;
+      bloquearBotaoGoogle = true;
       const user = await signInComEmail(email, senha);
-      if (user) {
+      if (verificarLogin(user)) {
         router.push('/');
       }
     } catch (error: any) {
@@ -42,7 +52,7 @@ export default function Login() {
 
     }
     finally{
-      bloquearpopUp = false;
+      bloquearBotaoGoogle = false;
     }
   }
 
@@ -85,7 +95,7 @@ export default function Login() {
                   secureTextEntry={mostrarSenha}
                   onKeyPress={(e) => {
                     if (e.nativeEvent.key === 'Enter') {
-                      realizarLogin();
+                      loginComEmaileSenha();
                     }
                   }}
                 />
@@ -108,7 +118,7 @@ export default function Login() {
               <View style={styles.botoes}>
 
                 <TouchableOpacity style={styles.botaoLogin}
-                  onPress={realizarLogin}>
+                  onPress={loginComEmaileSenha}>
                   <Text style={styles.textoBotaoLogin}>Entrar</Text>
                 </TouchableOpacity>
 
@@ -133,7 +143,7 @@ export default function Login() {
 
 
         <View style={styles.areaBanner}>
-          <Image style={{ width: 900, height: 950 }} source={require('../../../assets/images/ImagemTelaLogin.png')} />
+          <Image style={{ width: 900, height: 950, marginTop: 50, marginRight: 50}} source={require('../../../assets/images/ImagemTelaLogin.png')} />
 
         </View>
 
@@ -159,6 +169,7 @@ const styles = StyleSheet.create({
     flex: 0.42,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden'
   },
   caixaLogin: {
     width: '60%',

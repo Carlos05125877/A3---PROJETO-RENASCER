@@ -1,14 +1,17 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+  import { ScrollView, StyleSheet, View } from "react-native";
 import Banner from '../../components/banner';
 import Explicacao from '../../components/explicacao';
 import Relatos from '../../components/relatos';
 import Topo from '../../components/topo';
 
+
+
+
 export default function Index() {
   return (
     <ScrollView>
     <View>
-    <View style={{flex: 1, marginTop: 10, marginBottom: 10}} >
+    <View style={{flex: 1, marginTop: 10, marginBottom: 10, height: 100}} >
       <Topo/>
     </View>
     <View>

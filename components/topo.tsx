@@ -1,40 +1,36 @@
-import { auth } from '@/back-end/Api';
+import { auth, deslogar } from '@/back-end/Api';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-const { width, height } = Dimensions.get('window');
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useMediaQuery } from 'react-responsive';
 
 
 export default function Topo() {
   const [logado, setLogado] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const isMobile = useMediaQuery({ maxWidth: 830 });
 
   useEffect(() => {
-      const ouvindo = onAuthStateChanged(auth, (usuario) => {
-        if (usuario) {
-          setLogado(true);
-          setUser(usuario);
-        } else {
-          setLogado(false);
-          setUser(null)
-        }
+    const ouvindo = onAuthStateChanged(auth, (usuario) => {
+      if (usuario) {
+        setLogado(true);
+        setUser(usuario);
+        console.log("Usuario autenticado");
+      } else {
+        setLogado(false);
+        setUser(null)
+        console.log("Usuario não autenticado");
+      }
     });
-  
-  
-  return () => ouvindo();
 
-}, []);
 
-  const deslogar = async (): Promise<void> => {
-    try {
-      await signOut(auth);
-      console.log("Usuário deslogado com sucesso!");
-    } catch (error: any) {
-      console.error("Erro ao deslogar:", error.message);
-    }
-  }
+    return () => ouvindo();
+
+  }, []);
+
+
 
 
   const router = useRouter();
@@ -45,7 +41,7 @@ export default function Topo() {
         {/* Lado esquerdo */}
         <View style={styles.topoPaginaEsquerda}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <Image style={styles.logo} source={require('../assets/images/Logo.png')} />
+            <Image style={isMobile ?styles.logoMobile : styles.logo} source={require('../assets/images/Logo.png')} />
             <View>
               <Text style={styles.textoLogo}>Renascer</Text>
               <Text style={styles.subtituloLogo}>Especialista em Burnout</Text>
@@ -74,14 +70,14 @@ export default function Topo() {
             <Text style={styles.textoBotaoAgendamentoEntrar}>Agendar Consulta</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={deslogar} style={styles.botaoCriarConta}>
-            <Text style={styles.textoBotaoCriarConta}>Criar Conta</Text>
+          <TouchableOpacity onPress={()=>{!logado? router.push('/screens/cadastroUsuarios'):deslogar()}} style={styles.botaoCriarConta}>
+            <Text style={styles.textoBotaoCriarConta}>{!logado ? 'Criar Conta' : 'Sair'}</Text>
           </TouchableOpacity>
 
           {!logado ? (
             <TouchableOpacity
               onPress={() => router.push('/screens/login')}
-              style={[styles.botaoAgendamentoEntrar, { width: width * 0.075 }]}
+              style={[styles.botaoAgendamentoEntrar, { width: '15%', height: 45 }]}
             >
               <Text style={styles.textoBotaoAgendamentoEntrar}>Entrar</Text>
             </TouchableOpacity>
@@ -104,9 +100,8 @@ const styles = StyleSheet.create({
   backgroundPagina: {
     display: 'flex',
     flex: 1,
-    paddingLeft: width * 0.005,
-    paddingRight: width * 0.005,
-    overflow: 'hidden',
+    paddingLeft: 5,
+    paddingRight: 5,
   },
 
   topoPagina: {
@@ -115,22 +110,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
 
   topoPaginaEsquerda: {
     flex: 0.5,
     flexDirection: 'row',
     display: 'flex',
-    gap: width * 0.05,
+    gap: '5%',
     alignItems: 'center',
     justifyContent: 'space-between',
-    overflow: 'hidden',
 
   },
   logo: {
     width: 40,
     height: 40,
+  },
+  logoMobile: {
+    width: 50,
+    height: 50,
   },
   textoLogo: {
     color: '#000',
@@ -139,7 +137,22 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     fontWeight: 700,
   },
+  textoLogoMoble: {
+    color: '#000',
+    fontFamily: "Times New Roman",
+    fontSize: 15,
+    fontStyle: 'normal',
+    fontWeight: 700,
+  },
   subtituloLogo: {
+    color: '#000',
+    fontFamily: 'Arial',
+    fontSize: 16,
+    fontWeight: 400,
+    marginRight: 35,
+    marginTop: -5
+  },
+  subtituloLogoMobile: {
     color: '#000',
     fontFamily: 'Arial',
     fontSize: 16,
@@ -153,29 +166,49 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 400,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    width: '100%',
+    height: '6%'
+  },
+  textoComoFuncionaBlogMobile: {
+    color: '#000',
+    fontFamily: "Inria Sans",
+    fontSize: 16,
+    fontWeight: 400,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '6%'
   },
 
   botaoExclusivo: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: width * 0.065,
-    height: height * 0.06,
+    width: '15%',
+    height: '6%',
+  },
+  botaoExclusivoMobile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '15%',
+    height: '6%',
   },
   topoPaginaDireita: {
     flexDirection: 'row',
+    display: 'flex',
     flex: 0.35,
-    gap: 40,
-    marginRight: 50,
+    gap: '10%',
+    marginRight: 8,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     overflow: 'hidden'
+
   },
   botaoAgendamentoEntrar: {
     flexDirection: 'row',
     backgroundColor: '#336BF7',
-    width: width * 0.11,
-    height: height * 0.06,
+    width: '35%',
+    height: '10%',
     borderRadius: 7,
     justifyContent: 'center',
     alignItems: 'center',
@@ -187,9 +220,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   botaoCriarConta: {
-    width: width * 0.06,
-    height: height * 0.06,
-    flexDirection: 'row',
+    width: '15%',
+    height: '6%',
     alignItems: 'center',
     justifyContent: 'center',
   },
