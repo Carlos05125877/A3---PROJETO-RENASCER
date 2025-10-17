@@ -1,61 +1,60 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 import { User } from 'firebase/auth';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Topo from '../../..//components/topo';
 import { signInComContaGoogle, signInComEmail } from '../../../back-end/Api';
 
-{/*-----------------------------------------------------------------------------------*/}
+{/*-----------------------------------------------------------------------------------*/ }
 
 export default function Login() {
+  const bloquearBotaoGoogle = useRef(false);
   const [mostrarSenha, setmostrarSenha] = useState(true);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [senhaIncorreta, setsenhaIncorreta] = useState(false);
   const router = useRouter();
 
- const verificarLogin = (usuario : User)=>{
-    if(usuario){
+  const verificarLogin = (usuario: User) => {
+    if (usuario) {
       setsenhaIncorreta(false)
       return true;
     }
-     setsenhaIncorreta(true); 
-     return false;
-}
+    setsenhaIncorreta(true);
+    return false;
+  }
 
   const loginComGoogle = async () => {
+    if (bloquearBotaoGoogle.current === true) return;
+
     try {
+      bloquearBotaoGoogle.current = true
       const user = await signInComContaGoogle();
-        if(verificarLogin(user)){
+      if (verificarLogin(user)) {
         router.push('/');
       }
     } catch (error: any) {
       console.log(error);
       throw (error);
     }
+    finally {
+      bloquearBotaoGoogle.current = false;
+    }
   }
 
 
-  let bloquearBotaoGoogle = false
-  const loginComEmaileSenha= async () => {
-    if(bloquearBotaoGoogle) return;
+  const loginComEmaileSenha = async () => {
     try {
-      bloquearBotaoGoogle = true;
       const user = await signInComEmail(email, senha);
-      if (verificarLogin(user)) {
+      if (verificarLogin(user) && user.emailVerified) {
         router.push('/');
       }
     } catch (error: any) {
       setsenhaIncorreta(true);
       console.error(error);
-
-    }
-    finally{
-      bloquearBotaoGoogle = false;
     }
   }
-
 
   return (
     <View style={styles.backgroundPagina}>
@@ -70,7 +69,7 @@ export default function Login() {
         <View style={styles.areaLogin}>
           <View style={styles.caixaLogin}>
 
-            <View style={{ gap: 10 , alignItems: 'center'}}>
+            <View style={{ gap: 10, alignItems: 'center' }}>
               <Text style={styles.TextoLogin}>Login</Text>
               <Text style={styles.TextoLoginInformeEmail}>Informe seu e-mail e senha abaixo:</Text>
             </View>
@@ -109,9 +108,9 @@ export default function Login() {
                   </View>
                 </TouchableOpacity>
               </View>
-              <View style={{alignItems:'flex-start'}}>
+              <View style={{ alignItems: 'flex-start' }}>
                 {senhaIncorreta && (
-                  <Text style={{ color: 'red',fontSize: 14}}>Senha Incorreta</Text>
+                  <Text style={{ color: 'red', fontSize: 14 }}>Senha Incorreta</Text>
                 )}              </View>
 
 
@@ -123,7 +122,7 @@ export default function Login() {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.botaoGoogle} onPress={loginComGoogle}>
-                  <Image style={{width: 25, height:25}} source={require('../../../assets/images/images.png')}/>
+                  <Image style={{ width: 25, height: 25 }} source={require('../../../assets/images/images.png')} />
                 </TouchableOpacity>
 
                 <TouchableOpacity>
@@ -143,7 +142,7 @@ export default function Login() {
 
 
         <View style={styles.areaBanner}>
-          <Image style={{ width: '100%', height: '100%',}} source={require('../../../assets/images/ImagemTelaLogin.png')} />
+          <Image style={{ width: '100%', height: '100%', }} source={require('../../../assets/images/ImagemTelaLogin.png')} />
 
         </View>
 

@@ -32,11 +32,12 @@ export default function CadastroUsuarios() {
 
 
 
-    const verificarCadastroUsuario = async () => {
+   const verificarCadastroUsuario = async () => {
         if (senha === confirmarSenha) {
             try {
                 const user = await cadastroUsuario(email, senha);
-                if (user) {
+                if (user.emailVerified) {
+                    console.log('cadastro criado com sucesso');
                     router.push('/');
                 }
             } catch (error: any) {
@@ -175,7 +176,7 @@ export default function CadastroUsuarios() {
                             <View style={styles.botoes}>
 
                                 <TouchableOpacity disabled={senhaConfere} style={styles.botaoCadastrar}
-                                    onPress={verificarCadastroUsuario}>
+                                    onPress={async()=>{await verificarCadastroUsuario()}}>
                                     <Text style={styles.textoBotaoCadastrar}>Confirmar</Text>
                                 </TouchableOpacity>
 

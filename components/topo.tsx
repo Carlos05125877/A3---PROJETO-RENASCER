@@ -2,10 +2,9 @@ import { auth, deslogar } from '@/back-end/Api';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useMediaQuery } from 'react-responsive';
-
 
 export default function Topo() {
   const [logado, setLogado] = useState(false);
@@ -14,7 +13,7 @@ export default function Topo() {
 
   useEffect(() => {
     const ouvindo = onAuthStateChanged(auth, (usuario) => {
-      if (usuario) {
+      if (usuario?.emailVerified) {
         setLogado(true);
         setUser(usuario);
         console.log("Usuario autenticado");
@@ -77,7 +76,7 @@ export default function Topo() {
           {!logado ? (
             <TouchableOpacity
               onPress={() => router.push('/screens/login')}
-              style={[styles.botaoAgendamentoEntrar, { width: '15%', height: 45 }]}
+              style={[styles.botaoAgendamentoEntrar, { width: '15%' }]}
             >
               <Text style={styles.textoBotaoAgendamentoEntrar}>Entrar</Text>
             </TouchableOpacity>
@@ -207,8 +206,8 @@ const styles = StyleSheet.create({
   botaoAgendamentoEntrar: {
     flexDirection: 'row',
     backgroundColor: '#336BF7',
-    width: '30%',
-    height: '10%',
+    width: '35%',
+    height: '100%',
     borderRadius: 7,
     justifyContent: 'center',
     alignItems: 'center',
