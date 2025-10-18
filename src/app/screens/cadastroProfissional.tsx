@@ -28,6 +28,7 @@ export default function CadastroUsuarios() {
     const [cpfInvalido, setCpfInvalido] = useState(false);
     const [emailInvalido, setEmailInvalido] = useState(false);
     const [bloquarBotaoConfirmar, setBloquarBotaoConfirmar] = useState(true);
+    const [crp, setCrp] = useState('');
 
 
     useEffect(() => {
@@ -63,8 +64,8 @@ export default function CadastroUsuarios() {
     }, [cpf]);
 
     useEffect(() => {
-        if (!cpfInvalido && !senhaNaoConfere && !emailInvalido 
-            && cpf.length >= 14 && email != '' && senha != '' 
+        if (!cpfInvalido && !senhaNaoConfere && !emailInvalido
+            && cpf.length >= 14 && email != '' && senha != ''
             && confirmarSenha != '') {
             setBloquarBotaoConfirmar(false);
         } else {
@@ -81,7 +82,7 @@ export default function CadastroUsuarios() {
         if (senha === confirmarSenha) {
             try {
                 bloquearBotaoGoogle.current = true
-                const user = await cadastroUsuario(email, senha, nome,cpf, telefone, dataNascimento);
+                const user = await cadastroUsuario(email, senha, nome, cpf, telefone, dataNascimento);
                 if (user.emailVerified) {
                     console.log('cadastro criado com sucesso');
                     router.push('/');
@@ -126,7 +127,7 @@ export default function CadastroUsuarios() {
                     <View style={styles.caixaCadastro}>
 
                         <View>
-                            <Text style={styles.TextoCadastro}>Cadastro de Usuário</Text>
+                            <Text style={styles.TextoCadastro}>Cadastro de Profissional</Text>
                         </View>
 
                         <View style={{ gap: 10 }}>
@@ -182,20 +183,36 @@ export default function CadastroUsuarios() {
 
                             </View>
                             {!emailInvalido ? '' : <Text style={{ color: 'red' }}>E-mail Invalido</Text>}
-                            <View style={styles.boxTextInput}>
+                            <View style={{ flexDirection: 'row', gap: 4 }}>
+                                <View style={[styles.boxTextInput, {width: 185}]}>
+                                    <TextInputMask
+                                        type={'datetime'}
+                                        options={{
+                                            format: 'dd/MM/aaaa'
+                                        }}
+                                        style={styles.TextInput}
+                                        value={dataNascimento}
+                                        onChangeText={setDataNascimento}
+                                        placeholder='Data de Nascimento *'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                        secureTextEntry={false}
+                                    />
+
+                                </View>
+                                <View style={[styles.boxTextInput, {width: 185}]}>
                                 <TextInputMask
-                                    type={'datetime'}
+                                    type={'custom'}
                                     options={{
-                                        format: 'dd/MM/aaaa'
+                                        mask: '99/99999'
                                     }}
                                     style={styles.TextInput}
-                                    value={dataNascimento}
-                                    onChangeText={setDataNascimento}
-                                    placeholder='Data de Nascimento *'
+                                    value={crp}
+                                    onChangeText={setCrp}
+                                    placeholder='CRP *'
                                     placeholderTextColor={'rgba(0,0,0,0.5)'}
                                     secureTextEntry={false}
                                 />
-
+                                </View>
                             </View>
                             <View style={styles.boxTextInput}>
                                 <TextInput style={styles.TextInput}
@@ -246,12 +263,6 @@ export default function CadastroUsuarios() {
                                     <Text style={styles.textoBotaoCadastrar}>Confirmar</Text>
                                 </TouchableOpacity>
 
-                                <Text style={styles.textoCadastrarCom}>Cadastrar com</Text>
-
-                                <TouchableOpacity style={styles.botaoGoogle} onPress={loginComGoogle}>
-                                    <Image style={{ width: 25, height: 25 }} source={require
-                                        ('../../../assets/images/images.png')} />
-                                </TouchableOpacity>
                             </View>
 
 
@@ -264,7 +275,7 @@ export default function CadastroUsuarios() {
 
                 <View style={styles.areaBanner}>
                     <Image style={{ width: '100%', height: '100%', alignContent: 'center', justifyContent: 'center' }}
-                        source={require('../../../assets/images/imagemCadastro.png')} />
+                        source={require('../../../assets/images/imagemCadastroProfissional.png')} />
 
                 </View>
 
@@ -313,7 +324,7 @@ const styles = StyleSheet.create({
     TextoCadastro: {
         color: '#000',
         fontFamily: "Arial",
-        fontSize: 35,
+        fontSize: 32,
         fontWeight: 700,
     },
 

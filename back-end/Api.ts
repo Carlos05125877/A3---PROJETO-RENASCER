@@ -7,10 +7,15 @@ import {
   signInWithEmailAndPassword, signInWithPopup,
   signOut, User
 } from 'firebase/auth';
+import { getDatabase } from 'firebase/database';
+import { doc, getFirestore, setDoc } from 'firebase/firestore';
 import firebaseConfig from './firebaseConfig';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db= getDatabase(app);
+const firestore = getFirestore(app); 
+
 export { app, auth };
 
 
@@ -60,22 +65,41 @@ export async function signInComEmail(email: string, senha: string): Promise<User
   }
 }
 
-export async function cadastroUsuario(email: string, senha: string): Promise<User> {
+export async function cadastroUsuario(
+  email: string, 
+  senha: string,
+  nome: string,
+  cpf: string,
+  telefone: string,
+  dataNascimento: string
+): Promise<User> {
   try {
     auth.languageCode = 'pt'
     const user = await createUserWithEmailAndPassword(auth, email, senha);
+
     const verificarEmail = user.user;
     await sendEmailVerification(verificarEmail, { url: 'http://localhost:8081/' });
     console.log('email enviado para o usuario');
     alert("Codigo de verificação enviado para o seu e-mail");
     await reload(verificarEmail);
+
+    await setDoc(doc(firestore, 'users', verificarEmail.uid), {
+      nome,
+      cpf,
+      telefone,
+      email,
+      dataNascimento,
+      criadoEm: new Date().toISOString(),
+    });
     return verificarEmail;
   } catch (error: any) {
     if (error.code === 'auth/email-already-in-use') {
       alert('Este e-mail já está cadastrado.');
     } else if (error.code === 'auth/invalid-email') {
       alert('E-mail inválido.');
-    } else {
+    } else if(error.code == 'auth/missing-password'){
+      alert('Digite uma senha');
+    }else {
       alert('Erro ao criar usuário: ' + error.message);
     }
     console.error(error.code);

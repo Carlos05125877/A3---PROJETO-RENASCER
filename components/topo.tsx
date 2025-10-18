@@ -69,7 +69,7 @@ export default function Topo() {
             <Text style={styles.textoBotaoAgendamentoEntrar}>Agendar Consulta</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=>{!logado? router.push('/screens/cadastroUsuarios'):deslogar()}} style={styles.botaoCriarConta}>
+          <TouchableOpacity onPress={()=>{!logado? router.push('/screens/cadastroProfissional'):deslogar()}} style={styles.botaoCriarConta}>
             <Text style={styles.textoBotaoCriarConta}>{!logado ? 'Criar Conta' : 'Sair'}</Text>
           </TouchableOpacity>
 
