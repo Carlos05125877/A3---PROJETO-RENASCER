@@ -3,17 +3,30 @@ import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react
 
 export default function Banner() {
     return (
-        <ImageBackground source={require('../assets/images/Banner.png')}
+        <ImageBackground
+            source={require('../assets/images/Banner.png')}
             style={styles.banner}>
-            <View style={{ alignItems: 'flex-end', overflow: 'hidden'  }}>
-                <View style={{ alignItems: 'center'}}>
-                    <Text style={styles.tituloBanner}>Síndrome de Burnout</Text>
-                    <View style={{ alignItems: 'center' }}>
-                        <Text style={styles.subtituloBanner}>Rapidez, facilidade e segurança.</Text>
-                        <Text style={styles.subtituloBanner}>Agende sua terapia online com um psicólogo</Text>
-                        <TouchableOpacity onPress={() => { }} style={[styles.botaoEncontrarProfissional, {
-                        }]}>
-                            <Text style={styles.textoEncontrarProfissional}>Encontrar Profissional</Text>
+            <View
+                style={{ alignItems: 'flex-end', overflow: 'hidden' }}>
+                <View
+                    style={{ alignItems: 'center' }}>
+                    <Text
+                        style={styles.tituloBanner}>Síndrome de Burnout
+                    </Text>
+                    <View
+                        style={{ alignItems: 'center' }}>
+                        <Text style={styles.subtituloBanner}>Rapidez, facilidade e segurança.
+
+                        </Text>
+                        <Text style={styles.subtituloBanner}>Agende sua terapia online com um psicólogo
+
+                        </Text>
+                        <TouchableOpacity
+                            onPress={() => { }} style={[styles.botaoEncontrarProfissional, {
+                            }]}>
+                            <Text
+                                style={styles.textoEncontrarProfissional}>
+                                Encontrar Profissional</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

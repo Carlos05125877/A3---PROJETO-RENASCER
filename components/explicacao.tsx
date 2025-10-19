@@ -2,18 +2,22 @@ import { StyleSheet, Text, View } from "react-native";
 
 export default function Explicacao() {
     return (
-        <View style={styles.content}>
-            <Text style={styles.explicacao}>
-                <Text style={[styles.explicacao, { color: '#2DBE51' }]}>
-                    Síndrome de Burnout 
+        <View
+            style={styles.content}>
+            <Text
+                style={styles.explicacao}>
+                <Text
+                    style={[styles.explicacao, { color: '#2DBE51' }]}>
+                    Síndrome de Burnout
                 </Text>
                 ou
-                <Text style={[styles.explicacao, { color: '#2DBE51' }]}>
-                    Síndrome do Esgotamento Profissional 
+                <Text
+                    style={[styles.explicacao, { color: '#2DBE51' }]}>
+                    Síndrome do Esgotamento Profissional
                 </Text>
                 é um distúrbio emocional com síndromes de exaustão extrema,
                 estresse e esgotamento físico resultante de situações de trabalho
-                desgastantes, que demandam muita competitividade ou responsabilidade.
+                desgastantes, que demandam muita competitividade ou \.
             </Text>
         </View>
     )

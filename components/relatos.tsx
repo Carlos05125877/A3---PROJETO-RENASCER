@@ -24,62 +24,77 @@ export default function Relatos() {
 
     return (
         //parte azul da view
-        <View style={styles.fundo}>
+        <View
+            style={styles.fundo}>
 
-            <View style={styles.boxTitulo} >
-                <Text style={styles.titulo}>Relatos Profissionais</Text>
-                <View style={{ width: 400, height: 1, 
-                    backgroundColor: 'white', opacity: 0.5}}>
-                    
+            <View
+                style={styles.boxTitulo} >
+                <Text
+                    style={styles.titulo}>
+                    Relatos Profissionais
+                </Text>
+                <View
+                    style={{
+                        width: 400,
+                        height: 1,
+                        backgroundColor: 'white',
+                        opacity: 0.5
+                    }}>
+
                 </View>
             </View>
 
-            {/* area do carrossel que abrange desde os botoes até o carrossel em si*/ }
-    <View style={styles.areaCarrosel}>
+            {/* area do carrossel que abrange desde os botoes até o carrossel em si*/}
+            <View
+                style={styles.areaCarrosel}>
 
-        {/*botao esquerdo*/}
-        <View style={styles.botao}>
-            <TouchableOpacity onPress={() => { anteriorProximo = false; animacaoBotao() }}>
-                <Entypo name="chevron-small-left" size={75} color="#336BF7" />
-            </TouchableOpacity>
-        </View>
-
-        <Carousel
-            ref={manualCarrosel}
-            width={823} //é necessario ser do tamanho do elemento atual do carrossel. Caso seja menor buga 
-            //a exibição. Valor quebrado porque depois diminui 15% do width para ser possivel exibir
-            //uma parte do proximo elemento
-            height={500}
-            data={relato}
-            //mapa declarado la em cima com os dados
-            loop
-            autoPlay //serve para de tempo em tempos se mover sozinho
-            autoPlayInterval={15000}
-            scrollAnimationDuration={800}
-
-            mode="parallax"
-            modeConfig={{
-                parallaxScrollingScale: 0.85, //elemento principal
-                parallaxScrollingOffset: 150, //parte do elemento secundario visivel
-                parallaxAdjacentItemScale: 0.75, // tamanho do elemento secundario
-            }}
-
-            renderItem={({ item }) => (
-                <View style={styles.caixaCarrossel}>
-                    <Text style={styles.textoRelato}>{item.texto}</Text>
-                    <Text style={styles.textoRelato}>{item.autor}</Text>
+                {/*botao esquerdo*/}
+                <View
+                    style={styles.botao}>
+                    <TouchableOpacity
+                        onPress={() => { anteriorProximo = false; animacaoBotao() }}>
+                        <Entypo name="chevron-small-left" size={75} color="#336BF7" />
+                    </TouchableOpacity>
                 </View>
-            )}
-        />
 
-        {/* Botão Direito */}
-        <View style={styles.botao}>
-            <TouchableOpacity onPress={() => { anteriorProximo = true; animacaoBotao() }}>
-                <Entypo name="chevron-small-right" size={75} color="#336BF7" />
-            </TouchableOpacity>
-        </View>
+                <Carousel
+                    ref={manualCarrosel}
+                    width={823} //é necessario ser do tamanho do elemento atual do carrossel. Caso seja menor buga 
+                    //a exibição. Valor quebrado porque depois diminui 15% do width para ser possivel exibir
+                    //uma parte do proximo elemento
+                    height={500}
+                    data={relato}
+                    //mapa declarado la em cima com os dados
+                    loop
+                    autoPlay //serve para de tempo em tempos se mover sozinho
+                    autoPlayInterval={15000}
+                    scrollAnimationDuration={800}
 
-    </View>
+                    mode="parallax"
+                    modeConfig={{
+                        parallaxScrollingScale: 0.85, //elemento principal
+                        parallaxScrollingOffset: 150, //parte do elemento secundario visivel
+                        parallaxAdjacentItemScale: 0.75, // tamanho do elemento secundario
+                    }}
+
+                    renderItem={({ item }) => (
+                        <View style={styles.caixaCarrossel}>
+                            <Text style={styles.textoRelato}>{item.texto}</Text>
+                            <Text style={styles.textoRelato}>{item.autor}</Text>
+                        </View>
+                    )}
+                />
+
+                {/* Botão Direito */}
+                <View
+                    style={styles.botao}>
+                    <TouchableOpacity
+                        onPress={() => { anteriorProximo = true; animacaoBotao() }}>
+                        <Entypo name="chevron-small-right" size={75} color="#336BF7" />
+                    </TouchableOpacity>
+                </View>
+
+            </View>
         </View >
     )
 }

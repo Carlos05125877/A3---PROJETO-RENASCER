@@ -1,4 +1,4 @@
-import { auth, deslogar } from '@/back-end/Api';
+import { auth, deslogar, Obter_Dados_Firestore } from '@/back-end/Api';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -10,24 +10,40 @@ export default function Topo() {
   const [logado, setLogado] = useState(false);
   const [user, setUser] = useState<any>(null);
   const isMobile = useMediaQuery({ maxWidth: 830 });
+  const [urlImagem, setUrlImagem] = useState<string | undefined>(undefined);
 
-  useEffect(() => {
-    const ouvindo = onAuthStateChanged(auth, (usuario) => {
-      if (usuario?.emailVerified) {
-        setLogado(true);
-        setUser(usuario);
-        console.log("Usuario autenticado");
-      } else {
-        setLogado(false);
-        setUser(null)
-        console.log("Usuario não autenticado");
+  useEffect(
+    () => {
+      const ouvindo = onAuthStateChanged(auth, (usuario) => {
+        if (usuario?.emailVerified) {
+          setLogado(true);
+          setUser(usuario);
+          console.log("Usuario autenticado");
+        } else {
+          setLogado(false);
+          setUser(null)
+          console.log("Usuario não autenticado");
+        }
+      });
+
+
+      return () => ouvindo();
+
+    }, []);
+
+  useEffect(
+    () => {
+      const buscarImagem = async () => {
+        if (user?.uid) {
+
+          const dados = await Obter_Dados_Firestore(user.uid,)
+          if(dados){
+          setUrlImagem(dados.urlImagem);
+          }
+        }
       }
-    });
-
-
-    return () => ouvindo();
-
-  }, []);
+      buscarImagem();
+    }, [user])
 
 
 
@@ -35,42 +51,78 @@ export default function Topo() {
   const router = useRouter();
 
   return (
-    <View style={styles.backgroundPagina}>
-      <View style={styles.topoPagina}>
+    <View
+      style={styles.backgroundPagina}>
+      <View
+        style={styles.topoPagina}>
         {/* Lado esquerdo */}
-        <View style={styles.topoPaginaEsquerda}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <Image style={isMobile ?styles.logoMobile : styles.logo} source={require('../assets/images/Logo.png')} />
+        <View
+          style={styles.topoPaginaEsquerda}>
+          <View
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Image
+              style={isMobile ? styles.logoMobile : styles.logo}
+              source={require('../assets/images/Logo.png')} />
             <View>
-              <Text style={styles.textoLogo}>Renascer</Text>
-              <Text style={styles.subtituloLogo}>Especialista em Burnout</Text>
+              <Text style={styles.textoLogo}>
+                Renascer
+              </Text>
+              <Text
+                style={styles.subtituloLogo}>
+                Especialista em Burnout
+              </Text>
             </View>
           </View>
 
-          <TouchableOpacity><Text style={styles.textoComoFuncionaBlog}>Como Funciona</Text></TouchableOpacity>
-          <TouchableOpacity><Text style={styles.textoComoFuncionaBlog}>Blog</Text></TouchableOpacity>
+          <TouchableOpacity>
+            <Text
+              style={styles.textoComoFuncionaBlog}>
+              Como Funciona
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text
+              style={styles.textoComoFuncionaBlog}>
+              Blog
+            </Text>
+          </TouchableOpacity>
 
-          <TouchableOpacity style={styles.botaoExclusivo}>
+          <TouchableOpacity
+            style={styles.botaoExclusivo}>
             <MaterialCommunityIcons name='crown' size={24} color='#E6B103' />
-            <Text style={{
-              paddingLeft: 5,
-              color: '#E6B103',
-              fontFamily: "Inria Sans",
-              fontSize: 16,
-              fontWeight: 700
-            }}>Exclusivo</Text>
+            <Text
+              style={{
+                paddingLeft: 5,
+                color: '#E6B103',
+                fontFamily: "Inria Sans",
+                fontSize: 16,
+                fontWeight: 700
+              }}>Exclusivo
+            </Text>
           </TouchableOpacity>
         </View>
 
         {/* Lado direito */}
-        <View style={styles.topoPaginaDireita}>
-          <TouchableOpacity style={styles.botaoAgendamentoEntrar}>
+        <View
+          style={styles.topoPaginaDireita}>
+          <TouchableOpacity
+            style={styles.botaoAgendamentoEntrar}>
             <MaterialCommunityIcons name='calendar' size={24} color='#FFFFFF' />
-            <Text style={styles.textoBotaoAgendamentoEntrar}>Agendar Consulta</Text>
+            <Text
+              style={styles.textoBotaoAgendamentoEntrar}>
+              Agendar Consulta
+            </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=>{!logado? router.push('/screens/cadastroProfissional'):deslogar()}} style={styles.botaoCriarConta}>
-            <Text style={styles.textoBotaoCriarConta}>{!logado ? 'Criar Conta' : 'Sair'}</Text>
+          <TouchableOpacity
+            onPress={() => {
+              !logado ? router.push('/screens/cadastroProfissional')
+                : deslogar()
+            }}
+            style={styles.botaoCriarConta}>
+            <Text style={styles.textoBotaoCriarConta}>
+              {!logado ? 'Criar Conta' : 'Sair'}
+            </Text>
           </TouchableOpacity>
 
           {!logado ? (
@@ -78,11 +130,14 @@ export default function Topo() {
               onPress={() => router.push('/screens/login')}
               style={[styles.botaoAgendamentoEntrar, { width: '15%' }]}
             >
-              <Text style={styles.textoBotaoAgendamentoEntrar}>Entrar</Text>
+              <Text
+                style={styles.textoBotaoAgendamentoEntrar}>
+                Entrar
+              </Text>
             </TouchableOpacity>
           ) : (
             <Image
-              source={{ uri: user?.photoURL || undefined }}
+              source={{ uri: urlImagem }}
               style={{ width: 40, height: 40, borderRadius: 20 }}
             />
           )}

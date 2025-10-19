@@ -4,12 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import { cadastroUsuario, signInComContaGoogle } from '../../../back-end/Api';
-import { verificarCpf } from '../../../back-end/validarCPF';
+import { verificarCpf } from '../../../back-end/API/Validações/validarCPF';
 import Topo from '../../../components/topo';
-
-
-
-
 
 
 export default function CadastroUsuarios() {
@@ -27,8 +23,7 @@ export default function CadastroUsuarios() {
     const [senhaNaoConfere, setSenhaNaoConfere] = useState(false);
     const [cpfInvalido, setCpfInvalido] = useState(false);
     const [emailInvalido, setEmailInvalido] = useState(false);
-    const [bloquarBotaoConfirmar, setBloquarBotaoConfirmar] = useState(true);
-
+    const bloquarBotaoConfirmar = useRef(true);
 
     useEffect(() => {
         if (email === '') {
@@ -63,25 +58,23 @@ export default function CadastroUsuarios() {
     }, [cpf]);
 
     useEffect(() => {
-        if (!cpfInvalido && !senhaNaoConfere && !emailInvalido 
-            && cpf.length >= 14 && email != '' && senha != '' 
-            && confirmarSenha != '') {
-            setBloquarBotaoConfirmar(false);
+        if (!cpfInvalido && !senhaNaoConfere && !emailInvalido
+            && cpf.length >= 14 && email != '' && senha != ''
+            && confirmarSenha != '' && nome != '' && dataNascimento != '') {
+            bloquarBotaoConfirmar.current = false;
         } else {
-            setBloquarBotaoConfirmar(true);
+            bloquarBotaoConfirmar.current = true;
         }
-    }, [cpf, email, senha, , confirmarSenha, senhaNaoConfere, cpfInvalido, emailInvalido]
+    }, [cpf, email, senha, dataNascimento, nome, confirmarSenha, senhaNaoConfere, cpfInvalido, emailInvalido]
     )
 
 
 
-
     const verificarCadastroUsuario = async () => {
-        if (bloquearBotaoGoogle.current === true) return;
         if (senha === confirmarSenha) {
             try {
-                bloquearBotaoGoogle.current = true
-                const user = await cadastroUsuario(email, senha, nome,cpf, telefone, dataNascimento);
+                const user = await cadastroUsuario(email, senha, nome, cpf, 
+                    telefone, dataNascimento);
                 if (user.emailVerified) {
                     console.log('cadastro criado com sucesso');
                     router.push('/');
@@ -89,8 +82,6 @@ export default function CadastroUsuarios() {
             } catch (error: any) {
                 console.error(error.code);
                 console.error(error.message);
-            } finally {
-                bloquearBotaoGoogle.current = false;
             }
         } else {
             console.warn('Falha ao cadastrar usuario. Senhas divergentes');
@@ -100,7 +91,11 @@ export default function CadastroUsuarios() {
 
 
     const loginComGoogle = async () => {
+        if (bloquearBotaoGoogle.current === true) return;
+
         try {
+            bloquearBotaoGoogle.current = true
+
             const user = await signInComContaGoogle();
             if (user) {
                 router.push('/');
@@ -108,6 +103,8 @@ export default function CadastroUsuarios() {
         } catch (error: any) {
             console.error(error.code);
             console.error(error.message);
+        } finally {
+            bloquearBotaoGoogle.current = false;
         }
     }
 
@@ -241,8 +238,14 @@ export default function CadastroUsuarios() {
 
                             <View style={styles.botoes}>
 
-                                <TouchableOpacity disabled={bloquarBotaoConfirmar} style={styles.botaoCadastrar}
-                                    onPress={async () => { await verificarCadastroUsuario() }}>
+                                <TouchableOpacity style={styles.botaoCadastrar}
+                                    onPress={async () => {
+                                        if (bloquarBotaoConfirmar.current) {
+                                            alert('Preencha todos os campos obrigatórios');
+                                        } else {
+                                            await verificarCadastroUsuario()
+                                        }
+                                    }}>
                                     <Text style={styles.textoBotaoCadastrar}>Confirmar</Text>
                                 </TouchableOpacity>
 
