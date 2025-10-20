@@ -71,19 +71,11 @@ export async function signInComEmail(email: string, senha: string): Promise<User
   }
 }
 
-export async function cadastroUsuario(
-  email: string,
-  senha: string,
-  nome: string,
-  cpf: string,
-  telefone: string,
-  dataNascimento: string,
-
-): Promise<User> {
+export async function cadastroUsuario(usuario : Record<string, any>): Promise<User> {
   try {
     auth.languageCode = 'pt'
     console.log('Tentando criar Usuario');
-    const user = await createUserWithEmailAndPassword(auth, email, senha);
+    const user = await createUserWithEmailAndPassword(auth, usuario.email, usuario.senha);
     console.log('usuario criado com sucesso');
 
     console.log('enviando email para confirmação');
@@ -95,11 +87,7 @@ export async function cadastroUsuario(
 
     console.log('adicionando dados de usuario ao firestore');
     await setDoc(doc(firestore, 'users', verificarEmail.uid), {
-      nome,
-      cpf,
-      telefone,
-      email,
-      dataNascimento,
+      usuario,
       criadoEm: new Date().toISOString(),
     }, { merge: true });
     console.log('Dados adicionados com sucesso ao FireStore');
@@ -122,45 +110,55 @@ export async function cadastroUsuario(
 
 
 export async function enviar_Arquivos_Storage_E_Retornar_Url
-  (arquivo: File | null, userId: string | null): Promise<string> {
+  (arquivos: Record<string, File | null>, userId: string | null): Promise<Record<string, string>>{
   try {
-    if (arquivo && userId) {
-      console.log('enviando arquivos para pasta de Usuario')
-      const localArquivoStorage = ref(storage, `DadosPessoaisUsuarios/${userId}/${arquivo.name}`);
-      await uploadBytes(localArquivoStorage, arquivo);
-      console.log('Arquivos enviados com Sucesso');
-      console.log('Buscando Url do Arquivo');
-      const urlArquivo = await getDownloadURL(localArquivoStorage);
-      console.log('Url retornada com sucesso');
-      return urlArquivo;
+    const Urls: Record<string, string> = {}
+    if (arquivos && userId) {
+      for (const [chave, arquivo] of Object.entries(arquivos)) {
+        if(arquivo != null){
+        console.log('enviando arquivos para pasta de Usuario');
+        const localArquivoStorage = ref(storage, `DadosPessoaisUsuarios/${userId}/${arquivo.name}`);
+        await uploadBytes(localArquivoStorage, arquivo);
+        console.log('Arquivos enviados com Sucesso');
+        console.log('Buscando Url do Arquivo');
+        const urlArquivo = await getDownloadURL(localArquivoStorage);
+        Urls[chave] = urlArquivo;
+        console.log('Url retornada com sucesso');
+      }
+    }
+      return Urls;
     }
     console.warn('Erro: Arquivo Invalido ou ID de usuario inexisteste. Buscando arquivo padrão');
     const localArquivoStorageErro = ref(storage, `DadosPublicosUsuarios/user.png`);
     console.log('Buscando Url do arquivo Padrao');
     const urlArquivoPadrao = await getDownloadURL(localArquivoStorageErro);
     console.log('Url padrão retornada com sucesso');
-    return urlArquivoPadrao
+    Urls['urlImagem'] = urlArquivoPadrao
+    return Urls
   } catch (error: any) {
+
+    const urlErro: Record<string, string> = {}
     console.error("Erro ao enviar arquivo ou retornar url do mesmo:");
     console.error(error.code);
     console.error(error.message);
     console.warn('Tentando buscar arquivo padrao');
     const referenciaPadrao = ref(storage, `user/user.png`);
-    const urlErro = await getDownloadURL(referenciaPadrao);
+    const url = await getDownloadURL(referenciaPadrao);
     console.warn('arquivo padrao retornado com sucesso');
+    urlErro['urlImagem'] = url
     return urlErro
   }
 }
 
 
 
-export async function adicionar_Dados_FireStore(userId: string, dadosUsuario : Record<string, any>) {
+export async function adicionar_Dados_FireStore(userId: string, dadosUsuario: Record<string, any>) {
   try {
     console.log('adiconando dados de usuario ao FireStore');
 
     await setDoc(doc(firestore, 'users', userId),
-    dadosUsuario
-    , { merge: true })
+      dadosUsuario
+      , { merge: true })
     console.log('dados de Usuario adiconados com sucesso');
 
   } catch (error: any) {
@@ -179,12 +177,13 @@ export async function Obter_Dados_Firestore(userId: string): Promise<Record<stri
     console.log('Acessando dados do usuário...');
     const consulta = await getDoc(documentoUsuarioFirestore);
 
+
     if (!consulta.exists()) {
       console.warn('Documento não encontrado');
       return undefined;
     }
 
-    const dadosUsuario = consulta.data(); 
+    const dadosUsuario = consulta.data();
 
     console.log('Dados selecionados com sucesso:', dadosUsuario);
     return dadosUsuario;

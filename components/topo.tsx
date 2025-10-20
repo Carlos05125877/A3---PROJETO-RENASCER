@@ -15,7 +15,8 @@ export default function Topo() {
   useEffect(
     () => {
       const ouvindo = onAuthStateChanged(auth, (usuario) => {
-        if (usuario?.emailVerified) {
+        
+        if (usuario && usuario.emailVerified ) {
           setLogado(true);
           setUser(usuario);
           console.log("Usuario autenticado");
@@ -36,7 +37,7 @@ export default function Topo() {
       const buscarImagem = async () => {
         if (user?.uid) {
 
-          const dados = await Obter_Dados_Firestore(user.uid,)
+          const dados = await Obter_Dados_Firestore(user.uid)
           if(dados){
           setUrlImagem(dados.urlImagem);
           }
@@ -58,8 +59,9 @@ export default function Topo() {
         {/* Lado esquerdo */}
         <View
           style={styles.topoPaginaEsquerda}>
-          <View
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <View>
+      
+              <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }} onPress={()=>router.push('/')}>
             <Image
               style={isMobile ? styles.logoMobile : styles.logo}
               source={require('../assets/images/Logo.png')} />
@@ -72,6 +74,7 @@ export default function Topo() {
                 Especialista em Burnout
               </Text>
             </View>
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity>

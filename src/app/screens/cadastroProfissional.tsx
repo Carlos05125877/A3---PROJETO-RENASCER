@@ -1,5 +1,7 @@
+import UsuariosProfissional from '@/back-end/API/Cadastro/UsuariosProfissional';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
+import { User } from 'firebase/auth';
 import { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
@@ -7,8 +9,7 @@ import { adicionar_Dados_FireStore, cadastroUsuario, enviar_Arquivos_Storage_E_R
 import { verificarCpf } from '../../../back-end/API/Validações/validarCPF';
 import Topo from '../../../components/topo';
 
-
-export default function CadastroUsuarios() {
+export default function cadastroProfissional() {
     const router = useRouter();
 
     const [mostrarSenha, setmostrarSenha] = useState(true);
@@ -23,9 +24,10 @@ export default function CadastroUsuarios() {
     const [cpfInvalido, setCpfInvalido] = useState(false);
     const [emailInvalido, setEmailInvalido] = useState(false);
     const bloquarBotaoConfirmar = useRef(true);
+    const urlImagem = useRef<Record<string, string>>({})
     const [Biografia, setBiografia] = useState('');
-    const urlImagem = useRef<string>('')
     const [crp, setCrp] = useState('');
+    const user = useRef<User | null>(null)
 
 
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -83,27 +85,34 @@ export default function CadastroUsuarios() {
 
 
 
-    const verificarCadastroUsuario = async () => {
+    const cadastrarUsuario = async () : Promise<boolean>=>  {
         if (senha === confirmarSenha) {
             try {
-                const user = await cadastroUsuario(email, senha,
-                    nome, cpf, telefone,
-                    dataNascimento);
-                urlImagem.current = await enviar_Arquivos_Storage_E_Retornar_Url(imagem, user.uid);
+                 user.current = await cadastroUsuario({'email': email, 'senha': senha,
+                     'nome': nome, 'cpf': cpf, 'telefone':telefone, 'dataNascimento': dataNascimento, 
+                     'crp':crp, 'biografia': Biografia});
+                 urlImagem.current = await enviar_Arquivos_Storage_E_Retornar_Url(
+                    {'urlImagem': imagem}, user.current.uid);
 
-                adicionar_Dados_FireStore(user.uid, {urlImagem: urlImagem.current});
-                if (user.emailVerified) {
-                    console.log('cadastro criado com sucesso');
-                    router.push('/');
-                }
+                adicionar_Dados_FireStore(user.current.uid, urlImagem.current);
+                return true;
             } catch (error: any) {
                 console.error(error.code);
                 console.error(error.message);
+                return false;
             }
+
 
         } else {
             console.warn('Falha ao cadastrar usuario. Senhas divergentes');
+            return false;
         }
+    }
+
+    if(user.current){
+        const usuario = new UsuariosProfissional (user.current.uid, nome, cpf, 
+            email, telefone, dataNascimento,imagem, crp, Biografia
+        )
     }
     return (
         <View
@@ -382,7 +391,7 @@ export default function CadastroUsuarios() {
                                         if (bloquarBotaoConfirmar.current) {
                                             alert('Preencha todos os campos obrigatórios');
                                         } else {
-                                            await verificarCadastroUsuario()
+                                            await cadastrarUsuario()
                                         }
                                     }}>
                                     <Text

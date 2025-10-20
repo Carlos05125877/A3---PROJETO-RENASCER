@@ -73,8 +73,8 @@ export default function CadastroUsuarios() {
     const verificarCadastroUsuario = async () => {
         if (senha === confirmarSenha) {
             try {
-                const user = await cadastroUsuario(email, senha, nome, cpf, 
-                    telefone, dataNascimento);
+                const user = await cadastroUsuario({'email': email, 'senha': senha,
+                     'nome': nome, 'cpf': cpf, 'telefone':telefone, 'dataNascimento': dataNascimento});
                 if (user.emailVerified) {
                     console.log('cadastro criado com sucesso');
                     router.push('/');
@@ -87,6 +87,7 @@ export default function CadastroUsuarios() {
             console.warn('Falha ao cadastrar usuario. Senhas divergentes');
         }
     }
+
 
 
 
@@ -243,7 +244,7 @@ export default function CadastroUsuarios() {
                                         if (bloquarBotaoConfirmar.current) {
                                             alert('Preencha todos os campos obrigatórios');
                                         } else {
-                                            await verificarCadastroUsuario()
+//------------------------------------------await verificarCadastroUsuario()
                                         }
                                     }}>
                                     <Text style={styles.textoBotaoCadastrar}>Confirmar</Text>
