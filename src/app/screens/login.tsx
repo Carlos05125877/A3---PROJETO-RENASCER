@@ -59,7 +59,7 @@ export default function Login() {
   return (
     <View style={styles.backgroundPagina}>
 
-      <View style={{ paddingTop: 10 }}>
+      <View style={{ paddingTop: 10 , zIndex: 1}}>
         <Topo />
       </View>
 

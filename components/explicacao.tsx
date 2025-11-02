@@ -24,10 +24,9 @@ export default function Explicacao() {
 }
 
 const styles = StyleSheet.create({
+    
     content: {
-        flex: 1,
-        marginTop: 30,
-        marginBottom: 30,
+        flex: 2,
         marginRight: 250,
         marginLeft: 250,
         justifyContent: 'center',
@@ -35,6 +34,7 @@ const styles = StyleSheet.create({
     },
 
     explicacao: {
+        flex: 1,
         color: '#000000',
         fontFamily: 'Arial',
         fontSize: 24,

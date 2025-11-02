@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
-import { cadastroUsuario, signInComContaGoogle } from '../../../back-end/Api';
+import { adicionar_Dados_FireStore, cadastroUsuario, enviar_Arquivos_Storage_E_Retornar_Url, signInComContaGoogle } from '../../../back-end/Api';
 import { verificarCpf } from '../../../back-end/API/Validações/validarCPF';
 import Topo from '../../../components/topo';
 
@@ -73,8 +73,12 @@ export default function CadastroUsuarios() {
     const verificarCadastroUsuario = async () => {
         if (senha === confirmarSenha) {
             try {
+                const imagem = null
                 const user = await cadastroUsuario({'email': email, 'senha': senha,
-                     'nome': nome, 'cpf': cpf, 'telefone':telefone, 'dataNascimento': dataNascimento});
+                     'nome': nome, 'cpf': cpf, 'telefone':telefone, 'dataNascimento': dataNascimento, 'colecao': 'users'});
+                const urlImagem = await enviar_Arquivos_Storage_E_Retornar_Url({ 'urlImagem': imagem }, user.uid);
+                
+                adicionar_Dados_FireStore(user.uid, 'users', urlImagem);     
                 if (user.emailVerified) {
                     console.log('cadastro criado com sucesso');
                     router.push('/');
@@ -113,7 +117,7 @@ export default function CadastroUsuarios() {
     return (
         <View style={styles.backgroundPagina}>
 
-            <View style={{ paddingTop: 10 }}>
+            <View style={{ paddingTop: 10, zIndex: 1 }}>
                 <Topo />
             </View>
 
@@ -244,7 +248,7 @@ export default function CadastroUsuarios() {
                                         if (bloquarBotaoConfirmar.current) {
                                             alert('Preencha todos os campos obrigatórios');
                                         } else {
-//------------------------------------------await verificarCadastroUsuario()
+                                            await verificarCadastroUsuario()
                                         }
                                     }}>
                                     <Text style={styles.textoBotaoCadastrar}>Confirmar</Text>

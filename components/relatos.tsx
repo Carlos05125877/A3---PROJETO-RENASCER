@@ -5,7 +5,7 @@ import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 
 export default function Relatos() {
     //hook que permite avançar ou retroceder o carrossel pelo botao
-    const manualCarrosel = useRef<ICarouselInstance>(null);
+    const manualCarrosel = useRef<ICarouselInstance> (null);
     let anteriorProximo: boolean = true;
 
     const animacaoBotao = () => {
@@ -17,20 +17,16 @@ export default function Relatos() {
     }
 
     //Caso surja mais relatos adicionar aqui
-    const relato = [{
+    const relato = [ {
         texto: "Tenho acompanhado muitos profissionais que chegam às sessões virtuais exaustos pela rotina de trabalho. O atendimento online facilita o acesso imediato ao cuidado, oferecendo acolhimento mesmo em meio a um dia cheio. Essa proximidade digital ajuda a prevenir o burnout e promover equilíbrio emocional.",
         autor: "Dra. Mariana Souza, Psicóloga CRP: 000000/MG"
-    }]
+    } ]
 
     return (
         //parte azul da view
-        <View
-            style={styles.fundo}>
-
-            <View
-                style={styles.boxTitulo} >
-                <Text
-                    style={styles.titulo}>
+        <View style={styles.fundo}>
+            <View style={styles.boxTitulo} >
+                <Text style={styles.titulo}>
                     Relatos Profissionais
                 </Text>
                 <View
@@ -40,17 +36,13 @@ export default function Relatos() {
                         backgroundColor: 'white',
                         opacity: 0.5
                     }}>
-
                 </View>
             </View>
 
             {/* area do carrossel que abrange desde os botoes até o carrossel em si*/}
-            <View
-                style={styles.areaCarrosel}>
-
+            <View style={styles.areaCarrosel}>
                 {/*botao esquerdo*/}
-                <View
-                    style={styles.botao}>
+                <View style={styles.botao}>
                     <TouchableOpacity
                         onPress={() => { anteriorProximo = false; animacaoBotao() }}>
                         <Entypo name="chevron-small-left" size={75} color="#336BF7" />
@@ -86,8 +78,7 @@ export default function Relatos() {
                 />
 
                 {/* Botão Direito */}
-                <View
-                    style={styles.botao}>
+                <View style={styles.botao}>
                     <TouchableOpacity
                         onPress={() => { anteriorProximo = true; animacaoBotao() }}>
                         <Entypo name="chevron-small-right" size={75} color="#336BF7" />
@@ -102,15 +93,17 @@ export default function Relatos() {
 //CSS
 
 const styles = StyleSheet.create({
+
     fundo: {
         flex: 1,
         backgroundColor: '#336BF7',
         alignItems: 'center',
         justifyContent: 'center',
     },
+
     boxTitulo: {
         flexDirection: 'row', alignItems: 'center',
-        justifyContent: 'center', gap: 30, marginTop: 60
+        justifyContent: 'center', gap: 30, marginTop: 100
 
     },
 
@@ -121,6 +114,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
 
     },
+
     areaCarrosel: {
         flexDirection: 'row',
         marginTop: 20,
@@ -131,21 +125,23 @@ const styles = StyleSheet.create({
     },
 
     caixaCarrossel: {
-        display: 'flex',
+        flex: 1,
         backgroundColor: '#0C2157',
         width: 823,
-        height: 500,
+        height: '5%',
         borderRadius: 30,
         alignItems: 'center',
         justifyContent: 'center',
 
     },
+
     textoRelato: {
         fontWeight: 'bold',
         color: '#FFFFFF',
         textAlign: 'center',
         padding: 30,
     },
+    
     botao: {
         marginHorizontal: 20,
         alignItems: 'center',

@@ -1,32 +1,32 @@
-import UsuariosProfissional from '@/back-end/API/Cadastro/UsuariosProfissional';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { useRouter } from 'expo-router';
-import { User } from 'firebase/auth';
 import { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
+
+import { User } from 'firebase/auth';
+
+
 import { adicionar_Dados_FireStore, cadastroUsuario, enviar_Arquivos_Storage_E_Retornar_Url } from '../../../back-end/Api';
 import { verificarCpf } from '../../../back-end/API/Validações/validarCPF';
 import Topo from '../../../components/topo';
 
-export default function cadastroProfissional() {
-    const router = useRouter();
+export default function CadastroProfissional() {
 
-    const [mostrarSenha, setmostrarSenha] = useState(true);
     const [nome, setNome] = useState('');
     const [cpf, setCpf] = useState('');
     const [telefone, setTelefone] = useState('');
     const [email, setEmail] = useState('');
     const [dataNascimento, setDataNascimento] = useState('');
+    const [crp, setCrp] = useState('');
+    const [Biografia, setBiografia] = useState('');
     const [senha, setSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
-    const [senhaNaoConfere, setSenhaNaoConfere] = useState(false);
+    const [mostrarSenha, setmostrarSenha] = useState(true);
+
+
     const [cpfInvalido, setCpfInvalido] = useState(false);
     const [emailInvalido, setEmailInvalido] = useState(false);
-    const bloquarBotaoConfirmar = useRef(true);
     const urlImagem = useRef<Record<string, string>>({})
-    const [Biografia, setBiografia] = useState('');
-    const [crp, setCrp] = useState('');
     const user = useRef<User | null>(null)
 
 
@@ -48,14 +48,6 @@ export default function cadastroProfissional() {
 
     }, [email])
 
-    useEffect(() => {
-        if (confirmarSenha != senha) {
-            setSenhaNaoConfere(true);
-        } else {
-            setSenhaNaoConfere(false);
-        }
-    }, [senha, confirmarSenha])
-
 
     useEffect(
         () => {
@@ -67,34 +59,41 @@ export default function cadastroProfissional() {
             }
         }, [cpf]);
 
-    useEffect(
-        () => {
-            if (!cpfInvalido && !senhaNaoConfere && !emailInvalido
-                && cpf.length >= 14 && email != '' && senha != ''
-                && confirmarSenha != '' && nome != '' && dataNascimento != '') {
-                bloquarBotaoConfirmar.current = false;
-            } else {
-                bloquarBotaoConfirmar.current = true;
-            }
-        }, [cpf, email, senha,
-        dataNascimento, nome,
-        confirmarSenha, senhaNaoConfere,
-        cpfInvalido, emailInvalido]
-    )
+    const verificarDados = async () => {
+        const dadosValidos =
+            !cpfInvalido &&
+            !emailInvalido &&
+            crp != '' &&
+            cpf.length >= 14 &&
+            email !== '' &&
+            senha !== '' &&
+            confirmarSenha !== '' &&
+            nome !== '' &&
+            dataNascimento !== '' &&
+            senha === confirmarSenha;
+
+        if (dadosValidos) {
+            console.log('Dados válidos! Prosseguir com cadastro.');
+            await cadastrarUsuario();
+        } else {
+            alert('Preencha todos os campos obrigatórios corretamente');
+        }
+    };
 
 
 
-
-    const cadastrarUsuario = async () : Promise<boolean>=>  {
+    const cadastrarUsuario = async (): Promise<boolean> => {
         if (senha === confirmarSenha) {
             try {
-                 user.current = await cadastroUsuario({'email': email, 'senha': senha,
-                     'nome': nome, 'cpf': cpf, 'telefone':telefone, 'dataNascimento': dataNascimento, 
-                     'crp':crp, 'biografia': Biografia});
-                 urlImagem.current = await enviar_Arquivos_Storage_E_Retornar_Url(
-                    {'urlImagem': imagem}, user.current.uid);
+                user.current = await cadastroUsuario({
+                    'email': email, 'senha': senha,
+                    'nome': nome, 'cpf': cpf, 'telefone': telefone, 'dataNascimento': dataNascimento,
+                    'crp': crp, 'biografia': Biografia, 'colecao': 'profissionais'
+                });
+                urlImagem.current = await enviar_Arquivos_Storage_E_Retornar_Url(
+                    { 'urlImagem': imagem }, user.current.uid);
 
-                adicionar_Dados_FireStore(user.current.uid, urlImagem.current);
+                adicionar_Dados_FireStore(user.current.uid, 'profissionais', urlImagem.current);
                 return true;
             } catch (error: any) {
                 console.error(error.code);
@@ -109,9 +108,14 @@ export default function cadastroProfissional() {
         }
     }
 
-    if(user.current){
-        const usuario = new UsuariosProfissional (user.current.uid, nome, cpf, 
-            email, telefone, dataNascimento,imagem, crp, Biografia
+    const iconeSenha = () => {
+        if (mostrarSenha) {
+            return (<AntDesign style={styles.iconeMostrarSenha} 
+                name="eye-invisible" size={24} color="black" />
+            )
+        }
+        return (<AntDesign style={styles.iconeMostrarSenha} 
+            name="eye" size={24} color="black" />
         )
     }
     return (
@@ -119,314 +123,182 @@ export default function cadastroProfissional() {
             style={styles.backgroundPagina}>
 
             <View
-                style={{ paddingTop: 10 }}>
+                style={styles.topo}>
                 <Topo />
             </View>
 
             <View
                 style={styles.areaCadastroBanner}>
-
-
                 <View
                     style={styles.areaCadastro}>
+                    <Text
+                        style={styles.TextoCadastro}>
+                        Cadastro de Profissional
+                    </Text>
                     <View
-                        style={styles.caixaCadastro}>
-
-                        <View>
+                        style={styles.inputsCadastro}>
+                        <TextInput
+                            style={styles.TextInput}
+                            value={nome}
+                            onChangeText={setNome}
+                            placeholder='Nome *'
+                            placeholderTextColor={'rgba(0,0,0,0.5)'}
+                        />
+                        <TextInputMask
+                            style={styles.TextInput}
+                            type={'cpf'}
+                            value={cpf}
+                            onChangeText={setCpf}
+                            placeholder='CPF *'
+                            placeholderTextColor={'rgba(0,0,0,0.5)'}
+                        />
+                        {
+                            cpfInvalido &&
                             <Text
-                                style={styles.TextoCadastro}>
-                                Cadastro de Profissional
+                                style={styles.mensagemErro}>
+                                CPF inválido
                             </Text>
-                        </View>
-
+                        }
+                        <TextInputMask
+                            type={'cel-phone'}
+                            options={{
+                                maskType: 'BRL',
+                                withDDD: true,
+                            }
+                            }
+                            style={styles.TextInput}
+                            value={telefone}
+                            onChangeText={setTelefone}
+                            placeholder='Telefone'
+                            placeholderTextColor={'rgba(0,0,0,0.5)'}
+                        />
+                        <TextInput
+                            style={styles.TextInput}
+                            value={email}
+                            onChangeText={setEmail}
+                            placeholder='E-mail *'
+                            placeholderTextColor={'rgba(0,0,0,0.5)'}
+                        />
+                        {
+                            emailInvalido &&
+                            <Text
+                                style={styles.mensagemErro}>
+                                E-mail Invalido
+                            </Text>
+                        }
                         <View
-                            style={{ gap: 10 }}>
+                            style={styles.nascimentoCrp}>
 
-                            <View
-                                style={styles.boxTextInput}>
-                                <TextInput
-                                    style={styles.TextInput}
-                                    value={nome}
-                                    onChangeText={setNome}
-                                    placeholder='Nome *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'} secureTextEntry={false}
-                                />
-                            </View>
-
-
-                            <View
-                                style={styles.boxTextInput}>
-                                <TextInputMask
-                                    style={styles.TextInput}
-                                    type={'cpf'}
-                                    value={cpf}
-                                    onChangeText={setCpf}
-                                    placeholder='CPF *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={false}
-
-                                />
-                            </View>
-                            {
-                                !cpfInvalido ?
-                                    '' :
-                                    <Text
-                                        style={{ color: 'red' }}>
-                                        CPF inválido
-                                    </Text>
-                            }
-
-                            <View
-                                style={styles.boxTextInput}>
-                                <TextInputMask
-                                    type={'cel-phone'}
-                                    options={{
-                                        maskType: 'BRL',
-                                        withDDD: true,
-                                    }
-                                    }
-                                    style={styles.TextInput}
-                                    value={telefone}
-                                    onChangeText={setTelefone}
-                                    placeholder='Telefone'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={false}
-                                />
-
-                            </View>
-                            <View
-                                style={styles.boxTextInput}>
-                                <TextInput
-                                    style={styles.TextInput}
-                                    value={email}
-                                    onChangeText={setEmail}
-                                    placeholder='E-mail *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={false}
-                                />
-
-                            </View>
-                            {
-                                !emailInvalido
-                                    ? ''
-                                    : <Text
-                                        style={{ color: 'red' }}>
-                                        E-mail Invalido
-                                    </Text>
-                            }
-                            <View
-                                style={{
-                                    flexDirection: 'row',
-                                    gap: 4
-                                }}>
-                                <View
-                                    style={[
-                                        styles.boxTextInput,
-                                        { width: 185 }
-                                    ]}>
-                                    <TextInputMask
-                                        type={'datetime'}
-                                        options={{
-                                            format: 'dd/MM/aaaa'
-                                        }}
-                                        style={styles.TextInput}
-                                        value={dataNascimento}
-                                        onChangeText={setDataNascimento}
-                                        placeholder='Data de Nascimento *'
-                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                        secureTextEntry={false}
-                                    />
-
-                                </View>
-                                <View
-                                    style={[
-                                        styles.boxTextInput, { width: 185 }
-                                    ]}>
-                                    <TextInputMask
-                                        type={'custom'}
-                                        options={{
-                                            mask: '99/99999'
-                                        }}
-                                        style={styles.TextInput}
-                                        value={crp}
-                                        onChangeText={setCrp}
-                                        placeholder='CRP *'
-                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                        secureTextEntry={false}
-                                    />
-                                </View>
-
-                            </View>
-                            <View
-                                style={[
-                                    styles.boxTextInput,
-                                    { height: 75 }
-                                ]}>
-                                <TextInput
-                                    multiline
-                                    style={[
-                                        styles.TextInput,
-                                        {
-                                            textAlign: 'justify',
-                                            paddingTop: 10,
-                                            paddingHorizontal: 10,
-                                            height: 75,
-                                        },
-                                    ]} value={Biografia}
-                                    onChangeText={setBiografia}
-                                    placeholder='Biografia'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={false} />
-                            </View>
-                            <View
-                                style={styles.boxTextInput}>
-                                <TextInput
-                                    style={styles.TextInput}
-                                    value={senha}
-                                    onChangeText={setSenha}
-                                    placeholder='Senha *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={mostrarSenha}
-                                />
-                                <TouchableOpacity
-                                    onPress={() => { setmostrarSenha(!mostrarSenha) }}>
-                                    <View
-                                        style={{
-                                            padding: 10,
-                                            opacity: 0.5
-                                        }}>
-                                        {
-                                            mostrarSenha
-                                                ? (
-                                                    <AntDesign name="eye-invisible" size={24} color="black" />
-                                                )
-                                                : (
-                                                    <AntDesign name="eye" size={24} color="black" />
-                                                )
-                                        }
-                                    </View>
-                                </TouchableOpacity>
-
-
-                            </View>
-                            <View
-                                style={styles.boxTextInput}>
-                                <TextInput
-                                    style={styles.TextInput}
-                                    value={confirmarSenha}
-                                    onChangeText={setConfirmarSenha}
-                                    placeholder='Confirmar Senha *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={mostrarSenha}
-                                />
-                                <TouchableOpacity
-                                    onPress={() => { setmostrarSenha(!mostrarSenha) }}>
-                                    <View
-                                        style={{ padding: 10, opacity: 0.5 }}>
-                                        {
-                                            mostrarSenha
-                                                ? (
-                                                    <AntDesign name="eye-invisible" size={24} color="black" />
-                                                )
-                                                : (
-                                                    <AntDesign name="eye" size={24} color="black" />
-                                                )}
-                                    </View>
-                                </TouchableOpacity>
-
-                            </View>
-                            <Text
-                                style={{ color: 'red' }}>
-                                {
-                                    !senhaNaoConfere
-                                        ? ''
-                                        : 'Senhas não conferem'}
-                            </Text>
-
-
-                            <View
-                                style={styles.botoes}>
-                                <View
-                                    style={{
-                                        width: 75,
-                                        height: 85,
-                                        borderRadius: 8,
-                                        borderWidth: 2,
-                                        borderColor: 'rgba(0,0,0,0.5)',
-                                    }} >
-
-                                    <TouchableOpacity
-                                        style={{
-                                            flex: 1,
-                                            overflow: 'hidden'
-                                        }}
-                                        onPress={async () => {
-                                            inputRef.current?.click()
-                                        }}>
-                                        {!imagem ?
-                                            <Image source={require('../../../assets/images/user.png')}
-                                                style={{ width: 75, height: 85 }}
-                                            />
-                                            : <Image source={{ uri: URL.createObjectURL(imagem) }}
-                                                style={{ width: 75, height: 83, overflow: 'hidden', borderRadius: 8 }}
-
-                                            />}
-
-                                        <input
-                                            ref={inputRef}
-                                            type='file'
-                                            accept='image/*'
-                                            style={{ display: 'none' }}
-                                            onChange={(e) =>
-                                                e.target.files?.[0] && setImagem(e.target.files?.[0])
-                                            }
-                                        />
-                                    </TouchableOpacity>
-
-                                </View>
-
-                                <TouchableOpacity
-                                    style={styles.botaoCadastrar}
-                                    onPress={async () => {
-                                        if (bloquarBotaoConfirmar.current) {
-                                            alert('Preencha todos os campos obrigatórios');
-                                        } else {
-                                            await cadastrarUsuario()
-                                        }
-                                    }}>
-                                    <Text
-                                        style={styles.textoBotaoCadastrar}>
-                                        Confirmar
-                                    </Text>
-                                </TouchableOpacity>
-
-                            </View>
-
-
+                            <TextInputMask
+                                type={'datetime'}
+                                options={{
+                                    format: 'dd/MM/aaaa'
+                                }}
+                                style={[styles.TextInput, styles.TextInputDataCrp]}
+                                value={dataNascimento}
+                                onChangeText={setDataNascimento}
+                                placeholder='Data de Nascimento *'
+                                placeholderTextColor={'rgba(0,0,0,0.5)'}
+                            />
+                            <TextInputMask
+                                type={'custom'}
+                                options={{
+                                    mask: '99/99999'
+                                }}
+                                style={[styles.TextInput, styles.TextInputDataCrp]}
+                                value={crp}
+                                onChangeText={setCrp}
+                                placeholder='CRP *'
+                                placeholderTextColor={'rgba(0,0,0,0.5)'}
+                            />
                         </View>
+                        <TextInput
+                            multiline
+                            style={[
+                                styles.TextInput,
+                                styles.TextInputBiografia
+                            ]} value={Biografia}
+                            onChangeText={setBiografia}
+                            placeholder='Biografia'
+                            placeholderTextColor={'rgba(0,0,0,0.5)'}
+                        />
+                        <View
+                            style={styles.boxTextInput}>
+                            <TextInput
+                                style={[styles.TextInput, styles.TextInputSenha]}
+                                value={senha}
+                                onChangeText={setSenha}
+                                placeholder='Senha *'
+                                placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                secureTextEntry={mostrarSenha}
+                            />
+                            <TouchableOpacity
+                                onPress={() => { setmostrarSenha(!mostrarSenha) }}>
+                                {iconeSenha()}
+                            </TouchableOpacity>
+                        </View>
+                        <View
+                            style={styles.boxTextInput}>
+                            <TextInput
+                                style={[styles.TextInput, styles.TextInputSenha]}
+                                value={confirmarSenha}
+                                onChangeText={setConfirmarSenha}
+                                placeholder='Confirmar Senha *'
+                                placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                secureTextEntry={mostrarSenha}
+                            />
+                            <TouchableOpacity
+                                onPress={() => { setmostrarSenha(!mostrarSenha) }}>
+                                {iconeSenha()}
+                            </TouchableOpacity>
+                        </View>
+                        <Text
+                            style={styles.mensagemErro}>
+                            {senha != confirmarSenha && 'Senhas não conferem'}
+                        </Text>
+                        <TouchableOpacity
+                            style={styles.botaoInput}
+                            onPress={async () => {
+                                inputRef.current?.click()
+                            }}>
+                            {!imagem ?
+                                <Image source={require('../../../assets/images/user.png')}
+                                    style={styles.imagemInput}
+                                />
+                                : <Image source={{ uri: URL.createObjectURL(imagem) }}
+                                    style={styles.imagemInput}
 
-
+                                />}
+                            <input
+                                ref={inputRef}
+                                type='file'
+                                accept='image/*'
+                                style={{ display: 'none' }}
+                                onChange={(e) =>
+                                    e.target.files?.[0] && setImagem(e.target.files?.[0])
+                                }
+                            />
+                        </TouchableOpacity>
                     </View>
+                    <TouchableOpacity
+                        style={styles.botaoCadastrar}
+                        onPress={async () => {
+                            verificarDados();
+                        }}>
+                        <Text
+                            style={styles.textoBotaoCadastrar}>
+                            Confirmar
+                        </Text>
+                    </TouchableOpacity>
                 </View>
-
-
                 <View
                     style={styles.areaBanner}>
                     <Image
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            alignContent: 'center',
-                            justifyContent: 'center'
-                        }}
-                        source={require('../../../assets/images/imagemCadastroProfissional.png')} />
-
+                        style={styles.imagem}
+                        source={require('../../../assets/images/imagemCadastroProfissional.png')}/>
                 </View>
-
             </View>
-
         </View>
-
     )
 
 }
@@ -435,6 +307,10 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff',
         gap: 10,
+    },
+    topo: {
+        paddingTop: 10,
+        zIndex: 1
     },
 
     areaCadastroBanner: {
@@ -447,13 +323,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden',
+        gap: 20,
+
     },
     caixaCadastro: {
         width: '60%',
         height: '80%',
-        gap: 20,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    inputsCadastro: {
+        gap: 10,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     areaBanner: {
         flex: 0.58,
@@ -461,8 +343,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     AreaTextoCadastro: {
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
+        justifyContent: 'center',
+        alignItems: 'center',
 
     },
     TextoCadastro: {
@@ -488,12 +370,37 @@ const styles = StyleSheet.create({
 
     TextInput: {
         width: 375,
-        height: 45,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 2,
+        borderColor: 'rgba(0,0,0,0.5)',
+        borderRadius: 5,
+        borderStyle: 'solid',
+        height: 35,
         padding: 10,
         outlineWidth: 0,
         outlineColor: 'transparent',
         opacity: 1,
         color: '#000000',
+    },
+    TextInputDataCrp: {
+        width: 185,
+    },
+    TextInputBiografia: {
+        textAlign: 'justify',
+        paddingTop: 10,
+        paddingHorizontal: 10,
+        height: 75,
+    },
+    TextInputSenha: {
+        borderWidth: 0,
+    },
+    mensagemErro: {
+        color: 'red',
+        width: '100%',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start'
+
     },
     botoes: {
         justifyContent: 'center',
@@ -503,7 +410,7 @@ const styles = StyleSheet.create({
     },
     botaoCadastrar: {
         borderRadius: 7,
-        width: '65%',
+        width: '35%',
         height: 50,
         backgroundColor: '#336BF7',
         justifyContent: 'center',
@@ -532,5 +439,33 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 700,
     },
-
+    imagem: {
+        width: '100%',
+        height: '100%',
+        alignContent: 'center',
+        justifyContent: 'center'
+    },
+    imagemInput: {
+        width: 75,
+        height: 83,
+        overflow: 'hidden',
+        borderRadius: 8
+    },
+    botaoInput: {
+        flex: 1,
+        overflow: 'hidden',
+        width: 75,
+        height: 85,
+        borderRadius: 8,
+        borderWidth: 2,
+        borderColor: 'rgba(0,0,0,0.5)',
+    },
+    nascimentoCrp: {
+        flexDirection: 'row',
+        gap: 4
+    },
+    iconeMostrarSenha: {
+        padding: 10,
+        opacity: 0.5
+    }
 })

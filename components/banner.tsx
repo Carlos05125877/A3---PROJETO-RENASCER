@@ -1,78 +1,116 @@
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { useRouter } from 'expo-router';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 
 export default function Banner() {
+    const route = useRouter()
     return (
-        <ImageBackground
-            source={require('../assets/images/Banner.png')}
-            style={styles.banner}>
-            <View
-                style={{ alignItems: 'flex-end', overflow: 'hidden' }}>
-                <View
-                    style={{ alignItems: 'center' }}>
-                    <Text
-                        style={styles.tituloBanner}>Síndrome de Burnout
+        <View style={styles.box}>
+            <View style={{ flex: 0.65, gap: 40, paddingHorizontal: 25 }}>
+                <Text style={styles.titulo}> Cuide da sua saúde mental
+                    de maneira prática com{'\n'}Renascer
+                </Text>
+                <Text style={styles.subtitulo}>
+                    Agende sessões, descubra insights sobre psicologia
+                    e faça parte de uma rede com profissionais de
+                    saúde
+                </Text>
+            </View>
+            <View>
+                <Image source={require('../assets/images/Baneer.png')}
+                    style={{
+                        width: 400,
+                        height: 600,
+                        borderRadius: 20,
+                        marginRight: 175,
+                        marginBottom: 75,
+                        overflow: 'hidden'
+                    }} />
+                <View style={styles.miniBox}>
+                    <Text style={styles.tituloBox}>Agendamento de Sessões</Text>
+                    <Text style={styles.subtituloBox}>
+                        Encontre os melhores profissionais
+                        com facilidade, veja valores, e datas
+                        disponiveis e marque o melhor horário para
+                        você.
                     </Text>
-                    <View
-                        style={{ alignItems: 'center' }}>
-                        <Text style={styles.subtituloBanner}>Rapidez, facilidade e segurança.
-
-                        </Text>
-                        <Text style={styles.subtituloBanner}>Agende sua terapia online com um psicólogo
-
-                        </Text>
-                        <TouchableOpacity
-                            onPress={() => { }} style={[styles.botaoEncontrarProfissional, {
-                            }]}>
-                            <Text
-                                style={styles.textoEncontrarProfissional}>
-                                Encontrar Profissional</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity style={styles.botao}
+                    onPress={() => route.push('/screens/listaProfissionais')}>
+                        <AntDesign name="arrow-right" size={24} color="white" />
+                    </TouchableOpacity>
                 </View>
             </View>
-        </ImageBackground>
+        </View>
     )
-
 }
 
 const styles = StyleSheet.create({
-    banner: {
-        width: '100%',
-        height: 500,
-        alignItems: 'flex-end',
+
+    box: {
+        flexDirection: 'row',
+        flex: 1,
+        marginTop: '4%',
+        justifyContent: 'space-around'
     },
-    tituloBanner: {
-        marginTop: 50,
-        marginRight: 30,
-        marginBottom: 20,
+
+    titulo: {
+        color: '#0C2157',
+        textAlign: 'center',
+        fontFamily: 'Arial',
+        fontSize: 55,
+        fontWeight: 'bold',
+        marginTop: 100,
+    },
+
+    subtitulo: {
+        color: '#828282',
+        textAlign: 'center',
+        fontFamily: 'Arial',
+        fontSize: 28,
+        fontWeight: 'medium',
+        marginHorizontal: 90
+    },
+
+    miniBox: {
+        width: '75%',
+        height: '30%',
+        backgroundColor: '#336BF7',
+        position: 'absolute',
+        marginTop: '50%',
+        marginLeft: '35%',
+        gap: 20,
+        borderRadius: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden'
+    },
+
+    tituloBox: {
         color: '#FFF',
         textAlign: 'center',
         fontFamily: 'Arial',
-        fontSize: 48,
-        fontWeight: 900,
+        fontSize: 24,
+        fontWeight: 700,
+        paddingTop: 10
     },
-    subtituloBanner: {
-        color: '#FFFFFF',
+
+    subtituloBox: {
+        color: '#FFF',
+        textAlign: 'center',
         fontFamily: 'Arial',
-        fontSize: 20,
+        fontSize: 13,
         fontWeight: 400,
+        paddingHorizontal: 30
     },
-    botaoEncontrarProfissional: {
-        marginTop: 25,
-        backgroundColor: '#336BF7',
-        width: 200,
-        height: 50,
-        borderRadius: 7,
-        justifyContent: 'center',
+
+    botao: {
+        backgroundColor: '#0C2157',
+        borderRadius: 10000,
+        width: '15%',
+        height: '22%',
         alignItems: 'center',
-        padding: 10,
-    },
-    textoEncontrarProfissional: {
-        color: '#FFFFFF',
-        fontFamily: "Inria Sans",
-        fontSize: 16,
-        fontWeight: 400,
-    },
+        justifyContent: 'center',
+    }
 
 })
