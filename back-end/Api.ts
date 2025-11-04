@@ -4,11 +4,12 @@ import {
   GoogleAuthProvider,
   reload,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword, signInWithPopup,
   signOut, User
 } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
-import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import firebaseConfig from './firebaseConfig';
 
@@ -20,7 +21,12 @@ const storage = getStorage(app);
 
 export { app, auth };
 
-
+export interface profissionais {
+  nome: string
+  profissao: string
+  crp: string
+  biografia: string
+}
 
 export const deslogar = async (): Promise<void> => {
   try {
@@ -50,14 +56,14 @@ export const signInComContaGoogle = async (): Promise<User> => {
   }
 }
 
-export const signInComEmail = async (email: string, senha: string) : Promise<User> => {
+export const signInComEmail = async (email: string, senha: string): Promise<User> => {
   try {
     console.log('Tentando realizar login com email e senha');
     const userCredential = await signInWithEmailAndPassword(auth, email, senha);
     console.log('Usuário autenticado com sucesso:', userCredential.user);
     return userCredential.user;
   } catch (error: any) {
-    if (error.code === "auth/wrong-password") {
+    if (error.code === "auth/invalid-credential") {
       alert("Senha incorreta");
     }
     else if (error.code === "auth/invalid-email") {
@@ -76,7 +82,7 @@ export const signInComEmail = async (email: string, senha: string) : Promise<Use
 }
 
 
-export const cadastroUsuario = async (usuario: Record<string, any>) : Promise<User> => {
+export const cadastroUsuario = async (usuario: Record<string, any>): Promise<User> => {
   try {
     auth.languageCode = 'pt'
     console.log('Tentando criar Usuario');
@@ -158,7 +164,7 @@ export const enviar_Arquivos_Storage_E_Retornar_Url = async (arquivos: Record<st
 
 
 
-export const adicionar_Dados_FireStore = async (userId: string, colecao : string, dadosUsuario: Record<string, any>) => {
+export const adicionar_Dados_FireStore = async (userId: string, colecao: string, dadosUsuario: Record<string, any>) => {
   try {
     console.log('adiconando dados de usuario ao FireStore');
 
@@ -179,8 +185,8 @@ export const adicionar_Dados_FireStore = async (userId: string, colecao : string
 export const Obter_Dados_Firestore = async (userId: string): Promise<Record<string, any> | undefined> => {
   try {
     let documentoUsuarioFirestore = doc(firestore, 'users', userId);
-    const snapshot =  await getDoc(documentoUsuarioFirestore);
-    if(!snapshot.exists()){
+    const snapshot = await getDoc(documentoUsuarioFirestore);
+    if (!snapshot.exists()) {
       documentoUsuarioFirestore = doc(firestore, 'profissionais', userId)
     }
     console.log('Acessando dados do usuário...');
@@ -204,4 +210,29 @@ export const Obter_Dados_Firestore = async (userId: string): Promise<Record<stri
     alert('Falha ao selecionar os dados. Tente novamente');
   }
 }
+export const buscarProfissional = async (): Promise<profissionais[]> => {
+  const colecao = collection(firestore, 'profissionais');
+  const listaUsuarios = await getDocs(colecao);
+  const usuarioFiltrado  = listaUsuarios.docs.map((usuario) => {
+    const dados = usuario.data().dadosUsuario
+    const usuarioFinal : profissionais =
+    {
+      nome: dados.nome ?? '',
+      profissao: dados.profissao ?? '',
+      crp: dados.crp ?? '',
+      biografia: dados.biografia ?? ''
+    }
+    return usuarioFinal
+  }
+)
+return usuarioFiltrado
+}
+export const esqueciMinhaSenha = async (email : string) =>{
+  try{
+    sendPasswordResetEmail(auth, email);
+    alert('Email de redefinição enviado com sucesso')
+  } catch (error : any) {
+    alert(error.code + error.message)
+  }
 
+}

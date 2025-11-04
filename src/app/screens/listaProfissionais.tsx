@@ -1,15 +1,12 @@
+import { buscarProfissional, profissionais } from '@/back-end/Api';
 import Pesquisa from '@/components/pesquisa';
 import Profissional from '@/components/profissional';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import Modal from 'react-native-modal';
 import Topo from '../../../components/topo';
 
-interface Profissional {
-  nome: string;
-  especialidade: string;
-  crp: string;
-  descricao: string;
+interface Profissional extends profissionais {
   onAgendar?: () => void;
   onWhatsApp?: () => void;
   onInstagram?: () => void;
@@ -17,17 +14,18 @@ interface Profissional {
 
 
 export default function ListaDeProfissionais() {
-  const dadosProfissional = [{ nome: 'Joao da Silva', especialidade: "Psicólogo", crp: "123456", descricao: "João é um psicólogo que trabalha com terapia individual e familiar." },
-  { nome: 'Alex', especialidade: "Psicólogo", crp: "123456", descricao: "João é um psicólogo que trabalha com terapia individual e familiar." },
-  { nome: 'Matheus Pereira', especialidade: "Psicólogo", crp: "123456", descricao: "João é um psicólogo que trabalha com terapia individual e familiar." },
-  { nome: 'Yuri', especialidade: "Psicólogo", crp: "123456", descricao: "João é um psicólogo que trabalha com terapia individual e familiar." },
-  { nome: 'Carlos', especialidade: "Psicólogo", crp: "123456", descricao: "João é um psicólogo que trabalha com terapia individual e familiar." },
-  { nome: 'Samira', especialidade: "Psicólogo", crp: "123456", descricao: "João é um psicólogo que trabalha com terapia individual e familiar." },
-  ]
   const [nome, setNome] = useState('');
   const [localizacao, setLocalizacao] = useState('');
   const [modalVisivel, setModalVisivel] = useState(false)
   const [profissionalSelecionado, setProfissionalSelecionado] = useState<Profissional | null>(null)
+  const [listaProfissionais, setListaProfissionais] = useState<profissionais[]> ([])
+
+  useEffect(() => {
+    const Profissionais = async ()  => {
+      setListaProfissionais(await buscarProfissional());
+    }
+    Profissionais()
+  }, [])
 
 
   return (
@@ -41,12 +39,12 @@ export default function ListaDeProfissionais() {
           <Pesquisa onNomeChange={setNome} onLocalizacaoChange={setLocalizacao} />
         </View>
         <View style={{ paddingTop: 10, flexDirection: 'row', gap: 10, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
-          {dadosProfissional.map((pessoa, indice) => (
+          {listaProfissionais.map((pessoa, indice) => (
             <Profissional
               nome={pessoa.nome}
-              especialidade={pessoa.especialidade}
+              especialidade={pessoa.profissao}
               crp={pessoa.crp}
-              descricao={pessoa.descricao}
+              descricao={pessoa.biografia}
               onAgendar={() => {
                 setProfissionalSelecionado(pessoa)
                 setModalVisivel(true)
@@ -66,9 +64,9 @@ export default function ListaDeProfissionais() {
             {profissionalSelecionado && (
               <Profissional
                 nome={profissionalSelecionado.nome}
-                especialidade={profissionalSelecionado.especialidade}
+                especialidade={profissionalSelecionado.profissao}
                 crp={profissionalSelecionado.crp}
-                descricao={profissionalSelecionado.descricao}
+                descricao={profissionalSelecionado.biografia}
                 onAgendar={() => {
                   setProfissionalSelecionado(profissionalSelecionado)
                   setModalVisivel(true)

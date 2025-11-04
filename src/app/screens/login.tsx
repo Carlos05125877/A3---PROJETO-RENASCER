@@ -4,7 +4,7 @@ import { User } from 'firebase/auth';
 import { useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Topo from '../../..//components/topo';
-import { signInComContaGoogle, signInComEmail } from '../../../back-end/Api';
+import { esqueciMinhaSenha, signInComContaGoogle, signInComEmail } from '../../../back-end/Api';
 
 {/*-----------------------------------------------------------------------------------*/ }
 
@@ -126,11 +126,15 @@ export default function Login() {
                 </TouchableOpacity>
 
                 <TouchableOpacity>
-                  <Text style={{ color: '#336BF7' }}>Esqueci minha senha</Text>
+                  <Text style={{ color: '#336BF7' }}
+                  onPress={()=> {esqueciMinhaSenha(email)}}
+                  >Esqueci minha senha</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity>
-                  <Text style={{ color: '#336BF7' }}>Criar Conta</Text>
+                  <Text style={{ color: '#336BF7' }}
+                  onPress={ () => router.push('/screens/cadastroUsuarios')}
+                  >Criar Conta</Text>
                 </TouchableOpacity>
 
               </View>
