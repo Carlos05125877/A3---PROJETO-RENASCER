@@ -10,7 +10,7 @@ import Topo from '../../components/topo';
 export default function Index() {
   return (
     <View style={{flex: 1}}>
-      <View style={{ flex: 0.12, zIndex: 1}} >
+      <View style={{zIndex: 1}} >
         <Topo />
       </View>
       <ScrollView showsVerticalScrollIndicator ={false} style={{ flex: 1, overflowX: 'auto'}}>
@@ -25,11 +25,6 @@ export default function Index() {
         </View>
       </ScrollView>
     </View>
-    /*
-    <View style={{flex: 1}}>
-      <Login/>
-    </View>
-  
-    */
+
   )
 }

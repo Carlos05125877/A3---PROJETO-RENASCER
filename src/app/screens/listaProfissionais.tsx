@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import Modal from 'react-native-modal';
 import Topo from '../../../components/topo';
+import Agendador from '@/components/agendador';
 
 interface Profissional extends profissionais {
   onAgendar?: () => void;
@@ -62,17 +63,14 @@ export default function ListaDeProfissionais() {
           backdropColor="black"
           backdropOpacity={0.8}>
             {profissionalSelecionado && (
-              <Profissional
-                nome={profissionalSelecionado.nome}
-                especialidade={profissionalSelecionado.profissao}
-                crp={profissionalSelecionado.crp}
-                descricao={profissionalSelecionado.biografia}
-                onAgendar={() => {
-                  setProfissionalSelecionado(profissionalSelecionado)
-                  setModalVisivel(true)
-                }}
-                onWhatsApp={() => { }}
-                onInstagram={() => { }} />)}
+              <Agendador
+              id = {profissionalSelecionado.id}
+              nome = {profissionalSelecionado.nome} 
+              profissao= {profissionalSelecionado.profissao}
+              crp={profissionalSelecionado.crp}
+              imagem = {profissionalSelecionado.imagem}
+              />
+            )}
         </Modal>
         </View>
     </ScrollView >

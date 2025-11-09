@@ -5,6 +5,8 @@ import { useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Topo from '../../..//components/topo';
 import { esqueciMinhaSenha, signInComContaGoogle, signInComEmail } from '../../../back-end/Api';
+import Modal from 'react-native-modal';
+
 
 {/*-----------------------------------------------------------------------------------*/ }
 
@@ -15,6 +17,8 @@ export default function Login() {
   const [senha, setSenha] = useState('');
   const [senhaIncorreta, setsenhaIncorreta] = useState(false);
   const router = useRouter();
+  const [botaoEsqueciMinhaSenha, setBotaoEsqueciMinhaSenha] = useState(false)
+  const [redefinirEmail, setRedefinirEmail] = useState('')
 
   const verificarLogin = (usuario: User) => {
     if (usuario) {
@@ -59,7 +63,7 @@ export default function Login() {
   return (
     <View style={styles.backgroundPagina}>
 
-      <View style={{ paddingTop: 10 , zIndex: 1}}>
+      <View style={{ paddingTop: 10, zIndex: 1 }}>
         <Topo />
       </View>
 
@@ -127,13 +131,14 @@ export default function Login() {
 
                 <TouchableOpacity>
                   <Text style={{ color: '#336BF7' }}
-                  onPress={()=> {esqueciMinhaSenha(email)}}
+                    onPress={() => setBotaoEsqueciMinhaSenha(true)
+                    }
                   >Esqueci minha senha</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity>
                   <Text style={{ color: '#336BF7' }}
-                  onPress={ () => router.push('/screens/cadastroUsuarios')}
+                    onPress={() => router.push('/screens/cadastroUsuarios')}
                   >Criar Conta</Text>
                 </TouchableOpacity>
 
@@ -151,6 +156,43 @@ export default function Login() {
         </View>
 
       </View>
+      <Modal
+        isVisible={botaoEsqueciMinhaSenha}
+        onBackdropPress={() => setBotaoEsqueciMinhaSenha(false)}
+        animationIn='zoomIn'
+        animationOut='zoomOut'
+        style={{ justifyContent: 'center', alignItems: 'center' }}
+        backdropColor="black"
+        backdropOpacity={0.8}>
+        <View
+          style={styles.modal}>
+          <Text
+            style={styles.recuperarSenha}>
+            Recuperar Senha
+          </Text>
+          <Text
+            style={styles.textoInformativoModal}>
+            Digite o email cadastrado e aguarde o envio do link para recuperar sua senha
+          </Text>
+          <View
+            style={[styles.boxTextInput, {width: '92%'}]}>
+            <TextInput
+              style={[styles.TextInput, {width: '100%'}]}
+              value={redefinirEmail}
+              onChangeText={setRedefinirEmail}
+              placeholder='E-mail'
+              placeholderTextColor={'rgba(0,0,0,0.5)'} secureTextEntry={false} />
+          </View>
+          <TouchableOpacity
+            style={[styles.botaoLogin, { width: '40%', height: '20%', borderRadius: 8 }]}
+            onPress={() => esqueciMinhaSenha(redefinirEmail)}>
+            <Text style={styles.textoBotaoLogin}>
+              Confirmar
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
     </View>
 
   )
@@ -259,5 +301,27 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 700,
   },
+  modal: { 
+    backgroundColor: '#fff', 
+    gap: 20, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    borderRadius: 20, 
+    overflow: 'hidden', 
+    width: '35%', 
+    height: '40%'
+  },
+  recuperarSenha: { 
+    textAlign: 'center', 
+    fontWeight: 'bold', 
+    fontSize: 35, 
+    fontFamily: 'Arial'
+  },
+  textoInformativoModal: {
+     textAlign: 'center', 
+     fontSize: 24, 
+     fontFamily: 'Arial',
+     marginHorizontal: 20
+    }
 
 })

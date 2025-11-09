@@ -9,7 +9,7 @@ import {
   signOut, User
 } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
-import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, getFirestore, setDoc, addDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import firebaseConfig from './firebaseConfig';
 
@@ -22,10 +22,12 @@ const storage = getStorage(app);
 export { app, auth };
 
 export interface profissionais {
+  id: string,
   nome: string
   profissao: string
   crp: string
   biografia: string
+  imagem: string
 }
 
 export const deslogar = async (): Promise<void> => {
@@ -100,7 +102,9 @@ export const cadastroUsuario = async (usuario: Record<string, any>): Promise<Use
     const { senha, ...dadosUsuario } = usuario;
     dadosUsuario.criadoEm = new Date().toISOString();
     await setDoc(doc(firestore, usuario.colecao, verificarEmail.uid), {
-      dadosUsuario,
+
+      ...dadosUsuario,
+      criadoEm: new Date().toLocaleDateString('pt-BR')
     }, { merge: true });
     console.log('Dados adicionados com sucesso ao FireStore');
     return verificarEmail;
@@ -112,7 +116,7 @@ export const cadastroUsuario = async (usuario: Record<string, any>): Promise<Use
     } else if (error.code == 'auth/missing-password') {
       alert('Digite uma senha');
     } else {
-      alert('Erro ao criar usuário: ' + error.message);
+      alert('Erro ao criar Usuário: ' + error.message);
     }
     console.error(error.code);
     console.error(error.message);
@@ -164,14 +168,29 @@ export const enviar_Arquivos_Storage_E_Retornar_Url = async (arquivos: Record<st
 
 
 
-export const adicionar_Dados_FireStore = async (userId: string, colecao: string, dadosUsuario: Record<string, any>) => {
+export const adicionar_Dados_FireStore = async (userId: string, colecao: string,
+  dadosUsuario: Record<string, any>, colecaoInterna?: string) => {
   try {
     console.log('adiconando dados de usuario ao FireStore');
+    if (!colecaoInterna) {
+      await setDoc(doc(firestore, colecao, userId),
+        { 
+          ...dadosUsuario
 
-    await setDoc(doc(firestore, colecao, userId),
-      dadosUsuario
-      , { merge: true })
-    console.log('dados de Usuario adiconados com sucesso');
+        }
+        , { merge: true })
+      console.log('dados de Usuario adiconados com sucesso');
+    } else {
+      await setDoc(doc(firestore, colecao, userId, colecaoInterna, dadosUsuario.dia),
+        { [dadosUsuario.hora]:{
+          ...dadosUsuario,
+          status: 'Aguardando Confirmação'
+        }
+
+        }, {merge: true})
+      console.log('dados de Usuario adiconados com sucesso');
+      alert('Agendamento realizado com sucesso')
+    }
 
   } catch (error: any) {
     console.error('erro ao adicionar arquivos ao FireStore');
@@ -213,26 +232,38 @@ export const Obter_Dados_Firestore = async (userId: string): Promise<Record<stri
 export const buscarProfissional = async (): Promise<profissionais[]> => {
   const colecao = collection(firestore, 'profissionais');
   const listaUsuarios = await getDocs(colecao);
-  const usuarioFiltrado  = listaUsuarios.docs.map((usuario) => {
-    const dados = usuario.data().dadosUsuario
-    const usuarioFinal : profissionais =
+  const usuarioFiltrado = listaUsuarios.docs.map((usuario) => {
+    const dados = usuario.data()
+    const usuarioFinal: profissionais =
     {
+      id: usuario.id,
       nome: dados.nome ?? '',
-      profissao: dados.profissao ?? '',
+      profissao: dados.profissao ?? 'Sem Profissão Definida',
       crp: dados.crp ?? '',
-      biografia: dados.biografia ?? ''
+      biografia: dados.biografia ?? '',
+      imagem: dados.urlImagem ?? ''
     }
     return usuarioFinal
   }
-)
-return usuarioFiltrado
+  )
+  return usuarioFiltrado
 }
-export const esqueciMinhaSenha = async (email : string) =>{
-  try{
+export const esqueciMinhaSenha = async (email: string) => {
+  try {
     sendPasswordResetEmail(auth, email);
     alert('Email de redefinição enviado com sucesso')
-  } catch (error : any) {
+  } catch (error: any) {
     alert(error.code + error.message)
   }
+
+}
+
+
+export const obterSubColeção = (usuarioId: string, subColecao : string, data : string) => {
+    const local = doc(firestore, 'profissionais', usuarioId, subColecao, data)
+
+    const dados = getDoc(local)
+
+    return dados
 
 }
