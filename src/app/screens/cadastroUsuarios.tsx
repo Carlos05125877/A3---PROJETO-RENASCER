@@ -3,8 +3,9 @@ import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
-import { adicionar_Dados_FireStore, cadastroUsuario, enviar_Arquivos_Storage_E_Retornar_Url, signInComContaGoogle } from '../../../back-end/Api';
-import { verificarCpf } from '../../../back-end/API/Validações/validarCPF';
+import { adicionar_Dados_FireStore,enviar_Arquivos_Storage_E_Retornar_Url } from '../../../back-end/Api';
+import { cadastroUsuario, signInComContaGoogle } from '@/back-end/api.cadastroLogin';
+import { verificarCpf, cpfExistente } from '../../../back-end/API/Validações/validarCPF';
 import Topo from '../../../components/topo';
 
 
@@ -22,6 +23,7 @@ export default function CadastroUsuarios() {
     const [confirmarSenha, setConfirmarSenha] = useState('');
     const [senhaNaoConfere, setSenhaNaoConfere] = useState(false);
     const [cpfInvalido, setCpfInvalido] = useState(false);
+    const [cpfCadastrado, setCpfCadastrado] = useState(false)
     const [emailInvalido, setEmailInvalido] = useState(false);
     const bloquarBotaoConfirmar = useRef(true);
 
@@ -49,13 +51,26 @@ export default function CadastroUsuarios() {
 
 
     useEffect(() => {
-        const cpfNumeros = cpf.replace(/\D/g, '');
-        if (cpfNumeros.length === 11) {
-            setCpfInvalido(!verificarCpf(cpfNumeros));
-        } else {
-            setCpfInvalido(false);
+        const validadorCpf = async () => {
+            const cpfNumeros = cpf.replace(/\D/g, '');
+                setCpfInvalido(false);
+                setCpfCadastrado(false);
+            
+            if(cpfNumeros.length ===11){
+            const invalido = !verificarCpf(cpfNumeros);
+            if (invalido) {
+                setCpfInvalido(true);
+                return
+            }
+            const existe = await cpfExistente(cpf);
+            if (existe) {
+                setCpfCadastrado(true)
+                return
+            }
         }
-    }, [cpf]);
+        }
+        validadorCpf()
+    },[cpf])
 
     useEffect(() => {
         if (!cpfInvalido && !senhaNaoConfere && !emailInvalido
@@ -74,11 +89,13 @@ export default function CadastroUsuarios() {
         if (senha === confirmarSenha) {
             try {
                 const imagem = null
-                const user = await cadastroUsuario({'email': email, 'senha': senha,
-                     'nome': nome, 'cpf': cpf, 'telefone':telefone, 'dataNascimento': dataNascimento, 'colecao': 'users'});
+                const user = await cadastroUsuario({
+                    'email': email, 'senha': senha,
+                    'nome': nome, 'cpf': cpf, 'telefone': telefone, 'dataNascimento': dataNascimento, 'colecao': 'users'
+                });
                 const urlImagem = await enviar_Arquivos_Storage_E_Retornar_Url({ 'urlImagem': imagem }, user.uid);
-                
-                adicionar_Dados_FireStore(user.uid, 'users', urlImagem);     
+
+                adicionar_Dados_FireStore(user.uid, 'users', urlImagem);
                 if (user.emailVerified) {
                     console.log('cadastro criado com sucesso');
                     router.push('/');
@@ -154,7 +171,8 @@ export default function CadastroUsuarios() {
 
                                 />
                             </View>
-                            {!cpfInvalido ? '' : <Text style={{ color: 'red' }}>CPF inválido</Text>}
+                            {cpfInvalido && <Text style={{ color: 'red' }}>CPF inválido</Text>}
+                            {cpfCadastrado && <Text style={{ color: 'red' }}>CPF já cadastrado</Text>}
 
                             <View style={styles.boxTextInput}>
                                 <TextInputMask

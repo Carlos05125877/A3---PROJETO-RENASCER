@@ -2,13 +2,11 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
-
 import { User } from 'firebase/auth';
-
-
-import { adicionar_Dados_FireStore, cadastroUsuario, enviar_Arquivos_Storage_E_Retornar_Url } from '../../../back-end/Api';
-import { verificarCpf } from '../../../back-end/API/Validações/validarCPF';
+import { adicionar_Dados_FireStore, enviar_Arquivos_Storage_E_Retornar_Url } from '../../../back-end/Api';
+import { verificarCpf, cpfExistente} from '../../../back-end/API/Validações/validarCPF';
 import Topo from '../../../components/topo';
+import { cadastroUsuario } from '@/back-end/api.cadastroLogin';
 
 export default function CadastroProfissional() {
 
@@ -22,6 +20,9 @@ export default function CadastroProfissional() {
     const [senha, setSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
     const [mostrarSenha, setmostrarSenha] = useState(true);
+    const [cpfCadastrado, setCpfCadastrado] = useState(false)
+    const [url, setUrl] = useState('')
+
 
 
     const [cpfInvalido, setCpfInvalido] = useState(false);
@@ -49,15 +50,27 @@ export default function CadastroProfissional() {
     }, [email])
 
 
-    useEffect(
-        () => {
+    useEffect(() => {
+        const validadorCpf = async () => {
             const cpfNumeros = cpf.replace(/\D/g, '');
+            setCpfInvalido(false);
+            setCpfCadastrado(false);
+
             if (cpfNumeros.length === 11) {
-                setCpfInvalido(!verificarCpf(cpfNumeros));
-            } else {
-                setCpfInvalido(false);
+                const invalido = !verificarCpf(cpfNumeros);
+                if (invalido) {
+                    setCpfInvalido(true);
+                    return
+                }
+                const existe = await cpfExistente(cpf);
+                if (existe) {
+                    setCpfCadastrado(true)
+                    return
+                }
             }
-        }, [cpf]);
+        }
+        validadorCpf()
+    }, [cpf])
 
     const verificarDados = async () => {
         const dadosValidos =
@@ -79,6 +92,13 @@ export default function CadastroProfissional() {
             alert('Preencha todos os campos obrigatórios corretamente');
         }
     };
+
+    useEffect( () => {
+        if (!imagem) return
+
+        setUrl(URL.createObjectURL(imagem))
+
+    }, [imagem])
 
 
 
@@ -110,11 +130,11 @@ export default function CadastroProfissional() {
 
     const iconeSenha = () => {
         if (mostrarSenha) {
-            return (<AntDesign style={styles.iconeMostrarSenha} 
+            return (<AntDesign style={styles.iconeMostrarSenha}
                 name="eye-invisible" size={24} color="black" />
             )
         }
-        return (<AntDesign style={styles.iconeMostrarSenha} 
+        return (<AntDesign style={styles.iconeMostrarSenha}
             name="eye" size={24} color="black" />
         )
     }
@@ -152,13 +172,8 @@ export default function CadastroProfissional() {
                             placeholder='CPF *'
                             placeholderTextColor={'rgba(0,0,0,0.5)'}
                         />
-                        {
-                            cpfInvalido &&
-                            <Text
-                                style={styles.mensagemErro}>
-                                CPF inválido
-                            </Text>
-                        }
+                     {cpfInvalido && <Text style={styles.mensagemErro}>CPF inválido</Text>}
+                            {cpfCadastrado && <Text style={styles.mensagemErro}>CPF já cadastrado</Text>}
                         <TextInputMask
                             type={'cel-phone'}
                             options={{
@@ -265,7 +280,7 @@ export default function CadastroProfissional() {
                                 <Image source={require('../../../assets/images/user.png')}
                                     style={styles.imagemInput}
                                 />
-                                : <Image source={{ uri: URL.createObjectURL(imagem) }}
+                                : <Image source={{ uri: url }}
                                     style={styles.imagemInput}
 
                                 />}
@@ -295,7 +310,7 @@ export default function CadastroProfissional() {
                     style={styles.areaBanner}>
                     <Image
                         style={styles.imagem}
-                        source={require('../../../assets/images/imagemCadastroProfissional.png')}/>
+                        source={require('../../../assets/images/imagemCadastroProfissional.png')} />
                 </View>
             </View>
         </View>

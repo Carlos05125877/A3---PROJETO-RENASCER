@@ -1,25 +1,17 @@
 import { initializeApp } from 'firebase/app';
 import {
-  createUserWithEmailAndPassword, getAuth,
-  GoogleAuthProvider,
-  reload,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  signInWithEmailAndPassword, signInWithPopup,
-  signOut, User
+   getAuth
 } from 'firebase/auth';
-import { getDatabase } from 'firebase/database';
-import { collection, doc, getDoc, getDocs, getFirestore, setDoc, addDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import firebaseConfig from './firebaseConfig';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getDatabase(app);
 const firestore = getFirestore(app);
 const storage = getStorage(app);
 
-export { app, auth };
+export { app, auth, firestore, storage };
 
 export interface profissionais {
   id: string,
@@ -28,102 +20,10 @@ export interface profissionais {
   crp: string
   biografia: string
   imagem: string
+  horarios: string[]
+  instagram : string
+  whatsapp : string
 }
-
-export const deslogar = async (): Promise<void> => {
-  try {
-    console.log('Tentando deslogar usuario');
-    await signOut(auth);
-    console.log("Usuário deslogado com sucesso!");
-  } catch (error: any) {
-    console.error("Erro ao deslogar:", error.message);
-    alert('Erro ao realizar logout')
-  }
-}
-
-export const signInComContaGoogle = async (): Promise<User> => {
-  try {
-    console.log('Tentando realizar login com conta google');
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    console.log('Login realizado com sucesso');
-    return result.user
-  } catch (error: any) {
-    console.error('erro ao realizar login com o google');
-    alert('Erro ao fazer login com o google');
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    const email = error.customData.email;
-    throw error;
-  }
-}
-
-export const signInComEmail = async (email: string, senha: string): Promise<User> => {
-  try {
-    console.log('Tentando realizar login com email e senha');
-    const userCredential = await signInWithEmailAndPassword(auth, email, senha);
-    console.log('Usuário autenticado com sucesso:', userCredential.user);
-    return userCredential.user;
-  } catch (error: any) {
-    if (error.code === "auth/invalid-credential") {
-      alert("Senha incorreta");
-    }
-    else if (error.code === "auth/invalid-email") {
-      alert("E-mail inválido");
-    }
-    else if (error.code === "auth/user-not-found") {
-      alert("E-mail não cadastrado");
-    }
-    else {
-      alert("Erro ao fazer login: " + error.message);
-    }
-    console.error(error.code);
-    console.error(error.message)
-    throw error;
-  }
-}
-
-
-export const cadastroUsuario = async (usuario: Record<string, any>): Promise<User> => {
-  try {
-    auth.languageCode = 'pt'
-    console.log('Tentando criar Usuario');
-    const user = await createUserWithEmailAndPassword(auth, usuario.email, usuario.senha);
-    console.log('usuario criado com sucesso');
-
-    console.log('enviando email para confirmação');
-    const verificarEmail = user.user;
-    await sendEmailVerification(verificarEmail, { url: 'http://localhost:8081/' });
-    console.log('email enviado para o usuario');
-    alert("Codigo de verificação enviado para o seu e-mail");
-    await reload(verificarEmail);
-
-    console.log('adicionando dados de usuario ao firestore');
-    const { senha, ...dadosUsuario } = usuario;
-    dadosUsuario.criadoEm = new Date().toISOString();
-    await setDoc(doc(firestore, usuario.colecao, verificarEmail.uid), {
-
-      ...dadosUsuario,
-      criadoEm: new Date().toLocaleDateString('pt-BR')
-    }, { merge: true });
-    console.log('Dados adicionados com sucesso ao FireStore');
-    return verificarEmail;
-  } catch (error: any) {
-    if (error.code === 'auth/email-already-in-use') {
-      alert('Este e-mail já está cadastrado.');
-    } else if (error.code === 'auth/invalid-email') {
-      alert('E-mail inválido.');
-    } else if (error.code == 'auth/missing-password') {
-      alert('Digite uma senha');
-    } else {
-      alert('Erro ao criar Usuário: ' + error.message);
-    }
-    console.error(error.code);
-    console.error(error.message);
-    throw (error);
-  }
-}
-
 
 export const enviar_Arquivos_Storage_E_Retornar_Url = async (arquivos: Record<string, File | null>,
   userId: string | null): Promise<Record<string, string>> => {
@@ -169,29 +69,15 @@ export const enviar_Arquivos_Storage_E_Retornar_Url = async (arquivos: Record<st
 
 
 export const adicionar_Dados_FireStore = async (userId: string, colecao: string,
-  dadosUsuario: Record<string, any>, colecaoInterna?: string) => {
+  dadosUsuario: Record<string, any>) => {
   try {
-    console.log('adiconando dados de usuario ao FireStore');
-    if (!colecaoInterna) {
       await setDoc(doc(firestore, colecao, userId),
-        { 
+        {
           ...dadosUsuario
 
         }
         , { merge: true })
       console.log('dados de Usuario adiconados com sucesso');
-    } else {
-      await setDoc(doc(firestore, colecao, userId, colecaoInterna, dadosUsuario.dia),
-        { [dadosUsuario.hora]:{
-          ...dadosUsuario,
-          status: 'Aguardando Confirmação'
-        }
-
-        }, {merge: true})
-      console.log('dados de Usuario adiconados com sucesso');
-      alert('Agendamento realizado com sucesso')
-    }
-
   } catch (error: any) {
     console.error('erro ao adicionar arquivos ao FireStore');
     console.error(error.code);
@@ -199,6 +85,22 @@ export const adicionar_Dados_FireStore = async (userId: string, colecao: string,
     alert('Erro ao salvar os arquivos');
   }
 
+}
+export const agendamento = async (userId: string, colecao : string, 
+  dadosUsuario : Record< string , any>, subColecao: string) => {
+    try{
+         await setDoc(doc(firestore, colecao, userId, subColecao, dadosUsuario.dia),
+        {
+          [dadosUsuario.hora]: {
+            ...dadosUsuario,
+            status: 'Aguardando Confirmação'
+          }
+
+        }, { merge: true })
+      alert('Agendamento realizado com sucesso')
+    }catch (error : any){
+      alert (error.message)
+    }
 }
 
 export const Obter_Dados_Firestore = async (userId: string): Promise<Record<string, any> | undefined> => {
@@ -208,10 +110,7 @@ export const Obter_Dados_Firestore = async (userId: string): Promise<Record<stri
     if (!snapshot.exists()) {
       documentoUsuarioFirestore = doc(firestore, 'profissionais', userId)
     }
-    console.log('Acessando dados do usuário...');
     const consulta = await getDoc(documentoUsuarioFirestore);
-
-
     if (!consulta.exists()) {
       console.warn('Documento não encontrado');
       return undefined;
@@ -219,7 +118,6 @@ export const Obter_Dados_Firestore = async (userId: string): Promise<Record<stri
 
     const dadosUsuario = consulta.data();
 
-    console.log('Dados selecionados com sucesso:', dadosUsuario);
     return dadosUsuario;
 
   } catch (error: any) {
@@ -241,29 +139,24 @@ export const buscarProfissional = async (): Promise<profissionais[]> => {
       profissao: dados.profissao ?? 'Sem Profissão Definida',
       crp: dados.crp ?? '',
       biografia: dados.biografia ?? '',
-      imagem: dados.urlImagem ?? ''
+      imagem: dados.urlImagem ?? '',
+      horarios : [...dados.horariosAtendimento],
+      instagram : dados.instagram ?? '',
+      whatsapp : dados.whatsapp ?? ''
     }
+    console.log(usuarioFinal.instagram)
     return usuarioFinal
   }
   )
   return usuarioFiltrado
 }
-export const esqueciMinhaSenha = async (email: string) => {
-  try {
-    sendPasswordResetEmail(auth, email);
-    alert('Email de redefinição enviado com sucesso')
-  } catch (error: any) {
-    alert(error.code + error.message)
-  }
-
-}
 
 
-export const obterSubColeção = (usuarioId: string, subColecao : string, data : string) => {
-    const local = doc(firestore, 'profissionais', usuarioId, subColecao, data)
+export const obterSubColeção = (usuarioId: string, subColecao: string, data: string) => {
+  const local = doc(firestore, 'profissionais', usuarioId, subColecao, data)
 
-    const dados = getDoc(local)
+  const dados = getDoc(local)
 
-    return dados
+  return dados
 
 }

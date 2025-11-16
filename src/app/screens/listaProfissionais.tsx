@@ -19,10 +19,10 @@ export default function ListaDeProfissionais() {
   const [localizacao, setLocalizacao] = useState('');
   const [modalVisivel, setModalVisivel] = useState(false)
   const [profissionalSelecionado, setProfissionalSelecionado] = useState<Profissional | null>(null)
-  const [listaProfissionais, setListaProfissionais] = useState<profissionais[]> ([])
+  const [listaProfissionais, setListaProfissionais] = useState<profissionais[]>([])
 
   useEffect(() => {
-    const Profissionais = async ()  => {
+    const Profissionais = async () => {
       setListaProfissionais(await buscarProfissional());
     }
     Profissionais()
@@ -50,8 +50,27 @@ export default function ListaDeProfissionais() {
                 setProfissionalSelecionado(pessoa)
                 setModalVisivel(true)
               }}
-              onWhatsApp={() => { }}
-              onInstagram={() => { }} />
+              onWhatsApp={() => {
+                if (!pessoa.whatsapp) {
+                  alert('O profissional não cadastrou whatsapp')
+                  return
+                }
+                const acessoWhatsapp = pessoa.whatsapp.replace(/[^0-9]/g, '');
+
+
+                window.open(`https://api.whatsapp.com/send?phone=${acessoWhatsapp}`)
+
+              }}
+              onInstagram={() => {
+                if (!pessoa.instagram) {
+                  alert('O profissional não cadastrou instagram')
+                  return
+                }
+                const acessoInstagram = pessoa.instagram.replace(/[^a-zA-Z0-9._-]/g, '');
+
+
+                window.open(`https://www.instagram.com/${acessoInstagram}/`)
+              }} />
           ))}
         </View>
         <Modal
@@ -59,20 +78,21 @@ export default function ListaDeProfissionais() {
           onBackdropPress={() => setModalVisivel(false)}
           animationIn='zoomIn'
           animationOut='zoomOut'
-          style={{justifyContent: 'center', alignItems: 'center'}}
+          style={{ justifyContent: 'center', alignItems: 'center' }}
           backdropColor="black"
           backdropOpacity={0.8}>
-            {profissionalSelecionado && (
-              <Agendador
-              id = {profissionalSelecionado.id}
-              nome = {profissionalSelecionado.nome} 
-              profissao= {profissionalSelecionado.profissao}
+          {profissionalSelecionado && (
+            <Agendador
+              id={profissionalSelecionado.id}
+              nome={profissionalSelecionado.nome}
+              profissao={profissionalSelecionado.profissao}
               crp={profissionalSelecionado.crp}
-              imagem = {profissionalSelecionado.imagem}
-              />
-            )}
+              imagem={profissionalSelecionado.imagem}
+              horarios={profissionalSelecionado.horarios}
+            />
+          )}
         </Modal>
-        </View>
+      </View>
     </ScrollView >
 
   )

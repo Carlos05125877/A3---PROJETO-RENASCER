@@ -4,7 +4,7 @@ import { User } from 'firebase/auth';
 import { useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Topo from '../../..//components/topo';
-import { esqueciMinhaSenha, signInComContaGoogle, signInComEmail } from '../../../back-end/Api';
+import { esqueciMinhaSenha, signInComContaGoogle, signInComEmail } from '../../../back-end/api.cadastroLogin';
 import Modal from 'react-native-modal';
 
 

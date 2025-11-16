@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Calendar } from 'react-native-calendars'
-import { adicionar_Dados_FireStore, obterSubColeção } from '@/back-end/Api'
+import { agendamento, obterSubColeção } from '@/back-end/Api'
 import { auth } from '@/back-end/Api'
 import { useRouter } from 'expo-router'
 
@@ -12,19 +12,20 @@ interface props {
     profissao: string,
     crp: string,
     imagem: string
+    horarios : string[]
 
 }
 
 export default function Agendador(Props: props) {
     const route = useRouter();
-    const horarios = ['09:00', '10:00', '11:00', '12:00', 
-        '13:00', '14:00', '15:00', '16:00', '17:00', '18:00']
+    const horarios = Props.horarios
     const [botaoSelecionado, setBoataoSelecionado] = useState<number | null>(null)
     const [exibirModal, setExibirModal] = useState(false);
     const [data, setData] = useState('');
     const [horario, setHorario] = useState('')
     const [horarioSelecionado, setHorarioSelecionado] = useState<any>({})
     const [bloquearBotaoAgendar, setBloquearBotaoAgendar] = useState(true);
+    console.log(horarios)
 
     useEffect(() => {
         const verificarAgendamentos = async () => {
@@ -42,7 +43,8 @@ export default function Agendador(Props: props) {
     const agendamentos = {
         cliente: auth.currentUser?.uid,
         dia: '',
-        hora: ''
+        hora: '',
+        profissional: ''
     }
     useEffect(() => {
         if (data === '' || horario === '')
@@ -55,7 +57,7 @@ export default function Agendador(Props: props) {
     useEffect(() =>{
         if (agendamentos.cliente ===undefined){
             alert('faça login antes de continuar');
-            route.push('/screens/cadastroUsuarios')
+            route.push('/screens/login')
         }
     })
 
@@ -123,7 +125,10 @@ export default function Agendador(Props: props) {
                             }
                             agendamentos.dia = data
                             agendamentos.hora = horario
-                            adicionar_Dados_FireStore(Props.id, 'profissionais', agendamentos, 'agendamentos')
+                            agendamentos.profissional = Props.id
+                            agendamento(Props.id, 'profissionais', agendamentos, 'agendamentos')
+                            agendamentos.cliente &&
+                            agendamento(agendamentos.cliente, 'users', agendamentos, 'agendamentos')
                         }}
                     >
                         <Text style={styles.textoConfirmarHorario}>Agendar</Text>
@@ -133,7 +138,7 @@ export default function Agendador(Props: props) {
             {exibirModal &&
                 <View style={{
                     position: 'absolute',
-                    top: '12%',
+                    top: '0%',
                     left: '100%',
                     width: '60%',
 
@@ -160,8 +165,8 @@ export default function Agendador(Props: props) {
 const styles = StyleSheet.create(
     {
         box: {
-            flex: 0.6,
-            backgroundColor: '#F2EFEF',
+            flex: 0.7,
+            backgroundColor: '#e8e8e8ff',
             borderRadius: 20,
             paddingHorizontal: 30,
             paddingVertical: 20,
@@ -177,8 +182,10 @@ const styles = StyleSheet.create(
 
         },
         imagem: {
-            width: 140,
-            height: 140 //problema
+            width: 150,
+            height: 150,
+            borderRadius: 7 
+
         },
 
         nome: {
@@ -229,7 +236,7 @@ const styles = StyleSheet.create(
         },
         selecionarHorario: {
             width: '17%',
-            height: '43%',
+            height: 30,
             borderRadius: 7,
             borderColor: '#336BF7',
             borderWidth: 2,

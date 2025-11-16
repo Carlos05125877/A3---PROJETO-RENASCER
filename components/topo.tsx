@@ -1,10 +1,12 @@
-import { auth, deslogar, Obter_Dados_Firestore } from '@/back-end/Api';
+import { auth, Obter_Dados_Firestore } from '@/back-end/Api';
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { deslogar } from '@/back-end/api.cadastroLogin';
+import AgendadorProfissioanl from '../components/agendadorProfissional'
 
 
 
@@ -49,9 +51,6 @@ export default function Topo() {
       buscarImagem();
     }, [user] )
 
-
-
-
   const router = useRouter();
 
   return (
@@ -68,7 +67,7 @@ export default function Topo() {
                 Renascer
               </Text>
               <Text style={styles.subtituloLogo}>
-                Especialista em Burnout
+                Apoio Psicológico Digital
               </Text>
             </View>
           </TouchableOpacity>
@@ -102,7 +101,8 @@ export default function Topo() {
       {/* Lado direito */}
       <View
         style={styles.topoPaginaDireita}>
-        <TouchableOpacity style={styles.botaoAgendamentoEntrar} onPress={() => (router.push('/screens/listaProfissionais'))}>
+        <TouchableOpacity style={styles.botaoAgendamentoEntrar} 
+        onPress={() => (router.push('/screens/agendadorProfissional'))}>
           <MaterialCommunityIcons name='calendar' size={24} color='#FFFFFF' />
           <Text style={styles.textoBotaoAgendamentoEntrar}>
             Agendar Consulta
