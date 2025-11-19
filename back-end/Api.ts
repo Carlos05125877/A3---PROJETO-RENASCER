@@ -23,6 +23,7 @@ export interface profissionais {
   horarios: string[]
   instagram : string
   whatsapp : string
+  preco : string
 }
 
 export const enviar_Arquivos_Storage_E_Retornar_Url = async (arquivos: Record<string, File | null>,
@@ -142,7 +143,8 @@ export const buscarProfissional = async (): Promise<profissionais[]> => {
       imagem: dados.urlImagem ?? '',
       horarios : [...dados.horariosAtendimento],
       instagram : dados.instagram ?? '',
-      whatsapp : dados.whatsapp ?? ''
+      whatsapp : dados.whatsapp ?? '',
+      preco : dados.preco ?? '',
     }
     console.log(usuarioFinal.instagram)
     return usuarioFinal

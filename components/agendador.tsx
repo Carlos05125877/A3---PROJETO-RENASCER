@@ -13,6 +13,7 @@ interface props {
     crp: string,
     imagem: string
     horarios : string[]
+    preco : string
 
 }
 

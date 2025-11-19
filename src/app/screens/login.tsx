@@ -3,9 +3,9 @@ import { useRouter } from 'expo-router';
 import { User } from 'firebase/auth';
 import { useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Topo from '../../..//components/topo';
-import { esqueciMinhaSenha, signInComContaGoogle, signInComEmail } from '../../../back-end/api.cadastroLogin';
 import Modal from 'react-native-modal';
+import Topo from '../../..//components/topo';
+import { esqueciMinhaSenha, loginComGoogle, signInComEmail } from '../../../back-end/api.cadastroLogin';
 
 
 {/*-----------------------------------------------------------------------------------*/ }
@@ -23,29 +23,12 @@ export default function Login() {
   const verificarLogin = (usuario: User) => {
     if (usuario) {
       setsenhaIncorreta(false)
-      return true;
     }
     setsenhaIncorreta(true);
-    return false;
+    return !senhaIncorreta;
   }
 
-  const loginComGoogle = async () => {
-    if (bloquearBotaoGoogle.current === true) return;
 
-    try {
-      bloquearBotaoGoogle.current = true
-      const user = await signInComContaGoogle();
-      if (verificarLogin(user)) {
-        router.push('/');
-      }
-    } catch (error: any) {
-      console.log(error);
-      throw (error);
-    }
-    finally {
-      bloquearBotaoGoogle.current = false;
-    }
-  }
 
 
   const loginComEmaileSenha = async () => {
@@ -115,7 +98,8 @@ export default function Login() {
               <View style={{ alignItems: 'flex-start' }}>
                 {senhaIncorreta && (
                   <Text style={{ color: 'red', fontSize: 14 }}>Senha Incorreta</Text>
-                )}              </View>
+                )}
+              </View>
 
 
               <View style={styles.botoes}>
@@ -125,7 +109,11 @@ export default function Login() {
                   <Text style={styles.textoBotaoLogin}>Entrar</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.botaoGoogle} onPress={loginComGoogle}>
+                <TouchableOpacity style={styles.botaoGoogle}
+                  onPress={async () => {
+                    const user = await loginComGoogle(bloquearBotaoGoogle)
+                    user && router.push('/')
+                  }}>
                   <Image style={{ width: 25, height: 25 }} source={require('../../../assets/images/images.png')} />
                 </TouchableOpacity>
 
@@ -175,9 +163,9 @@ export default function Login() {
             Digite o email cadastrado e aguarde o envio do link para recuperar sua senha
           </Text>
           <View
-            style={[styles.boxTextInput, {width: '92%'}]}>
+            style={[styles.boxTextInput, { width: '92%' }]}>
             <TextInput
-              style={[styles.TextInput, {width: '100%'}]}
+              style={[styles.TextInput, { width: '100%' }]}
               value={redefinirEmail}
               onChangeText={setRedefinirEmail}
               placeholder='E-mail'
@@ -301,27 +289,27 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 700,
   },
-  modal: { 
-    backgroundColor: '#fff', 
-    gap: 20, 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    borderRadius: 20, 
-    overflow: 'hidden', 
-    width: '35%', 
+  modal: {
+    backgroundColor: '#fff',
+    gap: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+    overflow: 'hidden',
+    width: '35%',
     height: '40%'
   },
-  recuperarSenha: { 
-    textAlign: 'center', 
-    fontWeight: 'bold', 
-    fontSize: 35, 
+  recuperarSenha: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 35,
     fontFamily: 'Arial'
   },
   textoInformativoModal: {
-     textAlign: 'center', 
-     fontSize: 24, 
-     fontFamily: 'Arial',
-     marginHorizontal: 20
-    }
+    textAlign: 'center',
+    fontSize: 24,
+    fontFamily: 'Arial',
+    marginHorizontal: 20
+  }
 
 })

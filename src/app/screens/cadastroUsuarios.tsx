@@ -1,19 +1,15 @@
+import { cadastrarUsuario, loginComGoogle } from '@/back-end/api.cadastroLogin';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
-import { adicionar_Dados_FireStore,enviar_Arquivos_Storage_E_Retornar_Url } from '../../../back-end/Api';
-import { cadastroUsuario, signInComContaGoogle } from '@/back-end/api.cadastroLogin';
-import { verificarCpf, cpfExistente } from '../../../back-end/API/Validações/validarCPF';
 import Topo from '../../../components/topo';
+import { useCpfInvalido, useEmailInvalido } from '../hooks/validaçõesDeUsuario';
 
 
 export default function CadastroUsuarios() {
     const router = useRouter();
-
-    const bloquearBotaoGoogle = useRef(false);
-    const [mostrarSenha, setmostrarSenha] = useState(true);
     const [nome, setNome] = useState('');
     const [cpf, setCpf] = useState('');
     const [telefone, setTelefone] = useState('');
@@ -21,114 +17,27 @@ export default function CadastroUsuarios() {
     const [dataNascimento, setDataNascimento] = useState('');
     const [senha, setSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
-    const [senhaNaoConfere, setSenhaNaoConfere] = useState(false);
-    const [cpfInvalido, setCpfInvalido] = useState(false);
-    const [cpfCadastrado, setCpfCadastrado] = useState(false)
-    const [emailInvalido, setEmailInvalido] = useState(false);
+    const [mostrarSenha, setmostrarSenha] = useState(true);
     const bloquarBotaoConfirmar = useRef(true);
+    const bloquearBotaoGoogle = useRef(false);
+    const [emailInvalido] = useEmailInvalido(email)
+    const [cpfInvalido, cpfCadastrado] = useCpfInvalido(cpf)
 
-    useEffect(() => {
-        if (email === '') {
-            setEmailInvalido(false);
-        } else {
-            const verificador = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (verificador.test(email)) {
-                setEmailInvalido(false);
-            } else {
-                setEmailInvalido(true);
-            }
-        }
-
-    }, [email])
-
-    useEffect(() => {
-        if (confirmarSenha != senha) {
-            setSenhaNaoConfere(true);
-        } else {
-            setSenhaNaoConfere(false);
-        }
-    }, [senha, confirmarSenha])
 
 
     useEffect(() => {
-        const validadorCpf = async () => {
-            const cpfNumeros = cpf.replace(/\D/g, '');
-                setCpfInvalido(false);
-                setCpfCadastrado(false);
-            
-            if(cpfNumeros.length ===11){
-            const invalido = !verificarCpf(cpfNumeros);
-            if (invalido) {
-                setCpfInvalido(true);
-                return
-            }
-            const existe = await cpfExistente(cpf);
-            if (existe) {
-                setCpfCadastrado(true)
-                return
-            }
-        }
-        }
-        validadorCpf()
-    },[cpf])
-
-    useEffect(() => {
-        if (!cpfInvalido && !senhaNaoConfere && !emailInvalido
+        if (!cpfInvalido && senha === confirmarSenha && !emailInvalido
             && cpf.length >= 14 && email != '' && senha != ''
             && confirmarSenha != '' && nome != '' && dataNascimento != '') {
             bloquarBotaoConfirmar.current = false;
         } else {
             bloquarBotaoConfirmar.current = true;
         }
-    }, [cpf, email, senha, dataNascimento, nome, confirmarSenha, senhaNaoConfere, cpfInvalido, emailInvalido]
+    }, [cpf, email, senha, dataNascimento, nome, confirmarSenha, senha, 
+        confirmarSenha, cpfInvalido, emailInvalido]
     )
 
 
-
-    const verificarCadastroUsuario = async () => {
-        if (senha === confirmarSenha) {
-            try {
-                const imagem = null
-                const user = await cadastroUsuario({
-                    'email': email, 'senha': senha,
-                    'nome': nome, 'cpf': cpf, 'telefone': telefone, 'dataNascimento': dataNascimento, 'colecao': 'users'
-                });
-                const urlImagem = await enviar_Arquivos_Storage_E_Retornar_Url({ 'urlImagem': imagem }, user.uid);
-
-                adicionar_Dados_FireStore(user.uid, 'users', urlImagem);
-                if (user.emailVerified) {
-                    console.log('cadastro criado com sucesso');
-                    router.push('/');
-                }
-            } catch (error: any) {
-                console.error(error.code);
-                console.error(error.message);
-            }
-        } else {
-            console.warn('Falha ao cadastrar usuario. Senhas divergentes');
-        }
-    }
-
-
-
-
-    const loginComGoogle = async () => {
-        if (bloquearBotaoGoogle.current === true) return;
-
-        try {
-            bloquearBotaoGoogle.current = true
-
-            const user = await signInComContaGoogle();
-            if (user) {
-                router.push('/');
-            }
-        } catch (error: any) {
-            console.error(error.code);
-            console.error(error.message);
-        } finally {
-            bloquearBotaoGoogle.current = false;
-        }
-    }
 
 
     return (
@@ -256,7 +165,7 @@ export default function CadastroUsuarios() {
                                 </TouchableOpacity>
 
                             </View>
-                            <Text>{!senhaNaoConfere ? '' : <Text style={{ color: 'red' }}>Senhas não conferem</Text>}</Text>
+                            {senha !== confirmarSenha && <Text style={{ color: 'red' }}>Senhas não conferem</Text>}
 
 
                             <View style={styles.botoes}>
@@ -266,7 +175,11 @@ export default function CadastroUsuarios() {
                                         if (bloquarBotaoConfirmar.current) {
                                             alert('Preencha todos os campos obrigatórios');
                                         } else {
-                                            await verificarCadastroUsuario()
+                                            cadastrarUsuario({
+                                                'email': email, 'senha': senha, 'nome': nome, 'cpf': cpf,
+                                                'telefone': telefone, 'dataNascimento': dataNascimento,
+                                                'colecao': 'users'
+                                            }, null);
                                         }
                                     }}>
                                     <Text style={styles.textoBotaoCadastrar}>Confirmar</Text>
@@ -274,7 +187,11 @@ export default function CadastroUsuarios() {
 
                                 <Text style={styles.textoCadastrarCom}>Cadastrar com</Text>
 
-                                <TouchableOpacity style={styles.botaoGoogle} onPress={loginComGoogle}>
+                                <TouchableOpacity style={styles.botaoGoogle}
+                                    onPress={async () => {
+                                        const user = await loginComGoogle(bloquearBotaoGoogle)
+                                        user && router.push('/')
+                                    }}>
                                     <Image style={{ width: 25, height: 25 }} source={require
                                         ('../../../assets/images/images.png')} />
                                 </TouchableOpacity>

@@ -49,11 +49,35 @@ export default function AgendadorProfissional() {
 
     useEffect(() => {
         if (imagem && dados) {
-            setUrlImagem(URL.createObjectURL(imagem)) //serve apenas para causar rerender. Gambiarra temporaria
+            setUrlImagem(URL.createObjectURL(imagem))
             return
         }
 
     }, [imagem])
+
+    const enviarDados = async () => {
+        const user = auth.currentUser;
+
+        if (!user) {
+            alert("Não foi possível atualizar os dados. Verifique o login");
+            return;
+        }
+        if (imagem && dados) {
+            const novaUrl = await enviar_Arquivos_Storage_E_Retornar_Url({ 'urlImagem': imagem }, user.uid)
+            dados.urlImagem = novaUrl['urlImagem']
+        }
+        if (dados) {
+            dados.biografia = biografia
+            dados.endereco = endereco
+            dados.whatsapp = whatsapp
+            dados.instagram = instagram
+            dados.preco = preco
+            dados.horariosAtendimento = [...horarioSelecionado]
+            dados.horariosAtendimento.sort()
+            await adicionar_Dados_FireStore(user.uid, "profissionais", dados);
+            alert("Dados Salvos com Sucesso");
+        }
+    }
 
 
 
@@ -71,12 +95,26 @@ export default function AgendadorProfissional() {
                 style={{
                     flex: 1, overflowX: 'auto',
                     backgroundColor: '#E8E8E8ff',
-                    borderRadius: 8
+                    borderRadius: 8,
+                    shadowColor: '#000',
+                    shadowOffset: {
+                        width: 1,
+                        height: 1,
+                    },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 10,
+
                 }}
-                contentContainerStyle={styles.box}>
+                contentContainerStyle={styles.box}
+            >
                 <View style={styles.dadosProfissional}>
-                    <TouchableOpacity onPress={() => selecionadorImagem.current?.click()}>
-                        <Image style={styles.imagemProfissional} source={{ uri: urlImagem }} />
+                    <TouchableOpacity
+                        onPress={() => selecionadorImagem.current?.click()}
+                    >
+                        <Image
+                            style={styles.imagemProfissional}
+                            source={{ uri: urlImagem }}
+                        />
                         <>
                             <input
                                 ref={selecionadorImagem}
@@ -90,16 +128,23 @@ export default function AgendadorProfissional() {
                         </>
                     </TouchableOpacity>
                     <View style={styles.infoProfissional}>
-                        <Text style={styles.nomeProfissional}>{dados && dados.nome}</Text>
-                        <Text style={styles.profissãoProfissional}>Profissão:{dados && dados.profissao}</Text>
-                        <Text style={styles.crp}>CRP: {dados && dados.crp}</Text>
+                        <Text style={styles.nomeProfissional}>
+                            {dados && dados.nome}
+                        </Text>
+                        <Text style={styles.profissãoProfissional}>
+                            Profissão:{dados && dados.profissao}
+                        </Text>
+                        <Text style={styles.crp}>
+                            CRP: {dados && dados.crp}
+                        </Text>
                     </View>
                 </View>
                 <Text style={styles.subtitulo}>Biografia</Text>
                 <View style={styles.boxDescricao}>
-                    <TextInput multiline
+                    <TextInput
+                        multiline
                         style={styles.inputDescricao}
-                        maxLength={361}
+                        maxLength={400}
                         placeholder='Esse campo será visivel para todos'
                         placeholderTextColor={'rgba(0,0,0,0.5'}
                         value={biografia}
@@ -115,7 +160,12 @@ export default function AgendadorProfissional() {
                     />
                 </View>
                 <View style={styles.whstsInsta}>
-                    <View style={{ width: '45%', gap: 5 }}>
+                    <View
+                        style={{
+                            width: '45%',
+                            gap: 5
+                        }}
+                    >
                         <Text style={styles.subtitulo}>Whatsapp</Text>
                         <View style={styles.boxWhats}>
                             <TextInputMask
@@ -126,14 +176,19 @@ export default function AgendadorProfissional() {
                             />
                         </View>
                     </View>
-                    <View style={{ width: '45%', gap: 5 }}>
+                    <View
+                        style={{
+                            width: '45%',
+                            gap: 5
+                        }}
+                    >
                         <Text style={styles.subtitulo}>Instagram</Text>
                         <View style={styles.boxInsta}>
                             <TextInputMask
                                 type='custom'
                                 style={styles.inputInsta}
                                 options={{
-                                    mask: '@********************'
+                                    mask: '@******************************'
                                 }}
                                 value={instagram}
                                 onChangeText={setInstagram} />
@@ -149,7 +204,13 @@ export default function AgendadorProfissional() {
                         style={styles.inputPreco} />
                 </View>
                 <Text style={styles.subtitulo}>Disponibilidade de Horários</Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        justifyContent: 'center'
+                    }}
+                >
                     {
                         horarios.map((horario, index) => {
 
@@ -164,7 +225,9 @@ export default function AgendadorProfissional() {
                                     }
                                     }
                                 >
-                                    <Text style={styles.textoHorario}>{horario}</Text>
+                                    <Text style={styles.textoHorario}>
+                                        {horario}
+                                    </Text>
                                 </TouchableOpacity>
                             )
 
@@ -173,29 +236,7 @@ export default function AgendadorProfissional() {
                 </View>
                 <View style={styles.botaoSalvar}>
                     <TouchableOpacity style={styles.botao}
-                        onPress={async () => {
-                            const user = auth.currentUser;
-
-                            if (!user) {
-                                alert("Não foi possível atualizar os dados. Verifique o login");
-                                return;
-                            }
-                            if (imagem && dados) {
-                                const novaUrl = await enviar_Arquivos_Storage_E_Retornar_Url({ 'urlImagem': imagem }, user.uid)
-                                dados.urlImagem = novaUrl['urlImagem']
-                            }
-                            if (dados) {
-                                dados.biografia = biografia
-                                dados.endereco = endereco
-                                dados.whatsapp = whatsapp
-                                dados.instagram = instagram
-                                dados.preco = preco
-                                dados.horariosAtendimento = [...horarioSelecionado]
-                                dados.horariosAtendimento.sort()
-                                await adicionar_Dados_FireStore(user.uid, "profissionais", dados);
-                                alert("Dados Salvos com Sucesso");
-                            }
-                        }}
+                        onPress={enviarDados}
                     >
 
                         <Text style={styles.textoSalvar}>Salvar</Text>
@@ -272,7 +313,7 @@ const styles = StyleSheet.create({
     boxDescricao: {
         backgroundColor: '#FFF',
         width: '100%',
-        height: '18%',
+        height: 100,
         borderRadius: 10,
         borderColor: '#000',
         borderWidth: 1,
@@ -283,13 +324,17 @@ const styles = StyleSheet.create({
         outlineColor: 'transparent',
         textAlign: 'justify',
         width: '100%',
-        height: '100%'
+        height: '100%',
+        fontSize: 16,
+        color: '#000',
+        fontFamily: 'Inria Sans',
+        lineHeight: 22,
     },
 
     boxEndereco: {
         backgroundColor: '#FFF',
         width: '100%',
-        height: '8%',
+        height: 50,
         borderRadius: 10,
         borderColor: '#000',
         borderWidth: 1,
@@ -301,23 +346,28 @@ const styles = StyleSheet.create({
         outlineColor: 'transparent',
         textAlign: 'justify',
         width: '100%',
-        height: '100%'
+        height: '100%',
+        fontSize: 16,
+        color: '#000',
+        fontFamily: 'Inria Sans',
+        lineHeight: 22,
 
     },
     whstsInsta: {
         flexDirection: 'row',
         overflow: 'hidden',
-        height: '12%',
+        height: 75,
         justifyContent: 'space-between',
 
     },
 
     boxWhats: {
         backgroundColor: '#FFF',
-        flex: 1,
         borderRadius: 10,
         borderColor: '#000',
         borderWidth: 1,
+        width: '100%',
+        height: 50,
 
     },
     inputWhats: {
@@ -326,13 +376,18 @@ const styles = StyleSheet.create({
         outlineColor: 'transparent',
         textAlign: 'justify',
         width: '100%',
-        height: '95%'
+        height: '95%',
+        fontSize: 16,
+        color: '#000',
+        fontFamily: 'Inria Sans',
+        lineHeight: 22,
 
     },
 
     boxInsta: {
         backgroundColor: '#FFF',
-        flex: 1,
+        width: '100%',
+        height: 50,
         borderRadius: 10,
         borderColor: '#000',
         borderWidth: 1,
@@ -344,14 +399,18 @@ const styles = StyleSheet.create({
         outlineColor: 'transparent',
         textAlign: 'justify',
         width: '100%',
-        height: '95%'
+        height: '95%',
+        fontSize: 16,
+        color: '#000',
+        fontFamily: 'Inria Sans',
+        lineHeight: 22,
 
     },
 
     boxPreco: {
         backgroundColor: '#FFF',
         width: '20%',
-        height: '7%',
+        height: 50,
         borderRadius: 10,
         borderColor: '#000',
         borderWidth: 1,
@@ -363,7 +422,11 @@ const styles = StyleSheet.create({
         outlineColor: 'transparent',
         textAlign: 'justify',
         width: '100%',
-        height: '95%'
+        height: '95%',
+        fontSize: 16,
+        color: '#000',
+        fontFamily: 'Inria Sans',
+        lineHeight: 22,
 
     },
 
@@ -395,7 +458,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         width: '35%',
-        height: '80%',
+        height: 50,
         backgroundColor: '#336BF7',
         borderRadius: 8
     },

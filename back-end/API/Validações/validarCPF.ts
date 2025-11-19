@@ -1,5 +1,5 @@
-import { collection, query, where, getDocs } from "firebase/firestore";
 import { firestore } from "@/back-end/Api";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 function verificarPrimeiroDigito(cpf: string) {
     let soma: number = 0;
@@ -30,35 +30,38 @@ function verificarSegundoDigito(cpf: string) {
     return false;
 }
 
-export function verificarCpf(cpf: string){
-    for(let i = 1; i < 11; i++){
-        if (cpf[i] !==cpf[i-1]){
+export function verificarCpf(cpf: string) {
+    for (let i = 1; i < 11; i++) {
+        if (cpf[i] !== cpf[i - 1]) {
             break
         }
-        if (i === 10){
+        if (i === 10) {
             return false
         }
     }
 
-    if (verificarPrimeiroDigito(cpf) && verificarSegundoDigito(cpf)){
+    if (verificarPrimeiroDigito(cpf) && verificarSegundoDigito(cpf)) {
         return true;
     }
     return false;
 }
 
-export const cpfExistente = async (cpf : string ) => {
+export const cpfExistente = async (cpf: string) => {
     const dadosUsuarios = collection(firestore, 'users')
     const dadosProfissionais = collection(firestore, 'profissionais')
 
     const minhaQuery = query(dadosUsuarios, where('cpf', '==', cpf))
-    const minhaQuery2 = query(dadosProfissionais, where (cpf, '==', cpf))
+    const minhaQuery2 = query(dadosProfissionais, where('cpf', '==', cpf))
 
-    const documento =  await getDocs(minhaQuery)
-    const documento2= await getDocs(minhaQuery2)
+    const documento = await getDocs(minhaQuery)
+    const documento2 = await getDocs(minhaQuery2)
 
     return !documento.empty || !documento2.empty
-   
-    
+
+
 }
+
+
+
 
 

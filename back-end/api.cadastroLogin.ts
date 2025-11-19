@@ -7,7 +7,7 @@ import {
   signInWithEmailAndPassword, signInWithPopup,
   signOut, User
 } from 'firebase/auth';
-import { auth, adicionar_Dados_FireStore } from './Api';
+import { adicionar_Dados_FireStore, auth, enviar_Arquivos_Storage_E_Retornar_Url } from './Api';
 
 
 
@@ -15,9 +15,9 @@ export const cadastroUsuario = async (usuario: Record<string, any>): Promise<Use
   try {
     const user = await createUserWithEmailAndPassword(auth, usuario.email, usuario.senha);
     const userVerificado = await enviarEmail(user.user);
-    const { senha, ...dadosUsuario } = usuario;
+    const { senha,confirmarSenha, ...dadosUsuario } = usuario;
     dadosUsuario.criadoEm = new Date().toLocaleString('pt-BR');
-    await adicionar_Dados_FireStore(userVerificado.uid, usuario.colecao, usuario)
+    await adicionar_Dados_FireStore(userVerificado.uid, usuario.colecao, dadosUsuario)
     return userVerificado;
 
   } catch (error: any) {
@@ -47,6 +47,25 @@ export const enviarEmail = async (user: User) => {
     throw(error)
   }
 }
+export async function cadastrarUsuario(dados: Record<string, string>, imagem: File | null) {
+  
+
+    if (dados.senha !== dados.confirmarSenha) {
+        return false;
+    }
+    try {
+        const user = await cadastroUsuario(
+           dados);
+        const urlImagem = await enviar_Arquivos_Storage_E_Retornar_Url(
+            { 'urlImagem': imagem }, user.uid)
+
+        adicionar_Dados_FireStore(user.uid, 'profissionais', urlImagem);
+    } catch (error: any) {
+        console.error(error.code);
+        console.error(error.message);
+    }
+}
+
 export const signInComContaGoogle = async (): Promise<User> => {
   try {
     const provider = new GoogleAuthProvider();
@@ -57,6 +76,22 @@ export const signInComContaGoogle = async (): Promise<User> => {
     throw error;
   }
 }
+export const loginComGoogle = async (bloquearBotaoGoogle : React.RefObject<boolean>) => {
+        if (bloquearBotaoGoogle.current === true) return;
+
+        try {
+          alert('')
+            bloquearBotaoGoogle.current = true
+
+            const user = await signInComContaGoogle();
+            return user
+        } catch (error: any) {
+            console.error(error.code);
+            console.error(error.message);
+        } finally {
+            bloquearBotaoGoogle.current = false;
+        }
+    }
 export const signInComEmail = async (email: string, senha: string): Promise<User> => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, senha);

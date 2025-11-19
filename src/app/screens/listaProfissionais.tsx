@@ -41,11 +41,13 @@ export default function ListaDeProfissionais() {
         </View>
         <View style={{ paddingTop: 10, flexDirection: 'row', gap: 10, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
           {listaProfissionais.map((pessoa, indice) => (
+            pessoa.horarios.length > 0 &&
             <Profissional
               nome={pessoa.nome}
               especialidade={pessoa.profissao}
               crp={pessoa.crp}
               descricao={pessoa.biografia}
+              preco={pessoa.preco}
               onAgendar={() => {
                 setProfissionalSelecionado(pessoa)
                 setModalVisivel(true)
@@ -58,7 +60,7 @@ export default function ListaDeProfissionais() {
                 const acessoWhatsapp = pessoa.whatsapp.replace(/[^0-9]/g, '');
 
 
-                window.open(`https://api.whatsapp.com/send?phone=${acessoWhatsapp}`)
+                window.open(`https://web.whatsapp.com/send?phone=${acessoWhatsapp}`)
 
               }}
               onInstagram={() => {
@@ -88,6 +90,7 @@ export default function ListaDeProfissionais() {
               profissao={profissionalSelecionado.profissao}
               crp={profissionalSelecionado.crp}
               imagem={profissionalSelecionado.imagem}
+              preco={profissionalSelecionado.preco}
               horarios={profissionalSelecionado.horarios}
             />
           )}

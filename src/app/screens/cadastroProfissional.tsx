@@ -1,12 +1,11 @@
+import { cadastrarUsuario } from '@/back-end/api.cadastroLogin';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
-import { User } from 'firebase/auth';
-import { adicionar_Dados_FireStore, enviar_Arquivos_Storage_E_Retornar_Url } from '../../../back-end/Api';
-import { verificarCpf, cpfExistente} from '../../../back-end/API/Validações/validarCPF';
 import Topo from '../../../components/topo';
-import { cadastroUsuario } from '@/back-end/api.cadastroLogin';
+import { useCpfInvalido, useEmailInvalido, useImagemLocal, verificarDados } from '../hooks/validaçõesDeUsuario';
+
 
 export default function CadastroProfissional() {
 
@@ -19,114 +18,15 @@ export default function CadastroProfissional() {
     const [Biografia, setBiografia] = useState('');
     const [senha, setSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
-    const [mostrarSenha, setmostrarSenha] = useState(true);
-    const [cpfCadastrado, setCpfCadastrado] = useState(false)
-    const [url, setUrl] = useState('')
-
-
-
-    const [cpfInvalido, setCpfInvalido] = useState(false);
-    const [emailInvalido, setEmailInvalido] = useState(false);
-    const urlImagem = useRef<Record<string, string>>({})
-    const user = useRef<User | null>(null)
-
-
-    const inputRef = useRef<HTMLInputElement | null>(null);
     const [imagem, setImagem] = useState<File | null>(null);
-
-
-    useEffect(() => {
-        if (email === '') {
-            setEmailInvalido(false);
-        } else {
-            const verificador = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (verificador.test(email)) {
-                setEmailInvalido(false);
-            } else {
-                setEmailInvalido(true);
-            }
-        }
-
-    }, [email])
-
-
-    useEffect(() => {
-        const validadorCpf = async () => {
-            const cpfNumeros = cpf.replace(/\D/g, '');
-            setCpfInvalido(false);
-            setCpfCadastrado(false);
-
-            if (cpfNumeros.length === 11) {
-                const invalido = !verificarCpf(cpfNumeros);
-                if (invalido) {
-                    setCpfInvalido(true);
-                    return
-                }
-                const existe = await cpfExistente(cpf);
-                if (existe) {
-                    setCpfCadastrado(true)
-                    return
-                }
-            }
-        }
-        validadorCpf()
-    }, [cpf])
-
-    const verificarDados = async () => {
-        const dadosValidos =
-            !cpfInvalido &&
-            !emailInvalido &&
-            crp != '' &&
-            cpf.length >= 14 &&
-            email !== '' &&
-            senha !== '' &&
-            confirmarSenha !== '' &&
-            nome !== '' &&
-            dataNascimento !== '' &&
-            senha === confirmarSenha;
-
-        if (dadosValidos) {
-            console.log('Dados válidos! Prosseguir com cadastro.');
-            await cadastrarUsuario();
-        } else {
-            alert('Preencha todos os campos obrigatórios corretamente');
-        }
-    };
-
-    useEffect( () => {
-        if (!imagem) return
-
-        setUrl(URL.createObjectURL(imagem))
-
-    }, [imagem])
-
-
-
-    const cadastrarUsuario = async (): Promise<boolean> => {
-        if (senha === confirmarSenha) {
-            try {
-                user.current = await cadastroUsuario({
-                    'email': email, 'senha': senha,
-                    'nome': nome, 'cpf': cpf, 'telefone': telefone, 'dataNascimento': dataNascimento,
-                    'crp': crp, 'biografia': Biografia, 'colecao': 'profissionais'
-                });
-                urlImagem.current = await enviar_Arquivos_Storage_E_Retornar_Url(
-                    { 'urlImagem': imagem }, user.current.uid);
-
-                adicionar_Dados_FireStore(user.current.uid, 'profissionais', urlImagem.current);
-                return true;
-            } catch (error: any) {
-                console.error(error.code);
-                console.error(error.message);
-                return false;
-            }
-
-
-        } else {
-            console.warn('Falha ao cadastrar usuario. Senhas divergentes');
-            return false;
-        }
-    }
+    const [mostrarSenha, setmostrarSenha] = useState(true);
+    const [emailInvalido] = useEmailInvalido(email)
+    const [cpfInvalido, cpfCadastrado] = useCpfInvalido(cpf);
+    const [url] = useImagemLocal(imagem)
+    const inputRef = useRef<HTMLInputElement | null>(null);
+    const dadosValidos = verificarDados(cpfInvalido, emailInvalido, cpfCadastrado,
+        crp, cpf, email, senha, confirmarSenha, nome, dataNascimento)
+        
 
     const iconeSenha = () => {
         if (mostrarSenha) {
@@ -138,6 +38,8 @@ export default function CadastroProfissional() {
             name="eye" size={24} color="black" />
         )
     }
+
+    
     return (
         <View
             style={styles.backgroundPagina}>
@@ -172,8 +74,8 @@ export default function CadastroProfissional() {
                             placeholder='CPF *'
                             placeholderTextColor={'rgba(0,0,0,0.5)'}
                         />
-                     {cpfInvalido && <Text style={styles.mensagemErro}>CPF inválido</Text>}
-                            {cpfCadastrado && <Text style={styles.mensagemErro}>CPF já cadastrado</Text>}
+                        {cpfInvalido && <Text style={styles.mensagemErro}>CPF inválido</Text>}
+                        {cpfCadastrado && <Text style={styles.mensagemErro}>CPF já cadastrado</Text>}
                         <TextInputMask
                             type={'cel-phone'}
                             options={{
@@ -297,8 +199,15 @@ export default function CadastroProfissional() {
                     </View>
                     <TouchableOpacity
                         style={styles.botaoCadastrar}
-                        onPress={async () => {
-                            verificarDados();
+                        onPress={() => {
+                            dadosValidos ?
+                                cadastrarUsuario({
+                                    'email': email, 'senha': senha, 'confirmarSenha': confirmarSenha,
+                                    'nome': nome, 'cpf': cpf, 'telefone': telefone, 'dataNascimento': dataNascimento,
+                                    'crp': crp, 'biografia': Biografia, 'colecao': 'profissionais'
+                                }, imagem)
+                                :
+                                alert('Preencha todos os campos obrigatórios corretamente');
                         }}>
                         <Text
                             style={styles.textoBotaoCadastrar}>
