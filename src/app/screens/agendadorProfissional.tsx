@@ -1,14 +1,18 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
-import { useState, useRef, useEffect } from 'react'
-import { TextInputMask } from 'react-native-masked-text'
+import { adicaoDadosFirestore, auth, buscarDadosFirestore, criarArquivoStorage } from '@/back-end/Api'
+import ConfirmarConsulta from '@/components/confirmarConsulta'
+import Topo from '@/components/topo'
+import { useEffect, useRef, useState } from 'react'
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
-import { adicionar_Dados_FireStore, enviar_Arquivos_Storage_E_Retornar_Url, Obter_Dados_Firestore } from '@/back-end/Api'
-import { auth } from '@/back-end/Api'
+import { TextInputMask } from 'react-native-masked-text'
 
 
 
 
-export default function AgendadorProfissional() {
+export default function EditorPerfil() {
+    const [nome, setNome] = useState('')
+    const [profissao, setProfissao] = useState('')
+    const [crp, setCrp] = useState('')
     const [biografia, setBiografia] = useState('');
     const [endereco, setEndereco] = useState('');
     const [whatsapp, setWhatsapp] = useState('');
@@ -25,9 +29,12 @@ export default function AgendadorProfissional() {
 
             if (!user) return
 
-            const dadosUser = await Obter_Dados_Firestore(user.uid)
+            const dadosUser = await buscarDadosFirestore(user.uid)
             if (dadosUser) {
                 setDados(dadosUser)
+                setNome(dadosUser.nome ?? '')
+                setProfissao(dadosUser.profissao ?? '')
+                setCrp(dadosUser.crp ?? '')
                 setBiografia(dadosUser.biografia ?? '')
                 setEndereco(dadosUser.endereco ?? '')
                 setWhatsapp(dadosUser.whatsapp ?? '');
@@ -63,18 +70,21 @@ export default function AgendadorProfissional() {
             return;
         }
         if (imagem && dados) {
-            const novaUrl = await enviar_Arquivos_Storage_E_Retornar_Url({ 'urlImagem': imagem }, user.uid)
+            const novaUrl = await criarArquivoStorage({ 'urlImagem': imagem }, user.uid)
             dados.urlImagem = novaUrl['urlImagem']
         }
         if (dados) {
+            dados.nome = nome
+            dados.profissao = profissao
+            dados.crp = crp
             dados.biografia = biografia
             dados.endereco = endereco
-            dados.whatsapp = whatsapp
-            dados.instagram = instagram
+            if (whatsapp.length > 13) dados.whatsapp = whatsapp
+            dados.instagram = instagram.substring(1)
             dados.preco = preco
             dados.horariosAtendimento = [...horarioSelecionado]
             dados.horariosAtendimento.sort()
-            await adicionar_Dados_FireStore(user.uid, "profissionais", dados);
+            await adicaoDadosFirestore(user.uid, "profissionais", dados);
             alert("Dados Salvos com Sucesso");
         }
     }
@@ -88,25 +98,13 @@ export default function AgendadorProfissional() {
 
 
     return (
-        <View style={styles.componentePai}>
-            <Text style={styles.meuPerfil}>Meu Perfil</Text>
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                style={{
-                    flex: 1, overflowX: 'auto',
-                    backgroundColor: '#E8E8E8ff',
-                    borderRadius: 8,
-                    shadowColor: '#000',
-                    shadowOffset: {
-                        width: 1,
-                        height: 1,
-                    },
-                    shadowOpacity: 0.4,
-                    shadowRadius: 10,
+        <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
+            <View style={{ width: '100%' }}>
+                <Topo />
+            </View>
 
-                }}
-                contentContainerStyle={styles.box}
-            >
+            <Text style={styles.meuPerfil}>Meu Perfil</Text>
+            <View style={styles.box}>
                 <View style={styles.dadosProfissional}>
                     <TouchableOpacity
                         onPress={() => selecionadorImagem.current?.click()}
@@ -128,15 +126,39 @@ export default function AgendadorProfissional() {
                         </>
                     </TouchableOpacity>
                     <View style={styles.infoProfissional}>
-                        <Text style={styles.nomeProfissional}>
-                            {dados && dados.nome}
-                        </Text>
-                        <Text style={styles.profissãoProfissional}>
-                            Profissão:{dados && dados.profissao}
-                        </Text>
-                        <Text style={styles.crp}>
-                            CRP: {dados && dados.crp}
-                        </Text>
+                        <View style={styles.boxNomeProfissaoCrp}>
+                            <TextInput
+                                style={styles.nomeProfissional}
+                                value={nome}
+                                onChangeText={setNome}
+                                placeholder='Nome*'
+                                placeholderTextColor={'rgba(0,0,0,0.5)'}
+
+                            />
+                        </View>
+                        <View style={styles.boxNomeProfissaoCrp}>
+                            <TextInput
+                                style={styles.profissãoProfissional}
+                                value={profissao}
+                                onChangeText={setProfissao}
+                                placeholder='Profissão'
+                                placeholderTextColor={'rgba(0,0,0,0.5)'}
+
+                            />
+                        </View>
+                        <View style={styles.boxNomeProfissaoCrp}>
+                            <TextInputMask
+                                style={styles.crp}
+                                type={'custom'}
+                                options={{
+                                    mask: '99/99999'
+                                }}
+                                value={crp}
+                                onChangeText={setCrp}
+                                placeholder='CRP*'
+                                placeholderTextColor={'rgba(0,0,0,0.5)'}
+                            />
+                        </View>
                     </View>
                 </View>
                 <Text style={styles.subtitulo}>Biografia</Text>
@@ -208,7 +230,8 @@ export default function AgendadorProfissional() {
                     style={{
                         flexDirection: 'row',
                         flexWrap: 'wrap',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        height: '10%',
                     }}
                 >
                     {
@@ -221,7 +244,6 @@ export default function AgendadorProfissional() {
                                     horarioSelecionado.includes(horario) && styles.horarioSelecionado]}
                                     onPress={() => {
                                         horariosClicados(horario)
-                                        console.log(horarioSelecionado)
                                     }
                                     }
                                 >
@@ -238,14 +260,14 @@ export default function AgendadorProfissional() {
                     <TouchableOpacity style={styles.botao}
                         onPress={enviarDados}
                     >
-
                         <Text style={styles.textoSalvar}>Salvar</Text>
                     </TouchableOpacity>
-
                 </View>
-            </ScrollView>
+            </View>
+            <ConfirmarConsulta style={{flex: 0.2, marginTop: 100}} tipo='profissional'  />
+        </ScrollView >
 
-        </View >
+
     )
 
 }
@@ -253,23 +275,32 @@ export default function AgendadorProfissional() {
 const styles = StyleSheet.create({
     componentePai: {
         alignItems: 'center',
-        marginVertical: 25,
         flex: 1,
 
     },
     meuPerfil: {
+        marginTop: 5,
         fontFamily: "Arial",
         fontSize: 20,
         fontWeight: 700,
         marginHorizontal: 20,
-        marginBottom: 15
+        marginBottom: 15,
+        textAlign: 'center'
 
     },
     box: {
         padding: 20,
-        borderRadius: 20,
-        flex: 1,
+        borderRadius: 35,
         gap: 7,
+        backgroundColor: '#E8E8E8ff',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 1,
+            height: 1,
+        },
+        shadowOpacity: 0.4,
+        shadowRadius: 10,
+        width: '45%',
     },
     dadosProfissional: {
         flexDirection: 'row',
@@ -277,31 +308,55 @@ const styles = StyleSheet.create({
 
     },
     imagemProfissional: {
-        width: 150,
-        height: 150,
-        borderRadius: 7
+        width: 200,
+        height: 200,
+        borderRadius: 8
     },
     infoProfissional: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 10
 
     },
 
+
     nomeProfissional: {
-        fontFamily: "Arial",
+        padding: 10,
+        outlineWidth: 0,
+        outlineColor: 'transparent',
+        textAlign: 'justify',
+        width: '100%',
+        height: '100%',
         fontSize: 25,
-        fontWeight: 700,
+        color: '#000',
+        fontFamily: 'Inria Sans',
+        lineHeight: 22,
 
     },
     profissãoProfissional: {
-        fontFamily: "Arial",
-        fontSize: 22,
-        fontWeight: 700,
+        padding: 10,
+        outlineWidth: 0,
+        outlineColor: 'transparent',
+        textAlign: 'justify',
+        width: '100%',
+        height: '100%',
+        fontSize: 18,
+        color: '#000',
+        fontFamily: 'Inria Sans',
+        lineHeight: 22,
 
     },
     crp: {
-        fontFamily: "Arial",
+        padding: 10,
+        outlineWidth: 0,
+        outlineColor: 'transparent',
+        textAlign: 'justify',
+        width: '100%',
+        height: '100%',
         fontSize: 14,
-        fontWeight: 700,
-
+        color: '#000',
+        fontFamily: 'Inria Sans',
+        lineHeight: 22,
     },
     subtitulo: {
         fontFamily: "Arial",
@@ -329,6 +384,15 @@ const styles = StyleSheet.create({
         color: '#000',
         fontFamily: 'Inria Sans',
         lineHeight: 22,
+    },
+    boxNomeProfissaoCrp: {
+        backgroundColor: '#FFF',
+        width: '100%',
+        height: 50,
+        borderRadius: 10,
+        borderColor: '#000',
+        borderWidth: 1,
+
     },
 
     boxEndereco: {
@@ -432,7 +496,7 @@ const styles = StyleSheet.create({
 
     selecionarHorario: {
         width: '12%',
-        height: '60%',
+        height: '40%',
         borderRadius: 7,
         borderColor: '#336BF7',
         borderWidth: 2,
@@ -451,10 +515,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         height: '9%',
-        margin: 35
     },
     botao: {
-        marginBottom: 15,
+        marginVertical: 15,
         alignItems: 'center',
         justifyContent: 'center',
         width: '35%',
@@ -468,7 +531,4 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 700
     }
-
-
-
 })

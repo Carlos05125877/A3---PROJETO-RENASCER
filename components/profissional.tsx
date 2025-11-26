@@ -1,5 +1,5 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const { width, height } = Dimensions.get('window');
 
@@ -8,7 +8,8 @@ interface ProfissionalProps {
   especialidade: string;
   crp: string;
   descricao: string;
-  preco: string
+  preco: string;
+  imagem : string;
   onAgendar?: () => void;
   onWhatsApp?: () => void;
   onInstagram?: () => void;
@@ -20,6 +21,7 @@ export default function Profissional({
   crp,
   descricao,
   preco,
+  imagem,
   onAgendar,
   onWhatsApp,
   onInstagram
@@ -29,11 +31,7 @@ export default function Profissional({
       {/* Header do perfil */}
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
-          <MaterialCommunityIcons
-            name="account"
-            size={40}
-            color="#000"
-          />
+          <Image source={{uri: imagem}} style={{width: 75, height: 75, borderRadius: 8}}/>
         </View>
 
 
@@ -120,8 +118,8 @@ const styles = StyleSheet.create({
   },
 
   avatarContainer: {
-    width: 60,
-    height: 60,
+    width: 75,
+    height: 75,
     borderRadius: 8,
     backgroundColor: '#D9D9D9',
     justifyContent: 'center',

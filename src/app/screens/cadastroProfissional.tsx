@@ -1,4 +1,4 @@
-import { cadastrarUsuario } from '@/back-end/api.cadastroLogin';
+import { configuracaoUsuario } from '@/back-end/api.cadastroLogin';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -39,7 +39,7 @@ export default function CadastroProfissional() {
         )
     }
 
-    
+
     return (
         <View
             style={styles.backgroundPagina}>
@@ -201,11 +201,13 @@ export default function CadastroProfissional() {
                         style={styles.botaoCadastrar}
                         onPress={() => {
                             dadosValidos ?
-                                cadastrarUsuario({
+                                configuracaoUsuario({
                                     'email': email, 'senha': senha, 'confirmarSenha': confirmarSenha,
                                     'nome': nome, 'cpf': cpf, 'telefone': telefone, 'dataNascimento': dataNascimento,
-                                    'crp': crp, 'biografia': Biografia, 'colecao': 'profissionais'
-                                }, imagem)
+                                    'crp': crp, 'biografia': Biografia, 'colecao': 'profissionais', 
+                                    'horariosAtendimento': []
+
+                                }, imagem, 'profissionais')
                                 :
                                 alert('Preencha todos os campos obrigatórios corretamente');
                         }}>

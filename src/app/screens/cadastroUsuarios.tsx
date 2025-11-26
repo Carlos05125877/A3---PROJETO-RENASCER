@@ -1,4 +1,4 @@
-import { cadastrarUsuario, loginComGoogle } from '@/back-end/api.cadastroLogin';
+import { configuracaoUsuario, loginComGoogle } from '@/back-end/api.cadastroLogin';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
@@ -33,7 +33,7 @@ export default function CadastroUsuarios() {
         } else {
             bloquarBotaoConfirmar.current = true;
         }
-    }, [cpf, email, senha, dataNascimento, nome, confirmarSenha, senha, 
+    }, [cpf, email, senha, dataNascimento, nome, confirmarSenha, senha,
         confirmarSenha, cpfInvalido, emailInvalido]
     )
 
@@ -175,11 +175,15 @@ export default function CadastroUsuarios() {
                                         if (bloquarBotaoConfirmar.current) {
                                             alert('Preencha todos os campos obrigatórios');
                                         } else {
-                                            cadastrarUsuario({
-                                                'email': email, 'senha': senha, 'nome': nome, 'cpf': cpf,
-                                                'telefone': telefone, 'dataNascimento': dataNascimento,
+                                            configuracaoUsuario({
+                                                'email': email,
+                                                'senha': senha,
+                                                'confirmarSenha': confirmarSenha,
+                                                'nome': nome, 'cpf': cpf,
+                                                'telefone': telefone,
+                                                'dataNascimento': dataNascimento,
                                                 'colecao': 'users'
-                                            }, null);
+                                            }, null, 'users');
                                         }
                                     }}>
                                     <Text style={styles.textoBotaoCadastrar}>Confirmar</Text>

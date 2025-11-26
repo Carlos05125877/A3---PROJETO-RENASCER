@@ -7,17 +7,17 @@ import {
   signInWithEmailAndPassword, signInWithPopup,
   signOut, User
 } from 'firebase/auth';
-import { adicionar_Dados_FireStore, auth, enviar_Arquivos_Storage_E_Retornar_Url } from './Api';
+import { adicaoDadosFirestore, auth, criarArquivoStorage } from './Api';
 
 
 
-export const cadastroUsuario = async (usuario: Record<string, any>): Promise<User> => {
+const cadastroUsuario = async (usuario: Record<string, any>): Promise<User> => {
   try {
     const user = await createUserWithEmailAndPassword(auth, usuario.email, usuario.senha);
     const userVerificado = await enviarEmail(user.user);
     const { senha,confirmarSenha, ...dadosUsuario } = usuario;
     dadosUsuario.criadoEm = new Date().toLocaleString('pt-BR');
-    await adicionar_Dados_FireStore(userVerificado.uid, usuario.colecao, dadosUsuario)
+    await adicaoDadosFirestore(userVerificado.uid, usuario.colecao, dadosUsuario)
     return userVerificado;
 
   } catch (error: any) {
@@ -35,7 +35,7 @@ export const cadastroUsuario = async (usuario: Record<string, any>): Promise<Use
     throw (error);
   }
 }
-export const enviarEmail = async (user: User) => {
+ const enviarEmail = async (user: User) => {
   try{
   await sendEmailVerification(user, { url: 'http://localhost:8081/' })
   console.log('email enviado para o usuario');
@@ -47,8 +47,8 @@ export const enviarEmail = async (user: User) => {
     throw(error)
   }
 }
-export async function cadastrarUsuario(dados: Record<string, string>, imagem: File | null) {
-  
+export async function configuracaoUsuario(dados: Record<string, string | string[]>, imagem: File | null, 
+  localSalvamento : string) {
 
     if (dados.senha !== dados.confirmarSenha) {
         return false;
@@ -56,17 +56,17 @@ export async function cadastrarUsuario(dados: Record<string, string>, imagem: Fi
     try {
         const user = await cadastroUsuario(
            dados);
-        const urlImagem = await enviar_Arquivos_Storage_E_Retornar_Url(
+        const urlImagem = await criarArquivoStorage(
             { 'urlImagem': imagem }, user.uid)
 
-        adicionar_Dados_FireStore(user.uid, 'profissionais', urlImagem);
+        adicaoDadosFirestore(user.uid, localSalvamento, urlImagem);
     } catch (error: any) {
         console.error(error.code);
         console.error(error.message);
     }
 }
 
-export const signInComContaGoogle = async (): Promise<User> => {
+ const autenticacaoGoogle = async (): Promise<User> => {
   try {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
@@ -80,10 +80,9 @@ export const loginComGoogle = async (bloquearBotaoGoogle : React.RefObject<boole
         if (bloquearBotaoGoogle.current === true) return;
 
         try {
-          alert('')
             bloquearBotaoGoogle.current = true
 
-            const user = await signInComContaGoogle();
+            const user = await autenticacaoGoogle();
             return user
         } catch (error: any) {
             console.error(error.code);
@@ -92,7 +91,7 @@ export const loginComGoogle = async (bloquearBotaoGoogle : React.RefObject<boole
             bloquearBotaoGoogle.current = false;
         }
     }
-export const signInComEmail = async (email: string, senha: string): Promise<User> => {
+export const loginComEmailSenha = async (email: string, senha: string): Promise<User> => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, senha);
     return userCredential.user;

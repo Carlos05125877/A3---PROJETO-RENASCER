@@ -1,12 +1,11 @@
-import { auth, Obter_Dados_Firestore } from '@/back-end/Api';
+import { auth, buscarDadosFirestore } from '@/back-end/Api';
+import { deslogar } from '@/back-end/api.cadastroLogin';
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { deslogar } from '@/back-end/api.cadastroLogin';
-import AgendadorProfissioanl from '../components/agendadorProfissional'
 
 
 
@@ -42,7 +41,7 @@ export default function Topo() {
       const buscarImagem = async () => {
         if (user?.uid) {
 
-          const dados = await Obter_Dados_Firestore(user.uid)
+          const dados = await buscarDadosFirestore(user.uid)
           if (dados) {
             setUrlImagem(dados.urlImagem);
           }
@@ -102,7 +101,7 @@ export default function Topo() {
       <View
         style={styles.topoPaginaDireita}>
         <TouchableOpacity style={styles.botaoAgendamentoEntrar} 
-        onPress={() => (router.push('/screens/agendadorProfissional'))}>
+        onPress={() => (router.push('/screens/listaProfissionais'))}>
           <MaterialCommunityIcons name='calendar' size={24} color='#FFFFFF' />
           <Text style={styles.textoBotaoAgendamentoEntrar}>
             Agendar Consulta
@@ -156,10 +155,12 @@ export default function Topo() {
             </Text>
           </TouchableOpacity>
         ) : (
+          <TouchableOpacity onPress={() => router.push('/screens/agendadorProfissional')}>
           <Image
             source={{ uri: urlImagem }}
             style={{ width: 40, height: 40, borderRadius: 20 }}
           />
+          </TouchableOpacity>
         )}
       </View>
     </View>

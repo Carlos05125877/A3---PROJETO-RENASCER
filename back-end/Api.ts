@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import {
-   getAuth
+  getAuth
 } from 'firebase/auth';
 import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
@@ -26,7 +26,7 @@ export interface profissionais {
   preco : string
 }
 
-export const enviar_Arquivos_Storage_E_Retornar_Url = async (arquivos: Record<string, File | null>,
+export const criarArquivoStorage = async (arquivos: Record<string, File | null>,
   userId: string | null): Promise<Record<string, string>> => {
   try {
     const Urls: Record<string, string> = {}
@@ -69,7 +69,7 @@ export const enviar_Arquivos_Storage_E_Retornar_Url = async (arquivos: Record<st
 
 
 
-export const adicionar_Dados_FireStore = async (userId: string, colecao: string,
+export const adicaoDadosFirestore = async (userId: string, colecao: string,
   dadosUsuario: Record<string, any>) => {
   try {
       await setDoc(doc(firestore, colecao, userId),
@@ -87,7 +87,7 @@ export const adicionar_Dados_FireStore = async (userId: string, colecao: string,
   }
 
 }
-export const agendamento = async (userId: string, colecao : string, 
+export const criarAgendamento = async (userId: string, colecao : string, 
   dadosUsuario : Record< string , any>, subColecao: string) => {
     try{
          await setDoc(doc(firestore, colecao, userId, subColecao, dadosUsuario.dia),
@@ -98,13 +98,12 @@ export const agendamento = async (userId: string, colecao : string,
           }
 
         }, { merge: true })
-      alert('Agendamento realizado com sucesso')
     }catch (error : any){
       alert (error.message)
     }
 }
 
-export const Obter_Dados_Firestore = async (userId: string): Promise<Record<string, any> | undefined> => {
+export const buscarDadosFirestore = async (userId: string): Promise<Record<string, any> | undefined> => {
   try {
     let documentoUsuarioFirestore = doc(firestore, 'users', userId);
     const snapshot = await getDoc(documentoUsuarioFirestore);
@@ -141,12 +140,11 @@ export const buscarProfissional = async (): Promise<profissionais[]> => {
       crp: dados.crp ?? '',
       biografia: dados.biografia ?? '',
       imagem: dados.urlImagem ?? '',
-      horarios : [...dados.horariosAtendimento],
+      horarios : [...dados.horariosAtendimento ?? []],
       instagram : dados.instagram ?? '',
       whatsapp : dados.whatsapp ?? '',
       preco : dados.preco ?? '',
     }
-    console.log(usuarioFinal.instagram)
     return usuarioFinal
   }
   )
@@ -154,11 +152,19 @@ export const buscarProfissional = async (): Promise<profissionais[]> => {
 }
 
 
-export const obterSubColeção = (usuarioId: string, subColecao: string, data: string) => {
+export const buscarSubColecao = (usuarioId: string, subColecao: string, data: string) => {
   const local = doc(firestore, 'profissionais', usuarioId, subColecao, data)
 
   const dados = getDoc(local)
 
   return dados
+
+}
+
+export const buscarAgendamento =  async (tipo: string, usuario : string) => { 
+  const local = collection (firestore, tipo, usuario, 'agendamentos');
+  const dados = await getDocs(local) ?? [];
+ 
+  return dados.docs;
 
 }

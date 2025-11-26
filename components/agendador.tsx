@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler'
-import { Calendar } from 'react-native-calendars'
-import { agendamento, obterSubColeção } from '@/back-end/Api'
-import { auth } from '@/back-end/Api'
+import { auth, buscarSubColecao, criarAgendamento } from '@/back-end/Api'
 import { useRouter } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Calendar } from 'react-native-calendars'
+import { ScrollView } from 'react-native-gesture-handler'
 
 interface props {
     id: string
@@ -12,26 +11,26 @@ interface props {
     profissao: string,
     crp: string,
     imagem: string
-    horarios : string[]
-    preco : string
+    horarios: string[]
+    preco: string
 
 }
 
-export default function Agendador(Props: props) {
+export default function Agendador(props: props) {
+    const horarios = ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00',
+        '13:00', '14:00', '15:00', '16:00', '17:00', '18:00']
     const route = useRouter();
-    const horarios = Props.horarios
     const [botaoSelecionado, setBoataoSelecionado] = useState<number | null>(null)
     const [exibirModal, setExibirModal] = useState(false);
     const [data, setData] = useState('');
     const [horario, setHorario] = useState('')
     const [horarioSelecionado, setHorarioSelecionado] = useState<any>({})
     const [bloquearBotaoAgendar, setBloquearBotaoAgendar] = useState(true);
-    console.log(horarios)
 
     useEffect(() => {
         const verificarAgendamentos = async () => {
             if (data !== '') {
-                const dadosUsuario = await obterSubColeção(Props.id, 'agendamentos', data);
+                const dadosUsuario = await buscarSubColecao(props.id, 'agendamentos', data);
                 if (dadosUsuario) {
                     setHorarioSelecionado(dadosUsuario.data());
                 }
@@ -55,23 +54,23 @@ export default function Agendador(Props: props) {
         }
     }, [data, horario])
 
-    useEffect(() =>{
-        if (agendamentos.cliente ===undefined){
+    useEffect(() => {
+        if (agendamentos.cliente === undefined) {
             alert('faça login antes de continuar');
             route.push('/screens/login')
         }
-    })
+    },[])
 
 
     return (
         <View style={styles.box}>
             <ScrollView style={{ flex: 1, margin: 5 }}>
                 <View style={styles.superior}>
-                    <Image source={{ uri: Props.imagem }} style={styles.imagem} />
+                    <Image source={{ uri: props.imagem }} style={styles.imagem} />
                     <View style={styles.interiorSuperior}>
-                        <Text style={styles.nome}>{Props.nome}</Text>
-                        <Text style={styles.profissao}>{Props.profissao}</Text>
-                        <Text style={styles.crp}>CRP:{Props.crp}</Text>
+                        <Text style={styles.nome}>{props.nome}</Text>
+                        <Text style={styles.profissao}>{props.profissao}</Text>
+                        <Text style={styles.crp}>CRP:{props.crp}</Text>
                     </View>
                 </View>
                 <Text style={styles.subtitulos}>Data</Text>
@@ -86,27 +85,29 @@ export default function Agendador(Props: props) {
                                 textAlign: 'center',
 
                             }}>{data ?
-                             `${data.slice(8, 10)}/${data.slice(5, 7)}/${data.slice(0, 4)}` 
-                             : 'Selecione uma Data'}</Text>
-                            <Image source={require('../assets/images/calendario.png')} 
-                            style={{ width: 40, height: 40 }} />
+                                `${data.slice(8, 10)}/${data.slice(5, 7)}/${data.slice(0, 4)}`
+                                : 'Selecione uma Data'}</Text>
+                            <Image source={require('../assets/images/calendario.png')}
+                                style={{ width: 40, height: 40 }} />
                         </View>
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.subtitulos}>Horários</Text>
                 <View style={styles.horarios}>
                     {
-                        horarios.map((horario, index) => {
+
+                        props.horarios.map((horario, index) => {
                             const ocupado = horarioSelecionado?.[horario] || false;
                             return (
-                                <TouchableOpacity key={index} style={[styles.selecionarHorario, 
-                                    ocupado && { backgroundColor: 'red', opacity: 1 },
+                                <TouchableOpacity key={index} style={[styles.selecionarHorario,
+                                ocupado && { backgroundColor: 'red', opacity: 1 },
                                 botaoSelecionado === index && styles.horarioSelecionado]}
                                     onPress={() => {
-                                        botaoSelecionado !== index ? 
-                                        setBoataoSelecionado(index) : setBoataoSelecionado(-1);
-                                        botaoSelecionado !== index ? 
-                                        setHorario(horario) : setHorario('');
+                                        console.log(props.horarios)
+                                        botaoSelecionado !== index ?
+                                            setBoataoSelecionado(index) : setBoataoSelecionado(-1);
+                                        botaoSelecionado !== index ?
+                                            setHorario(horario) : setHorario('');
                                     }}
                                     disabled={ocupado}
                                 >
@@ -115,7 +116,8 @@ export default function Agendador(Props: props) {
                                     ]}>{horario}</Text>
                                 </TouchableOpacity>
                             )
-                        })}
+                        })
+                    }
                 </View>
                 <View style={styles.confirmarAgendamento}>
                     <TouchableOpacity style={styles.botaoAgendar}
@@ -126,10 +128,12 @@ export default function Agendador(Props: props) {
                             }
                             agendamentos.dia = data
                             agendamentos.hora = horario
-                            agendamentos.profissional = Props.id
-                            agendamento(Props.id, 'profissionais', agendamentos, 'agendamentos')
+                            agendamentos.profissional = props.id
+                            criarAgendamento(props.id, 'profissionais', agendamentos, 'agendamentos')
                             agendamentos.cliente &&
-                            agendamento(agendamentos.cliente, 'users', agendamentos, 'agendamentos')
+                                criarAgendamento(agendamentos.cliente, 'users', agendamentos, 'agendamentos')
+                            alert('Agendamento realizado com sucesso')
+
                         }}
                     >
                         <Text style={styles.textoConfirmarHorario}>Agendar</Text>
@@ -185,7 +189,7 @@ const styles = StyleSheet.create(
         imagem: {
             width: 150,
             height: 150,
-            borderRadius: 7 
+            borderRadius: 7
 
         },
 

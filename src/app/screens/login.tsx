@@ -5,7 +5,7 @@ import { useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import Topo from '../../..//components/topo';
-import { esqueciMinhaSenha, loginComGoogle, signInComEmail } from '../../../back-end/api.cadastroLogin';
+import { esqueciMinhaSenha, loginComEmailSenha, loginComGoogle } from '../../../back-end/api.cadastroLogin';
 
 
 {/*-----------------------------------------------------------------------------------*/ }
@@ -33,7 +33,7 @@ export default function Login() {
 
   const loginComEmaileSenha = async () => {
     try {
-      const user = await signInComEmail(email, senha);
+      const user = await loginComEmailSenha(email, senha);
       if (verificarLogin(user) && user.emailVerified) {
         router.push('/');
       }
@@ -172,7 +172,7 @@ export default function Login() {
               placeholderTextColor={'rgba(0,0,0,0.5)'} secureTextEntry={false} />
           </View>
           <TouchableOpacity
-            style={[styles.botaoLogin, { width: '40%', height: '20%', borderRadius: 8 }]}
+            style={[styles.botaoLogin, { width: '40%', height: '15%', borderRadius: 8 }]}
             onPress={() => esqueciMinhaSenha(redefinirEmail)}>
             <Text style={styles.textoBotaoLogin}>
               Confirmar
@@ -290,14 +290,15 @@ const styles = StyleSheet.create({
     fontWeight: 700,
   },
   modal: {
+    margin: 20,
     backgroundColor: '#fff',
     gap: 20,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 20,
     overflow: 'hidden',
-    width: '35%',
-    height: '40%'
+    width: '50%',
+    height: '70%'
   },
   recuperarSenha: {
     textAlign: 'center',
