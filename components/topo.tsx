@@ -74,27 +74,21 @@ export default function Topo() {
 
         <TouchableOpacity>
           <Text style={styles.textoComoFuncionaBlog}>
-            Como Funciona
+            Quem somos
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => (router.push('/screens/blogDicas'))}>
           <Text style={styles.textoComoFuncionaBlog}>
             Blog
           </Text>
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.botaoExclusivo}>
-          <MaterialCommunityIcons name='crown' size={24} color='#E6B103' />
-          <Text
-            style={ {
-              paddingLeft: 5,
-              color: '#E6B103',
-              fontFamily: "Inria Sans",
-              fontSize: 16,
-              fontWeight: 700
-            } }>Exclusivo
+        <TouchableOpacity
+          onPress={() => (router.push('/screens/emDesenvolvimento'))}>
+          <Text style={styles.textoComoFuncionaBlog}>
+            Comunidade
           </Text>
         </TouchableOpacity>
+
       </View>
 
       {/* Lado direito */}
