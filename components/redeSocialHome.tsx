@@ -18,7 +18,7 @@ export default function RedeSocialHome() {
 
                 <TouchableOpacity style={styles.botao}>
                     <Text style={styles.textoBotao}>
-                        Participe
+                        Em Breve
                     </Text>
                 </TouchableOpacity>
             </View>

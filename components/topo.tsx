@@ -72,7 +72,7 @@ export default function Topo() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => (router.push('/screens/quemSomos'))}>
           <Text style={styles.textoComoFuncionaBlog}>
             Quem somos
           </Text>
