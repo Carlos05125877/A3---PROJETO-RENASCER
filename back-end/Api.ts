@@ -21,9 +21,9 @@ export interface profissionais {
   biografia: string
   imagem: string
   horarios: string[]
-  instagram : string
-  whatsapp : string
-  preco : string
+  instagram: string
+  whatsapp: string
+  preco: string
 }
 
 export const criarArquivoStorage = async (arquivos: Record<string, File | null>,
@@ -72,13 +72,13 @@ export const criarArquivoStorage = async (arquivos: Record<string, File | null>,
 export const adicaoDadosFirestore = async (userId: string, colecao: string,
   dadosUsuario: Record<string, any>) => {
   try {
-      await setDoc(doc(firestore, colecao, userId),
-        {
-          ...dadosUsuario
+    await setDoc(doc(firestore, colecao, userId),
+      {
+        ...dadosUsuario
 
-        }
-        , { merge: true })
-      console.log('dados de Usuario adiconados com sucesso');
+      }
+      , { merge: true })
+    console.log('dados de Usuario adiconados com sucesso');
   } catch (error: any) {
     console.error('erro ao adicionar arquivos ao FireStore');
     console.error(error.code);
@@ -87,20 +87,20 @@ export const adicaoDadosFirestore = async (userId: string, colecao: string,
   }
 
 }
-export const criarAgendamento = async (userId: string, colecao : string, 
-  dadosUsuario : Record< string , any>, subColecao: string) => {
-    try{
-         await setDoc(doc(firestore, colecao, userId, subColecao, dadosUsuario.dia),
-        {
-          [dadosUsuario.hora]: {
-            ...dadosUsuario,
-            status: 'Aguardando Confirmação'
-          }
+export const criarAgendamento = async (userId: string, colecao: string,
+  dadosUsuario: Record<string, any>, subColecao: string) => {
+  try {
+    await setDoc(doc(firestore, colecao, userId, subColecao, dadosUsuario.dia),
+      {
+        [dadosUsuario.hora]: {
+          ...dadosUsuario,
+          status: 'Aguardando Confirmação'
+        }
 
-        }, { merge: true })
-    }catch (error : any){
-      alert (error.message)
-    }
+      }, { merge: true })
+  } catch (error: any) {
+    alert(error.message)
+  }
 }
 
 export const buscarDadosFirestore = async (userId: string): Promise<Record<string, any> | undefined> => {
@@ -140,10 +140,10 @@ export const buscarProfissional = async (): Promise<profissionais[]> => {
       crp: dados.crp ?? '',
       biografia: dados.biografia ?? '',
       imagem: dados.urlImagem ?? '',
-      horarios : [...dados.horariosAtendimento ?? []],
-      instagram : dados.instagram ?? '',
-      whatsapp : dados.whatsapp ?? '',
-      preco : dados.preco ?? '',
+      horarios: [...dados.horariosAtendimento ?? []],
+      instagram: dados.instagram ?? '',
+      whatsapp: dados.whatsapp ?? '',
+      preco: dados.preco ?? '',
     }
     return usuarioFinal
   }
@@ -161,10 +161,28 @@ export const buscarSubColecao = (usuarioId: string, subColecao: string, data: st
 
 }
 
-export const buscarAgendamento =  async (tipo: string, usuario : string) => { 
-  const local = collection (firestore, tipo, usuario, 'agendamentos');
+export const buscarAgendamento = async (tipo: string, usuario: string) => {
+  const local = collection(firestore, tipo, usuario, 'agendamentos');
   const dados = await getDocs(local) ?? [];
- 
+
   return dados.docs;
+
+}
+
+export const mudarStatusAgendamento = async (idProfissional: string, idCliente: string,
+  data: string, horario: string, novoStatus: string) => {
+  const localProfissional = doc(firestore, 'profissionais', idProfissional, 'agendamentos', data)
+  const localUsuario = doc(firestore, 'users', idCliente, 'agendamentos', data)
+  setDoc(localProfissional, {
+    [horario]: {
+      status: novoStatus
+    }
+  }, { merge: true })
+   setDoc(localUsuario, {
+    [horario]: {
+      status: novoStatus
+    }
+  }, { merge: true })
+  alert(`Agendamento ${novoStatus} com sucesso`)
 
 }

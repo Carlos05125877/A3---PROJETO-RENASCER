@@ -264,7 +264,7 @@ export default function EditorPerfil() {
                     </TouchableOpacity>
                 </View>
             </View>
-            <ConfirmarConsulta style={{width: "75%", marginVertical: 100}} tipo='profissionais'  />
+            <ConfirmarConsulta style={{width: 1250, marginVertical: 100}} tipo='profissionais'  />
         </ScrollView >
 
 

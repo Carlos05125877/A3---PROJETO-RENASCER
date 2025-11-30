@@ -4,7 +4,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 
@@ -15,15 +15,17 @@ export default function Topo() {
   const [user, setUser] = useState<any>(null);
   const [urlImagem, setUrlImagem] = useState<string | undefined>(undefined);
   const [criarConta, setCriarConta] = useState(false);
+  const dadosUser = useRef <Record<string, string> | undefined>({})
 
   useEffect(
     () => {
-      const ouvindo = onAuthStateChanged(auth, (usuario) => {
+      const ouvindo = onAuthStateChanged(auth, async (usuario) => {
 
         if (usuario && usuario.emailVerified) {
           setLogado(true);
           setUser(usuario);
           console.log("Usuario autenticado");
+          dadosUser.current =  await buscarDadosFirestore(usuario.uid)
         } else {
           setLogado(false);
           setUser(null)
@@ -49,6 +51,7 @@ export default function Topo() {
       }
       buscarImagem();
     }, [user] )
+
 
   const router = useRouter();
 
@@ -150,7 +153,9 @@ export default function Topo() {
             </Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity onPress={() => router.push('/screens/agendadorProfissional')}>
+          <TouchableOpacity onPress={() => router.push(
+            dadosUser.current?.colecao === 'profissionais' ?
+            '/screens/agendadorProfissional' : '/screens/agendadorUsuario')}>
           <Image
             source={{ uri: urlImagem }}
             style={{ width: 40, height: 40, borderRadius: 20 }}
