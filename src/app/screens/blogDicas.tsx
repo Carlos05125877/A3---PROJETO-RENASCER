@@ -1,3 +1,4 @@
+import BloqueioAssinatura from "@/components/bloqueioAssinatura";
 import Topo from "@/components/topo";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -8,12 +9,13 @@ const router = useRouter();
 
 export default function BlogDicas() {
     return (
-      <View style={{flex: 1}}>
+        <View style={{flex: 1}}>
         <View style={{  zIndex: 1 }}>
           <Topo />
         </View>
-        <ScrollView >
-          <View style={styles.containerPrincipal}>
+        <BloqueioAssinatura>
+          <ScrollView >
+            <View style={styles.containerPrincipal}>
             <View>
                 <Text style={styles.titulo}>Ações Imediatas</Text>
               </View>
@@ -123,9 +125,9 @@ export default function BlogDicas() {
                 <View style={{ height: 40 }} />
               </View>
             </View>
-        </ScrollView>
+          </ScrollView>
+        </BloqueioAssinatura>
       </View>
-      
     );
 }
 

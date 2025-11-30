@@ -1,7 +1,8 @@
+import { criarPreferenciaPagamento } from '@/back-end/api.assinatura';
 import { configuracaoUsuario } from '@/back-end/api.cadastroLogin';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRef, useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Linking, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import Topo from '../../../components/topo';
 import { useCpfInvalido, useEmailInvalido, useImagemLocal, verificarDados } from '../hooks/validaçõesDeUsuario';
@@ -199,21 +200,96 @@ export default function CadastroProfissional() {
                     </View>
                     <TouchableOpacity
                         style={styles.botaoCadastrar}
-                        onPress={() => {
-                            dadosValidos ?
-                                configuracaoUsuario({
+                        onPress={async () => {
+                            if (!dadosValidos) {
+                                alert('Preencha todos os campos obrigatórios corretamente');
+                                return;
+                            }
+
+                            try {
+                                // Primeiro, criar o usuário
+                                const user = await configuracaoUsuario({
                                     'email': email, 'senha': senha, 'confirmarSenha': confirmarSenha,
                                     'nome': nome, 'cpf': cpf, 'telefone': telefone, 'dataNascimento': dataNascimento,
                                     'crp': crp, 'biografia': Biografia, 'colecao': 'profissionais', 
                                     'horariosAtendimento': []
+                                }, imagem, 'profissionais');
 
-                                }, imagem, 'profissionais')
-                                :
-                                alert('Preencha todos os campos obrigatórios corretamente');
+                                if (!user) {
+                                    Alert.alert('Erro', 'Não foi possível criar o usuário. Verifique os dados e tente novamente.');
+                                    return;
+                                }
+
+                                // Após criar o usuário, redirecionar para pagamento
+                                Alert.alert(
+                                    'Cadastro realizado!',
+                                    'Agora você precisa realizar o pagamento da assinatura profissional (R$ 39,00) para ativar sua conta.',
+                                    [
+                                        {
+                                            text: 'Pagar Agora',
+                                            onPress: async () => {
+                                                try {
+                                                    const resultado = await criarPreferenciaPagamento(
+                                                        39.00,
+                                                        'Assinatura Profissional - Renascer',
+                                                        user.uid,
+                                                        'profissional'
+                                                    );
+                                                    
+                                                    const checkoutUrl = resultado.checkoutUrl;
+                                                    
+                                                    try {
+                                                        const canOpen = await Linking.canOpenURL(checkoutUrl);
+                                                        if (canOpen) {
+                                                            await Linking.openURL(checkoutUrl);
+                                                            Alert.alert(
+                                                                'Redirecionando',
+                                                                'Você será redirecionado para o Mercado Pago para finalizar o pagamento. Após o pagamento, sua assinatura será ativada automaticamente.',
+                                                                [{ text: 'OK' }]
+                                                            );
+                                                        } else {
+                                                            // Fallback para web
+                                                            if (typeof window !== 'undefined') {
+                                                                window.location.href = checkoutUrl;
+                                                            } else {
+                                                                Alert.alert('Erro', 'Não foi possível abrir o link de pagamento');
+                                                            }
+                                                        }
+                                                    } catch (error: any) {
+                                                        // Fallback para web
+                                                        if (typeof window !== 'undefined') {
+                                                            window.location.href = checkoutUrl;
+                                                        } else {
+                                                            Alert.alert('Erro', 'Não foi possível abrir o link de pagamento');
+                                                        }
+                                                    }
+                                                } catch (error: any) {
+                                                    console.error('Erro ao processar pagamento:', error);
+                                                    Alert.alert('Erro', 'Não foi possível processar o pagamento. Você pode fazer o pagamento depois na tela de assinatura.');
+                                                }
+                                            }
+                                        },
+                                        {
+                                            text: 'Pagar Depois',
+                                            style: 'cancel',
+                                            onPress: () => {
+                                                Alert.alert(
+                                                    'Atenção',
+                                                    'Você precisará realizar o pagamento para acessar todas as funcionalidades. Acesse a tela de assinatura quando estiver pronto.',
+                                                    [{ text: 'OK' }]
+                                                );
+                                            }
+                                        }
+                                    ]
+                                );
+                            } catch (error: any) {
+                                console.error('Erro ao cadastrar:', error);
+                                Alert.alert('Erro', 'Não foi possível completar o cadastro. Tente novamente.');
+                            }
                         }}>
                         <Text
                             style={styles.textoBotaoCadastrar}>
-                            Confirmar
+                            Confirmar e Pagar (R$ 39,00)
                         </Text>
                     </TouchableOpacity>
                 </View>

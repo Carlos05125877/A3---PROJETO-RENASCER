@@ -490,12 +490,7 @@ export default function Assinatura() {
               ✅ O pagamento será aberto em uma nova aba. Após completar o pagamento, você será redirecionado automaticamente para a tela de confirmação. Se isso não acontecer, você pode continuar navegando aqui - sua assinatura será ativada automaticamente em alguns segundos.
             </Text>
             
-            <TouchableOpacity
-              style={styles.botaoDiagnostico}
-              onPress={() => router.push('/screens/diagnosticoPagamento')}
-            >
-              <Text style={styles.textoBotaoDiagnostico}>🔬 Diagnosticar Problemas de Pagamento</Text>
-            </TouchableOpacity>
+            
             
           </View>
 

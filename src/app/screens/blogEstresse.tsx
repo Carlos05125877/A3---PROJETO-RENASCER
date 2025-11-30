@@ -1,3 +1,4 @@
+import BloqueioAssinatura from "@/components/bloqueioAssinatura";
 import Topo from "@/components/topo";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -7,11 +8,12 @@ export default function blogEstresse() {
     const router = useRouter();
     
     return (
-      <View style={{flex: 1}}>
-        <View style={{  zIndex: 1 }}>
-          <Topo />
-        </View>
-        <ScrollView >
+      <BloqueioAssinatura>
+        <View style={{flex: 1}}>
+          <View style={{  zIndex: 1 }}>
+            <Topo />
+          </View>
+          <ScrollView >
             <View style={styles.containerPrincipal}>
                 <View>
                     <Text style={styles.titulo}>Estresse</Text>
@@ -158,9 +160,9 @@ export default function blogEstresse() {
 
                 </View>
             </View>
-        </ScrollView>
-      </View>
-      
+          </ScrollView>
+        </View>
+      </BloqueioAssinatura>
     );
 }
 

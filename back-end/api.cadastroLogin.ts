@@ -48,10 +48,10 @@ const cadastroUsuario = async (usuario: Record<string, any>): Promise<User> => {
   }
 }
 export async function configuracaoUsuario(dados: Record<string, string | string[]>, imagem: File | null, 
-  localSalvamento : string) {
+  localSalvamento : string): Promise<User | null> {
 
     if (dados.senha !== dados.confirmarSenha) {
-        return false;
+        return null;
     }
     try {
         const user = await cadastroUsuario(
@@ -60,9 +60,11 @@ export async function configuracaoUsuario(dados: Record<string, string | string[
             { 'urlImagem': imagem }, user.uid)
 
         adicaoDadosFirestore(user.uid, localSalvamento, urlImagem);
+        return user;
     } catch (error: any) {
         console.error(error.code);
         console.error(error.message);
+        return null;
     }
 }
 

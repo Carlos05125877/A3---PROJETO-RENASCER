@@ -183,13 +183,55 @@ export default function PagamentoSucesso() {
             setMensagem('Pagamento aprovado, mas aguardando confirmação completa do Mercado Pago...');
           }
         } else if (finalUserId && !isWaiting && !hasRealPaymentParams) {
-          console.warn('⚠️ Usuário encontrado mas sem parâmetros do Mercado Pago. Aguardando confirmação...');
+          console.warn('⚠️ Usuário encontrado mas sem parâmetros do Mercado Pago. Verificando se webhook já processou...');
+          
+          // SEMPRE verificar Firestore primeiro antes de mostrar qualquer mensagem
+          try {
+            const assinante = await verificarAssinatura(finalUserId);
+            if (assinante) {
+              console.log('✅ Assinatura já ativada no Firestore! Webhook processou.');
+              setSucesso(true);
+              setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso! Você será redirecionado para o blog em instantes...');
+              setProcessando(false);
+              
+              setTimeout(() => {
+                router.push('/screens/blogDicas');
+              }, 2000);
+              return;
+            }
+          } catch (error) {
+            console.warn('Erro ao verificar assinatura no Firestore:', error);
+          }
+          
+          // Se não encontrou, aguardar e verificar periodicamente (não mostrar erro)
           setProcessando(true);
-          setMensagem('Aguardando confirmação do pagamento do Mercado Pago. Por favor, complete o pagamento na nova aba.');
+          setMensagem('Aguardando confirmação do pagamento. Verificando automaticamente...');
         } else {
-          console.error('❌ Não foi possível processar: userId ausente ou sem parâmetros do Mercado Pago');
-          setSucesso(false);
-          setMensagem('Erro ao processar pagamento. Por favor, entre em contato com o suporte.');
+          console.warn('⚠️ Sem userId ou parâmetros. Verificando se webhook já processou...');
+          
+          // Última tentativa: verificar se o webhook já processou mesmo sem parâmetros
+          if (user?.uid) {
+            try {
+              const assinante = await verificarAssinatura(user.uid);
+              if (assinante) {
+                console.log('✅ Assinatura encontrada no Firestore! Webhook processou.');
+                setSucesso(true);
+                setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso! Você será redirecionado para o blog em instantes...');
+                setProcessando(false);
+                
+                setTimeout(() => {
+                  router.push('/screens/blogDicas');
+                }, 2000);
+                return;
+              }
+            } catch (error) {
+              console.warn('Erro ao verificar assinatura:', error);
+            }
+          }
+          
+          // Se não encontrou, manter em processando (não mostrar erro imediatamente)
+          setProcessando(true);
+          setMensagem('Aguardando confirmação do pagamento. Verificando automaticamente...');
         }
       } catch (error: any) {
         console.error('❌ Erro ao processar pagamento:', error);
@@ -220,16 +262,61 @@ export default function PagamentoSucesso() {
         console.log('Processando pagamento - tem parâmetros do Mercado Pago ou está aguardando');
         processarPagamento();
       } else if (user && user.emailVerified && !hasMercadoPagoParams && !isWaiting) {
-        // Se não tem parâmetros do Mercado Pago e não está aguardando, mostrar mensagem
-        console.warn('⚠️ Sem parâmetros do Mercado Pago e não está aguardando');
-        setProcessando(false);
-        setSucesso(false);
-        setMensagem('Aguardando confirmação do pagamento do Mercado Pago. Por favor, complete o pagamento na nova aba que foi aberta.');
+        // Se não tem parâmetros do Mercado Pago e não está aguardando, verificar Firestore primeiro
+        console.warn('⚠️ Sem parâmetros do Mercado Pago e não está aguardando. Verificando Firestore...');
+        
+        // Verificar se webhook já processou antes de mostrar qualquer mensagem
+        (async () => {
+          try {
+            const assinante = await verificarAssinatura(user.uid);
+            if (assinante) {
+              console.log('✅ Assinatura já ativada no Firestore!');
+              setSucesso(true);
+              setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso! Você será redirecionado para o blog em instantes...');
+              setProcessando(false);
+              
+              setTimeout(() => {
+                router.push('/screens/blogDicas');
+              }, 2000);
+              return;
+            }
+          } catch (error) {
+            console.warn('Erro ao verificar assinatura:', error);
+          }
+          
+          // Se não encontrou, manter em processando (não mostrar erro)
+          setProcessando(true);
+          setMensagem('Aguardando confirmação do pagamento. Verificando automaticamente...');
+        })();
       } else {
         console.warn('Aguardando usuário ou parâmetros...');
-        setProcessando(false);
-        setSucesso(false);
-        setMensagem('Não foi possível processar o pagamento. Por favor, faça login e verifique sua assinatura na página de assinatura.');
+        
+        // Se tem usuário, verificar Firestore antes de mostrar erro
+        if (user?.uid) {
+          (async () => {
+            try {
+              const assinante = await verificarAssinatura(user.uid);
+              if (assinante) {
+                console.log('✅ Assinatura encontrada no Firestore!');
+                setSucesso(true);
+                setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
+                setProcessando(false);
+                setTimeout(() => router.push('/screens/blogDicas'), 2000);
+                return;
+              }
+            } catch (error) {
+              console.warn('Erro ao verificar assinatura:', error);
+            }
+            
+            // Se não encontrou, manter em processando
+            setProcessando(true);
+            setMensagem('Aguardando confirmação do pagamento. Verificando automaticamente...');
+          })();
+        } else {
+          // Sem usuário, manter em processando por mais tempo antes de mostrar erro
+          setProcessando(true);
+          setMensagem('Aguardando confirmação do pagamento. Verificando automaticamente...');
+        }
       }
     }, 500);
 
@@ -239,7 +326,7 @@ export default function PagamentoSucesso() {
   // Verificação periódica quando status é 'waiting' - verificar via API do Mercado Pago
   useEffect(() => {
     // Aguardar um pouco para garantir que o primeiro useEffect terminou
-    const initTimer = setTimeout(() => {
+    const initTimer = setTimeout(async () => {
       const params = getUrlParams();
       const status = params.get('status');
       const userId = params.get('user_id') || user?.uid || '';
@@ -258,6 +345,24 @@ export default function PagamentoSucesso() {
       if (status === 'waiting' && userId && !hasMercadoPagoParams) {
         console.log('⏳ Iniciando verificação periódica via API do Mercado Pago...');
         console.log('Dados para verificação:', { externalReference, preferenceId, userId });
+        
+        // Verificar IMEDIATAMENTE no Firestore primeiro (webhook pode ter processado)
+        try {
+          const assinante = await verificarAssinatura(userId);
+          if (assinante) {
+            console.log('✅ Assinatura já ativada no Firestore! Webhook processou antes da verificação periódica.');
+            setSucesso(true);
+            setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso! Você será redirecionado para o blog em instantes...');
+            setProcessando(false);
+            
+            setTimeout(() => {
+              router.push('/screens/blogDicas');
+            }, 2000);
+            return;
+          }
+        } catch (error) {
+          console.warn('Erro ao verificar assinatura no Firestore:', error);
+        }
         
         // Garantir que processando está true
         setProcessando(true);
@@ -286,11 +391,12 @@ export default function PagamentoSucesso() {
               return;
             }
             
-            // FALLBACK 1: Verificar se assinatura já foi ativada no Firestore (caso webhook tenha processado)
+            // PRIORIDADE 1: Verificar se assinatura já foi ativada no Firestore (caso webhook tenha processado)
+            // Esta é a verificação mais rápida e confiável - verificar PRIMEIRO
             try {
               const assinante = await verificarAssinatura(userId);
               if (assinante) {
-                console.log('✅ Assinatura já ativada no Firestore! Pagamento foi processado.');
+                console.log('✅ Assinatura já ativada no Firestore! Webhook processou o pagamento.');
                 clearInterval(checkInterval);
                 clearTimeout(initTimer);
                 
@@ -300,7 +406,7 @@ export default function PagamentoSucesso() {
                 
                 setTimeout(() => {
                   router.push('/screens/blogDicas');
-                }, 3000);
+                }, 2000);
                 return;
               }
             } catch (error) {
@@ -393,7 +499,7 @@ export default function PagamentoSucesso() {
           } catch (error: any) {
             console.error(`Erro na verificação periódica (tentativa ${tentativas}):`, error);
           }
-        }, 5000); // Verificar a cada 5 segundos via API
+        }, 3000); // Verificar a cada 3 segundos (mais rápido para melhor UX)
         
         // Limpar intervalos quando o componente desmontar
         return () => {
@@ -402,7 +508,7 @@ export default function PagamentoSucesso() {
           console.log('🛑 Parando verificação periódica via API');
         };
       }
-    }, 1000); // Aguardar 1 segundo antes de iniciar verificação
+    }, 2000); // Aguardar 2 segundos antes de iniciar verificação (dar tempo para webhook processar)
     
     return () => clearTimeout(initTimer);
   }, [user]); // Remover dependência de processando para garantir que sempre rode

@@ -82,6 +82,7 @@ export default function Topo() {
             Blog
           </Text>
         </TouchableOpacity>
+        
         <TouchableOpacity
           onPress={() => (router.push('/screens/emDesenvolvimento'))}>
           <Text style={styles.textoComoFuncionaBlog}>
@@ -175,6 +176,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 10,
     boxShadow: '0px 3px 8px rgba(100, 100, 100, 0.1)',
+    
 
   },
 

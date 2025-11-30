@@ -1,5 +1,46 @@
 const express = require('express');
+const admin = require('firebase-admin');
+const { processarWebhookMercadoPago } = require('./webhook-processor');
 const app = express();
+
+// Inicializar Firebase Admin
+// IMPORTANTE: O arquivo serviceAccountKey.json deve estar na raiz do projeto
+// E deve estar no .gitignore para não ser commitado
+// Em produção (Vercel, Railway, etc.), use variáveis de ambiente
+if (!admin.apps.length) {
+  try {
+    // Tentar carregar serviceAccountKey.json (desenvolvimento local)
+    let serviceAccount;
+    try {
+      serviceAccount = require('./serviceAccountKey.json');
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+      console.log('✅ Firebase Admin inicializado com serviceAccountKey.json');
+    } catch (e) {
+      // Se não encontrar o arquivo, tentar com variáveis de ambiente (produção)
+      if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
+        admin.initializeApp({
+          credential: admin.credential.cert({
+            projectId: process.env.FIREBASE_PROJECT_ID || "a3-renascer",
+            privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL
+          })
+        });
+        console.log('✅ Firebase Admin inicializado com variáveis de ambiente');
+      } else {
+        // Fallback: apenas projectId (pode não funcionar para atualizar Firestore)
+        admin.initializeApp({
+          projectId: process.env.FIREBASE_PROJECT_ID || "a3-renascer"
+        });
+        console.log('⚠️ Firebase Admin inicializado apenas com projectId (pode não funcionar para atualizar Firestore)');
+      }
+    }
+  } catch (error) {
+    console.error('❌ Erro ao inicializar Firebase Admin:', error.message);
+    console.error('⚠️ Configure as credenciais do Firebase Admin para processar webhooks');
+  }
+}
 
 // Middleware para parsear JSON
 app.use(express.json());
@@ -67,9 +108,19 @@ app.post('/webhook/mercadopago', async (req, res) => {
     console.log('✅ Notificação recebida e confirmada com sucesso');
     console.log('📋 ID do pagamento:', notificationData.id || 'N/A');
 
-    // AQUI você pode adicionar o processamento assíncrono
-    // Por enquanto, apenas logamos os dados
-    // No próximo passo, vamos adicionar o processamento real
+    // Processar webhook de forma assíncrona (após responder)
+    // Isso garante que o Mercado Pago receba a resposta rapidamente
+    processarWebhookMercadoPago(notificationData)
+      .then(resultado => {
+        if (resultado.sucesso) {
+          console.log('✅ Webhook processado com sucesso:', resultado.mensagem);
+        } else {
+          console.error('❌ Erro ao processar webhook:', resultado.mensagem);
+        }
+      })
+      .catch(error => {
+        console.error('❌ Erro inesperado ao processar webhook:', error);
+      });
 
   } catch (error) {
     console.error('❌ Erro ao processar webhook:', error);
@@ -100,15 +151,21 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Iniciar servidor
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log('\n🚀 ========================================');
-  console.log(`🚀 Servidor webhook rodando na porta ${PORT}`);
-  console.log(`🔗 Endpoint local: http://localhost:${PORT}/webhook/mercadopago`);
-  console.log(`🔗 Health check: http://localhost:${PORT}/health`);
-  console.log('🚀 ========================================\n');
-  console.log('📝 Próximo passo: Expor com localtunnel');
-  console.log(`   Execute: npx localtunnel --port ${PORT}\n`);
-});
+// Exportar app para Vercel (serverless)
+// No Vercel, não usamos app.listen(), apenas exportamos o app
+module.exports = app;
+
+// Para desenvolvimento local, iniciar servidor
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log('\n🚀 ========================================');
+    console.log(`🚀 Servidor webhook rodando na porta ${PORT}`);
+    console.log(`🔗 Endpoint local: http://localhost:${PORT}/webhook/mercadopago`);
+    console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+    console.log('🚀 ========================================\n');
+    console.log('📝 Próximo passo: Expor com localtunnel');
+    console.log(`   Execute: npx localtunnel --port ${PORT}\n`);
+  });
+}
 
