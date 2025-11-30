@@ -119,7 +119,7 @@ async function processarWebhookMercadoPago(notificationData) {
     const paymentData = await verificarStatusPagamento(paymentId);
 
     // Verificar se o pagamento foi aprovado
-    const status = paymentData.status || paymentData.collection_status;
+    const status = paymentData.status || paymentData.collection_status || paymentData.payment_status;
     console.log('📊 Status do pagamento:', status);
 
     if (status !== 'approved' && status !== 'authorized') {
@@ -177,16 +177,29 @@ async function processarWebhookMercadoPago(notificationData) {
 
     // Atualizar assinatura no Firestore
     console.log('🔄 Atualizando assinatura no Firestore...');
-    await atualizarAssinaturaNoFirestore(userId, assinatura, colecao);
-
-    console.log('✅ Assinatura processada com sucesso!');
-    
-    return {
-      sucesso: true,
-      mensagem: 'Assinatura processada com sucesso'
-    };
+    try {
+      await atualizarAssinaturaNoFirestore(userId, assinatura, colecao);
+      console.log('✅ Assinatura processada com sucesso!');
+      
+      return {
+        sucesso: true,
+        mensagem: 'Assinatura processada com sucesso'
+      };
+    } catch (firestoreError) {
+      console.error('❌ Erro ao atualizar Firestore:', firestoreError);
+      console.error('Detalhes do erro:', {
+        message: firestoreError.message,
+        code: firestoreError.code,
+        stack: firestoreError.stack
+      });
+      return {
+        sucesso: false,
+        mensagem: `Erro ao atualizar Firestore: ${firestoreError.message}`
+      };
+    }
   } catch (error) {
     console.error('❌ Erro ao processar webhook:', error);
+    console.error('Stack trace:', error.stack);
     return {
       sucesso: false,
       mensagem: `Erro ao processar webhook: ${error.message}`
