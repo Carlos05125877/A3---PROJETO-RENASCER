@@ -85,7 +85,10 @@ export default function Topo() {
             Blog
           </Text>
         </TouchableOpacity>
+<<<<<<< HEAD
         
+=======
+>>>>>>> 6dd7b27 (Adicao da confirmação de agendamento)
         <TouchableOpacity
           onPress={() => (router.push('/screens/emDesenvolvimento'))}>
           <Text style={styles.textoComoFuncionaBlog}>
