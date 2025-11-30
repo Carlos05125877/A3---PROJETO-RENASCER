@@ -1,10 +1,9 @@
 [build]
-  publish = "web-build"
+  publish = ".expo/web-build"
   command = "npx expo export:web"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  force = true
 
