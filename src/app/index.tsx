@@ -7,8 +7,8 @@ import Topo from '../../components/topo';
 
 export default function Index() {
   const { width } = useWindowDimensions();
-  // considerar dispositivo móvel apenas em native (não em web)
-  const isMobile = Platform.OS !== 'web' && width < 500;
+  // bloqueia apenas em dispositivos móveis reais (não em web resimensionado)
+  const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
 
   if (isMobile) {
     return (

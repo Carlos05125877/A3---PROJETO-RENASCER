@@ -91,33 +91,33 @@ export default function BlogDicas() {
                 </Text>
 
                 <Text style={styles.tituloSecao}>Últimos artigos</Text>
-              <View style={{ flexDirection: "column", gap: 12, alignItems: "flex-start" , width: '64%'}}>
-                <View style={styles.cartaoArtigo}>
-                      <Image source={require("../../../assets/images/depression.png")} style={styles.imagemArtigo} />
-                    <TouchableOpacity onPress={() => (router.push('/screens/blogDepressao'))}>
-                      <Text style={styles.tituloArtigo}>
-                          Depressão: entendendo suas causas, sintomas e caminhos de tratamento
-                      </Text>
-                    </TouchableOpacity>
-                </View>
+                <View style={{ flexDirection: "column", gap: 12, alignItems: "flex-start" , width: '64%'}}>
+                    <View style={styles.cartaoArtigo}>
+                        <Image source={require("../../../assets/images/depression.png")} style={styles.imagemArtigo} />
+                        <TouchableOpacity onPress={() => (router.push('/screens/blogDepressao'))}>
+                        <Text style={styles.tituloArtigo}>
+                            Depressão: entendendo suas causas, sintomas e caminhos de tratamento
+                        </Text>
+                        </TouchableOpacity>
+                    </View>
 
-                <View style={styles.cartaoArtigo}>
-                    <Image source={require("../../../assets/images/stress.png")} style={styles.imagemArtigo} />
-                    <TouchableOpacity onPress={() => (router.push('/screens/blogDepressao'))}>
-                      <Text style={styles.tituloArtigo}>
-                          Estresse: Entenda as causas e como prevenir - Interaja e descubra seu nível de bem-estar
-                      </Text>
-                    </TouchableOpacity>
-                </View>
+                    <View style={styles.cartaoArtigo}>
+                        <Image source={require("../../../assets/images/stress.png")} style={styles.imagemArtigo} />
+                        <TouchableOpacity onPress={() => (router.push('/screens/blogEstresse'))}>
+                        <Text style={styles.tituloArtigo}>
+                            Estresse: Entenda as causas e como prevenir - Interaja e descubra seu nível de bem-estar
+                        </Text>
+                        </TouchableOpacity>
+                    </View>
 
-                <View style={styles.cartaoArtigo}>
-                      <Image source={require("../../../assets/images/anxiety.png")} style={styles.imagemArtigo} />
-                    <TouchableOpacity onPress={() => (router.push('/screens/blogDepressao'))}>
-                      <Text style={styles.tituloArtigo}>
-                          Ansiedade: entendendo suas origens, sintomas e como encontrar o equilíbrio
-                      </Text>
-                    </TouchableOpacity>
-                </View>
+                    <View style={styles.cartaoArtigo}>
+                        <Image source={require("../../../assets/images/anxiety.png")} style={styles.imagemArtigo} />
+                        <TouchableOpacity onPress={() => (router.push('/screens/blogAnsiedade'))}>
+                        <Text style={styles.tituloArtigo}>
+                            Ansiedade: entendendo suas origens, sintomas e como encontrar o equilíbrio
+                        </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 <View style={{ height: 40 }} />
