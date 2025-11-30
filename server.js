@@ -133,6 +133,19 @@ app.post('/webhook/mercadopago', async (req, res) => {
   }
 });
 
+// Rota raiz - Informações do servidor
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    message: 'Webhook Server do Mercado Pago',
+    status: 'online',
+    endpoints: {
+      health: '/health',
+      webhook: '/webhook/mercadopago'
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Endpoint de health check
 app.get('/health', (req, res) => {
   res.status(200).json({ 
