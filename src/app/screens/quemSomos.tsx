@@ -46,26 +46,46 @@ export default function QuemSomos() {
           <Text style={styles.subtitulo}>Equipe</Text>
           <View style={styles.blocoEquipe}>
             <View style={styles.membro}>
-              <View style={styles.fotoPlaceholder} />
               <View style={styles.infoMembro}>
-                <Text style={styles.nomeMembro}>Carla Souza</Text>
-                <Text style={styles.cargoMembro}>Psicóloga (conteúdo e revisão)</Text>
+                <Text style={styles.nomeMembro}>Alex Fernandes</Text>
+                <Text style={styles.cargoMembro}>Estudante Ciência da Computação</Text>
+              </View>
+            </View>
+            <View style={styles.membro}>
+              <View style={styles.infoMembro}>
+                <Text style={styles.nomeMembro}>Carlos Souza</Text>
+                <Text style={styles.cargoMembro}>Estudante Ciência da Computação</Text>
               </View>
             </View>
 
             <View style={styles.membro}>
-              <View style={styles.fotoPlaceholder} />
               <View style={styles.infoMembro}>
-                <Text style={styles.nomeMembro}>Lucas Pereira</Text>
-                <Text style={styles.cargoMembro}>Desenvolvedor (frontend)</Text>
+                <Text style={styles.nomeMembro}>Samira Reis</Text>
+                <Text style={styles.cargoMembro}>Estudante Análise e Desenvolvimento de Sistemas</Text>
               </View>
             </View>
-
             <View style={styles.membro}>
-              <View style={styles.fotoPlaceholder} />
               <View style={styles.infoMembro}>
-                <Text style={styles.nomeMembro}>Mariana Lima</Text>
-                <Text style={styles.cargoMembro}>Design e UX</Text>
+                <Text style={styles.nomeMembro}>Yuri Carvalho</Text>
+                <Text style={styles.cargoMembro}>Estudante Ciência da Computação</Text>
+              </View>
+            </View>
+            <View style={styles.membro}>
+              <View style={styles.infoMembro}>
+                <Text style={styles.nomeMembro}>Ana Julia Garcia</Text>
+                <Text style={styles.cargoMembro}>Estudante Administração</Text>
+              </View>
+            </View>
+            <View style={styles.membro}>
+              <View style={styles.infoMembro}>
+                <Text style={styles.nomeMembro}>Vânia Marques da Cruz</Text>
+                <Text style={styles.cargoMembro}>Estudante Ciências Contábeis</Text>
+              </View>
+            </View>
+            <View style={styles.membro}>
+              <View style={styles.infoMembro}>
+                <Text style={styles.nomeMembro}>Késia Figueiredo</Text>
+                <Text style={styles.cargoMembro}>Estudante Ciências Contábeis</Text>
               </View>
             </View>
           </View>
