@@ -8,22 +8,12 @@ const router = useRouter();
 
 export default function BlogDicas() {
     return (
-<<<<<<< HEAD
-        <View style={{flex: 1}}>
-        <View style={{  zIndex: 1 }}>
-          <Topo />
-        </View>
-        <BloqueioAssinatura>
-          <ScrollView >
-            <View style={styles.containerPrincipal}>
-=======
       <View style={{flex: 1}}>
         <View style={{  zIndex: 1 }}>
           <Topo />
         </View>
         <ScrollView >
           <View style={styles.containerPrincipal}>
->>>>>>> 6dd7b27 (Adicao da confirmação de agendamento)
             <View>
                 <Text style={styles.titulo}>Ações Imediatas</Text>
               </View>
@@ -133,15 +123,8 @@ export default function BlogDicas() {
                 <View style={{ height: 40 }} />
               </View>
             </View>
-<<<<<<< HEAD
-          </ScrollView>
-        </BloqueioAssinatura>
-      </View>
-=======
         </ScrollView>
       </View>
-      
->>>>>>> 6dd7b27 (Adicao da confirmação de agendamento)
     );
 }
 
