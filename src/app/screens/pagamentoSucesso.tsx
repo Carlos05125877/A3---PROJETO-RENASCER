@@ -168,18 +168,15 @@ export default function PagamentoSucesso() {
               : 'Seu pagamento foi processado, mas o status não é aprovado. Entre em contato com o suporte.'
           );
           
-          // Se foi aprovado, redirecionar automaticamente para o blog
-          // IMPORTANTE: Só redireciona quando recebeu confirmação REAL do Mercado Pago
+          // Se foi aprovado, mostrar mensagem de sucesso (sem redirecionamento automático)
+          // IMPORTANTE: Usuário pode escolher quando navegar
           if (statusFinal === 'approved' && hasRealPaymentParams) {
-            const tempoRedirecionamento = verificado ? 2000 : 5000;
-            console.log(`🔄 [AUTO] Pagamento confirmado pelo Mercado Pago! Redirecionando para o blog em ${tempoRedirecionamento/1000} segundos...`);
-            
-            setTimeout(() => {
-              console.log('🔄 [AUTO] Redirecionando automaticamente para o blog...');
-              router.push('/screens/blogDicas');
-            }, tempoRedirecionamento);
+            console.log('✅ Pagamento confirmado pelo Mercado Pago!');
+            setSucesso(true);
+            setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
+            setProcessando(false);
           } else if (statusFinal === 'approved' && !hasRealPaymentParams) {
-            console.warn('⚠️ Status aprovado mas sem parâmetros do Mercado Pago - não redirecionando');
+            console.warn('⚠️ Status aprovado mas sem parâmetros do Mercado Pago');
             setMensagem('Pagamento aprovado, mas aguardando confirmação completa do Mercado Pago...');
           }
         } else if (finalUserId && !isWaiting && !hasRealPaymentParams) {
@@ -191,12 +188,8 @@ export default function PagamentoSucesso() {
             if (assinante) {
               console.log('✅ Assinatura já ativada no Firestore! Webhook processou.');
               setSucesso(true);
-              setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso! Você será redirecionado para o blog em instantes...');
+              setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
               setProcessando(false);
-              
-              setTimeout(() => {
-                router.push('/screens/blogDicas');
-              }, 2000);
               return;
             }
           } catch (error) {
@@ -216,12 +209,8 @@ export default function PagamentoSucesso() {
               if (assinante) {
                 console.log('✅ Assinatura encontrada no Firestore! Webhook processou.');
                 setSucesso(true);
-                setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso! Você será redirecionado para o blog em instantes...');
+                setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
                 setProcessando(false);
-                
-                setTimeout(() => {
-                  router.push('/screens/blogDicas');
-                }, 2000);
                 return;
               }
             } catch (error) {
@@ -272,12 +261,8 @@ export default function PagamentoSucesso() {
             if (assinante) {
               console.log('✅ Assinatura já ativada no Firestore!');
               setSucesso(true);
-              setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso! Você será redirecionado para o blog em instantes...');
+              setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
               setProcessando(false);
-              
-              setTimeout(() => {
-                router.push('/screens/blogDicas');
-              }, 2000);
               return;
             }
           } catch (error) {
@@ -301,7 +286,6 @@ export default function PagamentoSucesso() {
                 setSucesso(true);
                 setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
                 setProcessando(false);
-                setTimeout(() => router.push('/screens/blogDicas'), 2000);
                 return;
               }
             } catch (error) {
@@ -444,12 +428,8 @@ export default function PagamentoSucesso() {
                 clearTimeout(initTimer);
                 
                 setSucesso(true);
-                setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso! Você será redirecionado para o blog em instantes...');
+                setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
                 setProcessando(false);
-                
-                setTimeout(() => {
-                  router.push('/screens/blogDicas');
-                }, 2000);
                 return;
               }
             } catch (error) {
@@ -534,13 +514,8 @@ export default function PagamentoSucesso() {
                   console.log('✅ Assinatura processada com sucesso!');
                   
                   setSucesso(true);
-                  setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso! Você será redirecionado para o blog em instantes...');
+                  setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
                   setProcessando(false);
-                  
-                  // Redirecionar para o blog após alguns segundos
-                  setTimeout(() => {
-                    router.push('/screens/blogDicas');
-                  }, 3000);
                 } catch (error: any) {
                   console.error('Erro ao processar assinatura:', error);
                   setMensagem(`Erro ao processar assinatura: ${error.message}`);
