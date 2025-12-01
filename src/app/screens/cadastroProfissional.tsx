@@ -289,7 +289,7 @@ export default function CadastroProfissional() {
                         }}>
                         <Text
                             style={styles.textoBotaoCadastrar}>
-                            Confirmar e Pagar (R$ 39,00)
+                            Confirmar
                         </Text>
                     </TouchableOpacity>
                 </View>

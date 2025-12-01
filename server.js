@@ -95,49 +95,32 @@ app.post('/webhook/mercadopago', async (req, res) => {
 
     console.log('📋 Dados processados:', JSON.stringify(notificationData, null, 2));
 
+    // IMPORTANTE: Responder imediatamente com 200 para evitar timeout
+    // O Mercado Pago espera resposta em até 22 segundos
+    res.status(200).json({ 
+      status: 'received',
+      message: 'Notificação recebida com sucesso',
+      timestamp: new Date().toISOString(),
+      paymentId: notificationData.id || 'N/A'
+    });
+
     // Log de confirmação
-    console.log('✅ Notificação recebida');
+    console.log('✅ Notificação recebida e confirmada com sucesso');
     console.log('📋 ID do pagamento:', notificationData.id || 'N/A');
 
-    // IMPORTANTE: No Vercel, funções serverless podem ser encerradas após a resposta
-    // Para garantir que os logs apareçam, vamos processar ANTES de responder
-    // O Mercado Pago espera resposta em até 22 segundos, então temos tempo
-    console.log('🔄 Iniciando processamento do webhook (antes de responder)...');
-    
-    try {
-      const resultado = await processarWebhookMercadoPago(notificationData);
-      
-      console.log('📋 ===== RESULTADO DO PROCESSAMENTO DO WEBHOOK =====');
-      if (resultado.sucesso) {
-        console.log('✅ Webhook processado com sucesso:', resultado.mensagem);
-      } else {
-        console.error('❌ Erro ao processar webhook:', resultado.mensagem);
-        console.error('📋 Resultado completo:', JSON.stringify(resultado, null, 2));
-      }
-      console.log('📋 =================================================');
-      
-      // Agora responder com o resultado
-      res.status(200).json({ 
-        status: resultado.sucesso ? 'processed' : 'error',
-        message: resultado.mensagem,
-        timestamp: new Date().toISOString(),
-        paymentId: notificationData.id || 'N/A'
+    // Processar webhook de forma assíncrona (após responder)
+    // Isso garante que o Mercado Pago receba a resposta rapidamente
+    processarWebhookMercadoPago(notificationData)
+      .then(resultado => {
+        if (resultado.sucesso) {
+          console.log('✅ Webhook processado com sucesso:', resultado.mensagem);
+        } else {
+          console.error('❌ Erro ao processar webhook:', resultado.mensagem);
+        }
+      })
+      .catch(error => {
+        console.error('❌ Erro inesperado ao processar webhook:', error);
       });
-    } catch (error) {
-      console.error('❌ ===== ERRO INESPERADO AO PROCESSAR WEBHOOK =====');
-      console.error('❌ Error message:', error.message);
-      console.error('❌ Error stack:', error.stack);
-      console.error('❌ Error completo:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
-      console.error('❌ ===============================================');
-      
-      // Responder mesmo em caso de erro
-      res.status(200).json({ 
-        status: 'error',
-        message: error.message,
-        timestamp: new Date().toISOString(),
-        paymentId: notificationData.id || 'N/A'
-      });
-    }
 
   } catch (error) {
     console.error('❌ Erro ao processar webhook:', error);
@@ -148,19 +131,6 @@ app.post('/webhook/mercadopago', async (req, res) => {
       timestamp: new Date().toISOString()
     });
   }
-});
-
-// Rota raiz - Informações do servidor
-app.get('/', (req, res) => {
-  res.status(200).json({ 
-    message: 'Webhook Server do Mercado Pago',
-    status: 'online',
-    endpoints: {
-      health: '/health',
-      webhook: '/webhook/mercadopago'
-    },
-    timestamp: new Date().toISOString()
-  });
 });
 
 // Endpoint de health check

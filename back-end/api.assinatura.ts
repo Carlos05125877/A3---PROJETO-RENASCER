@@ -33,10 +33,10 @@ export const verificarAssinatura = async (userId: string): Promise<boolean> => {
         console.log('status:', status);
         
         if (isAssinante && status === 'approved') {
-          // Verificar se a assinatura não expirou
-          if (dados.assinatura.dataFim) {
-            const dataFim = new Date(dados.assinatura.dataFim);
-            const hoje = new Date();
+        // Verificar se a assinatura não expirou
+        if (dados.assinatura.dataFim) {
+          const dataFim = new Date(dados.assinatura.dataFim);
+          const hoje = new Date();
             const naoExpirada = dataFim >= hoje;
             console.log('Data fim:', dataFim.toISOString());
             console.log('Data hoje:', hoje.toISOString());
@@ -51,7 +51,7 @@ export const verificarAssinatura = async (userId: string): Promise<boolean> => {
           } else {
             console.log('✅ Assinatura válida encontrada em users (sem dataFim)');
             return true;
-          }
+      }
         } else {
           console.log('❌ Assinatura não está ativa:', { isAssinante, status });
         }
@@ -77,9 +77,9 @@ export const verificarAssinatura = async (userId: string): Promise<boolean> => {
         console.log('status:', status);
         
         if (isAssinante && status === 'approved') {
-          if (dados.assinatura.dataFim) {
-            const dataFim = new Date(dados.assinatura.dataFim);
-            const hoje = new Date();
+        if (dados.assinatura.dataFim) {
+          const dataFim = new Date(dados.assinatura.dataFim);
+          const hoje = new Date();
             const naoExpirada = dataFim >= hoje;
             console.log('Data fim:', dataFim.toISOString());
             console.log('Data hoje:', hoje.toISOString());
@@ -94,7 +94,7 @@ export const verificarAssinatura = async (userId: string): Promise<boolean> => {
           } else {
             console.log('✅ Assinatura válida encontrada em profissionais (sem dataFim)');
             return true;
-          }
+      }
         } else {
           console.log('❌ Assinatura não está ativa:', { isAssinante, status });
         }
@@ -136,7 +136,7 @@ export const atualizarAssinatura = async (
       console.warn('⚠️ Documento não existe na coleção', colecao, 'criando...');
       // Se não existe, criar o documento com a assinatura
       await setDoc(userRef, {
-        assinatura: {
+      assinatura: {
           ...assinatura,
           atualizadoEm: new Date().toISOString(),
           criadoEm: new Date().toISOString()
@@ -157,7 +157,7 @@ export const atualizarAssinatura = async (
       
       await updateDoc(userRef, {
         assinatura: assinaturaCompleta
-      });
+    });
       
       console.log('Assinatura mesclada:', JSON.stringify(assinaturaCompleta, null, 2));
     }
@@ -386,7 +386,7 @@ export const criarPreferenciaPagamento = async (
 
     const preferenceId = responseData.id;
     const externalReference = preferenceData.external_reference;
-    
+
     console.log('✅ Preferência criada com sucesso!', {
       preference_id: preferenceId,
       external_reference: externalReference,
