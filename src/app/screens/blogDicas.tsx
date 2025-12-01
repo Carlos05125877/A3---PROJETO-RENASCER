@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-import BloqueioAssinatura from "@/components/bloqueioAssinatura";
-=======
->>>>>>> 6dd7b27 (Adicao da confirmação de agendamento)
 import Topo from "@/components/topo";
 import { useRouter } from "expo-router";
 import React from "react";
