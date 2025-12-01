@@ -340,11 +340,54 @@ export default function PagamentoSucesso() {
                                     params.get('collection_id') || 
                                     params.get('collection_status');
       
+      // FALLBACK: Buscar external_reference e preference_id do localStorage se não encontrou na URL
+      let finalExternalReference = externalReference;
+      let finalPreferenceId = preferenceId;
+      
+      if (!finalExternalReference && typeof window !== 'undefined' && window.localStorage) {
+        const stored = window.localStorage.getItem('last_external_reference');
+        if (stored) {
+          finalExternalReference = stored;
+          console.log('📦 External Reference obtido do localStorage (fallback):', finalExternalReference);
+        }
+      }
+      
+      if (!finalPreferenceId && typeof window !== 'undefined' && window.localStorage) {
+        const stored = window.localStorage.getItem('last_preference_id');
+        if (stored) {
+          finalPreferenceId = stored;
+          console.log('📦 Preference ID obtido do localStorage (fallback):', finalPreferenceId);
+        }
+      }
+      
+      console.log('=== DIAGNÓSTICO DE PARÂMETROS ===');
+      console.log('URL completa:', typeof window !== 'undefined' ? window.location.href : 'N/A');
+      console.log('Query string:', typeof window !== 'undefined' ? window.location.search : 'N/A');
+      console.log('Parâmetros da URL:', {
+        payment_id: params.get('payment_id') || 'NÃO ENCONTRADO',
+        collection_id: params.get('collection_id') || 'NÃO ENCONTRADO',
+        preference_id: params.get('preference_id') || 'NÃO ENCONTRADO',
+        external_reference: params.get('external_reference') || 'NÃO ENCONTRADO',
+        collection_status: params.get('collection_status') || 'NÃO ENCONTRADO',
+        status: params.get('status') || 'NÃO ENCONTRADO',
+        user_id: params.get('user_id') || 'NÃO ENCONTRADO'
+      });
+      console.log('Dados finais que serão usados:', {
+        userId,
+        externalReference: finalExternalReference || 'NÃO DISPONÍVEL',
+        preferenceId: finalPreferenceId || 'NÃO DISPONÍVEL',
+        tipo
+      });
+      
       // Verificar se deve iniciar verificação periódica
       // IMPORTANTE: Verificar se status é waiting E se temos userId E (processando OU não temos parâmetros)
       if (status === 'waiting' && userId && !hasMercadoPagoParams) {
         console.log('⏳ Iniciando verificação periódica via API do Mercado Pago...');
-        console.log('Dados para verificação:', { externalReference, preferenceId, userId });
+        console.log('Dados para verificação:', { 
+          externalReference: finalExternalReference, 
+          preferenceId: finalPreferenceId, 
+          userId 
+        });
         
         // Verificar IMEDIATAMENTE no Firestore primeiro (webhook pode ter processado)
         try {
@@ -416,22 +459,54 @@ export default function PagamentoSucesso() {
             // FALLBACK 2: Buscar via API usando external_reference ou preference_id
             let paymentData = null;
             
-            if (externalReference) {
-              console.log(`🔍 [Tentativa ${tentativas}] Buscando pagamento via API usando external_reference: ${externalReference}`);
+            console.log(`\n🔍 === BUSCA DE PAGAMENTO - TENTATIVA ${tentativas}/${maxTentativas} ===`);
+            
+            if (finalExternalReference) {
+              console.log(`[1/2] Buscando pagamento via API usando external_reference: ${finalExternalReference}`);
               try {
-                paymentData = await buscarPagamentoPorReferencia(externalReference);
+                paymentData = await buscarPagamentoPorReferencia(finalExternalReference);
+                if (paymentData) {
+                  console.log('✅ Pagamento encontrado via external_reference!', {
+                    id: paymentData.id,
+                    status: paymentData.status,
+                    external_reference: paymentData.external_reference,
+                    date_created: paymentData.date_created
+                  });
+                } else {
+                  console.log('⏳ Nenhum pagamento encontrado com este external_reference ainda');
+                }
               } catch (error: any) {
-                console.warn(`Erro ao buscar por external_reference (tentativa ${tentativas}):`, error.message);
+                console.warn(`⚠️ Erro ao buscar por external_reference (tentativa ${tentativas}):`, error.message);
+                console.error('Detalhes do erro:', error);
               }
+            } else {
+              console.log('⚠️ External Reference não disponível para busca');
             }
             
-            if (!paymentData && preferenceId) {
-              console.log(`🔍 [Tentativa ${tentativas}] Buscando pagamento via API usando preference_id: ${preferenceId}`);
+            if (!paymentData && finalPreferenceId) {
+              console.log(`[2/2] Buscando pagamento via API usando preference_id: ${finalPreferenceId}`);
               try {
-                paymentData = await buscarPagamentoPorPreferencia(preferenceId);
+                paymentData = await buscarPagamentoPorPreferencia(finalPreferenceId);
+                if (paymentData) {
+                  console.log('✅ Pagamento encontrado via preference_id!', {
+                    id: paymentData.id,
+                    status: paymentData.status,
+                    preference_id: paymentData.preference_id,
+                    date_created: paymentData.date_created
+                  });
+                } else {
+                  console.log('⏳ Nenhum pagamento encontrado com este preference_id ainda');
+                }
               } catch (error: any) {
-                console.warn(`Erro ao buscar por preference_id (tentativa ${tentativas}):`, error.message);
+                console.warn(`⚠️ Erro ao buscar por preference_id (tentativa ${tentativas}):`, error.message);
+                console.error('Detalhes do erro:', error);
               }
+            } else if (!finalPreferenceId) {
+              console.log('⚠️ Preference ID não disponível para busca');
+            }
+            
+            if (!paymentData) {
+              console.log(`⏳ Nenhum pagamento encontrado ainda (tentativa ${tentativas}/${maxTentativas})`);
             }
             
             // Se encontrou um pagamento aprovado, processar
@@ -539,7 +614,7 @@ export default function PagamentoSucesso() {
   }
 
   return (
-    <View style={styles.container}>
+    <View >
       <Topo />
       <View style={styles.content}>
         {sucesso ? (
