@@ -251,10 +251,6 @@ export default function CadastroProfissional() {
                                         }
                                     }
                                     
-                                    // Redirecionar para tela de pagamentoSucesso com status=waiting
-                                    // A tela verificará automaticamente quando o pagamento for confirmado
-                                    const pagamentoSucessoUrl = `/screens/pagamentoSucesso?user_id=${encodeURIComponent(user.uid)}&tipo=profissional&status=waiting&preference_id=${encodeURIComponent(preferenceId)}&external_reference=${encodeURIComponent(externalReference)}`;
-                                    
                                     // Para web, abrir checkout em nova aba e redirecionar para pagamentoSucesso
                                     if (typeof window !== 'undefined') {
                                         console.log('🌐 Ambiente web detectado - abrindo checkout em nova aba');
@@ -270,7 +266,17 @@ export default function CadastroProfissional() {
                                             console.log('✅ Nova aba aberta com sucesso!');
                                             
                                             // Redirecionar para tela de pagamentoSucesso na aba atual
-                                            router.push(pagamentoSucessoUrl);
+                                            // A tela verificará automaticamente quando o pagamento for confirmado
+                                            router.push({
+                                                pathname: '/screens/pagamentoSucesso',
+                                                params: {
+                                                    user_id: user.uid,
+                                                    tipo: 'profissional',
+                                                    status: 'waiting',
+                                                    preference_id: preferenceId,
+                                                    external_reference: externalReference
+                                                }
+                                            } as any);
                                         } else {
                                             // Se não conseguiu abrir nova aba, abrir na mesma aba
                                             console.warn('⚠️ Não foi possível abrir nova aba, redirecionando na mesma aba');
@@ -283,7 +289,16 @@ export default function CadastroProfissional() {
                                             if (canOpen) {
                                                 await Linking.openURL(checkoutUrl);
                                                 // Redirecionar para pagamentoSucesso
-                                                router.push(pagamentoSucessoUrl);
+                                                router.push({
+                                                    pathname: '/screens/pagamentoSucesso',
+                                                    params: {
+                                                        user_id: user.uid,
+                                                        tipo: 'profissional',
+                                                        status: 'waiting',
+                                                        preference_id: preferenceId,
+                                                        external_reference: externalReference
+                                                    }
+                                                } as any);
                                             } else {
                                                 Alert.alert('Erro', 'Não foi possível abrir o link de pagamento');
                                             }
