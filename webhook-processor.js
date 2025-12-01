@@ -17,6 +17,14 @@ async function verificarStatusPagamento(paymentId) {
   try {
     console.log('🔍 Buscando detalhes do pagamento:', paymentId);
     
+    // Verificar se é um ID de teste do Mercado Pago
+    if (paymentId === '123456' || paymentId === '123456789') {
+      console.warn('⚠️ ID de teste do Mercado Pago detectado:', paymentId);
+      console.warn('⚠️ Notificações de teste não podem ser processadas completamente');
+      console.warn('⚠️ O ID é fictício e não existe na API do Mercado Pago');
+      throw new Error('ID de teste do Mercado Pago - não pode ser processado');
+    }
+    
     const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
       method: 'GET',
       headers: {
@@ -27,19 +35,35 @@ async function verificarStatusPagamento(paymentId) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(`Erro ao verificar status: ${errorData.message || response.statusText}`);
+      const statusText = response.statusText;
+      const status = response.status;
+      
+      console.error('❌ Erro na API do Mercado Pago:');
+      console.error('📋 Status:', status);
+      console.error('📋 Status Text:', statusText);
+      console.error('📋 Error Data:', JSON.stringify(errorData, null, 2));
+      
+      // Se for 404, pode ser um ID de teste
+      if (status === 404) {
+        console.warn('⚠️ Pagamento não encontrado (404) - pode ser um ID de teste');
+      }
+      
+      throw new Error(`Erro ao verificar status (${status}): ${errorData.message || statusText}`);
     }
 
     const paymentData = await response.json();
     console.log('✅ Detalhes do pagamento obtidos:', {
       id: paymentData.id,
       status: paymentData.status,
-      external_reference: paymentData.external_reference
+      external_reference: paymentData.external_reference,
+      date_created: paymentData.date_created
     });
     
     return paymentData;
   } catch (error) {
     console.error('❌ Erro ao buscar detalhes do pagamento:', error);
+    console.error('📋 Payment ID:', paymentId);
+    console.error('📋 Error message:', error.message);
     throw error;
   }
 }
@@ -144,7 +168,30 @@ async function processarWebhookMercadoPago(notificationData) {
 
     // Buscar detalhes do pagamento via API do Mercado Pago
     console.log('🔍 Buscando detalhes do pagamento na API do Mercado Pago...');
-    const paymentData = await verificarStatusPagamento(paymentId);
+    let paymentData;
+    
+    try {
+      paymentData = await verificarStatusPagamento(paymentId);
+    } catch (error) {
+      console.error('❌ Erro ao buscar detalhes do pagamento:', error.message);
+      
+      // Se for um erro de ID de teste, retornar sucesso mas avisar
+      if (error.message.includes('ID de teste') || error.message.includes('404')) {
+        console.warn('⚠️ Esta é uma notificação de teste do Mercado Pago');
+        console.warn('⚠️ Notificações de teste não podem ser processadas porque o ID é fictício');
+        console.warn('⚠️ Para testar completamente, faça um pagamento real de teste');
+        return {
+          sucesso: true,
+          mensagem: 'Notificação de teste recebida (não processada - ID fictício)'
+        };
+      }
+      
+      // Para outros erros, retornar falha
+      return {
+        sucesso: false,
+        mensagem: `Erro ao buscar detalhes do pagamento: ${error.message}`
+      };
+    }
 
     // Verificar se o pagamento foi aprovado
     const status = paymentData.status || paymentData.collection_status || paymentData.payment_status;
