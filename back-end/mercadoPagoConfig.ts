@@ -55,6 +55,6 @@ export const MERCADO_PAGO_CONFIG = {
   // URL do webhook para receber notificações do Mercado Pago
   // O webhook será chamado automaticamente quando houver atualizações no pagamento
   webhookUrl: process.env.REACT_APP_MERCADO_PAGO_WEBHOOK_URL || 
-              'https://angry-dryers-show.loca.lt/webhook/mercadopago'
+              'https://web-production-c0585.up.railway.app/webhook/mercadopago'
 };
 
