@@ -110,18 +110,24 @@ app.post('/webhook/mercadopago', async (req, res) => {
 
     // Processar webhook de forma assíncrona (após responder)
     // Isso garante que o Mercado Pago receba a resposta rapidamente
+    console.log('🔄 Iniciando processamento assíncrono do webhook...');
     processarWebhookMercadoPago(notificationData)
       .then(resultado => {
+        console.log('📋 ===== RESULTADO DO PROCESSAMENTO DO WEBHOOK =====');
         if (resultado.sucesso) {
           console.log('✅ Webhook processado com sucesso:', resultado.mensagem);
         } else {
           console.error('❌ Erro ao processar webhook:', resultado.mensagem);
           console.error('📋 Resultado completo:', JSON.stringify(resultado, null, 2));
         }
+        console.log('📋 =================================================');
       })
       .catch(error => {
-        console.error('❌ Erro inesperado ao processar webhook:', error);
-        console.error('📋 Stack trace:', error.stack);
+        console.error('❌ ===== ERRO INESPERADO AO PROCESSAR WEBHOOK =====');
+        console.error('❌ Error message:', error.message);
+        console.error('❌ Error stack:', error.stack);
+        console.error('❌ Error completo:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+        console.error('❌ ===============================================');
       });
 
   } catch (error) {

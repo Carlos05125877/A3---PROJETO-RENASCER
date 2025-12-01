@@ -172,14 +172,21 @@ async function processarWebhookMercadoPago(notificationData) {
     
     try {
       paymentData = await verificarStatusPagamento(paymentId);
+      console.log('✅ Busca de detalhes do pagamento concluída com sucesso');
     } catch (error) {
-      console.error('❌ Erro ao buscar detalhes do pagamento:', error.message);
+      console.error('❌ ===== ERRO AO BUSCAR DETALHES DO PAGAMENTO =====');
+      console.error('📋 Payment ID:', paymentId);
+      console.error('📋 Error message:', error.message);
+      console.error('📋 Error stack:', error.stack);
+      console.error('📋 Error completo:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
       
       // Se for um erro de ID de teste, retornar sucesso mas avisar
       if (error.message.includes('ID de teste') || error.message.includes('404')) {
+        console.warn('⚠️ ===== NOTIFICAÇÃO DE TESTE DETECTADA =====');
         console.warn('⚠️ Esta é uma notificação de teste do Mercado Pago');
         console.warn('⚠️ Notificações de teste não podem ser processadas porque o ID é fictício');
         console.warn('⚠️ Para testar completamente, faça um pagamento real de teste');
+        console.warn('⚠️ ============================================');
         return {
           sucesso: true,
           mensagem: 'Notificação de teste recebida (não processada - ID fictício)'
@@ -187,6 +194,7 @@ async function processarWebhookMercadoPago(notificationData) {
       }
       
       // Para outros erros, retornar falha
+      console.error('❌ ===== ERRO NÃO É DE TESTE - RETORNANDO FALHA =====');
       return {
         sucesso: false,
         mensagem: `Erro ao buscar detalhes do pagamento: ${error.message}`
