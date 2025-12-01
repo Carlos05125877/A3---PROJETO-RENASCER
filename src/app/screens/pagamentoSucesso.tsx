@@ -161,8 +161,8 @@ export default function PagamentoSucesso() {
           setMensagem(
             statusFinal === 'approved'
               ? verificado
-                ? 'Sua assinatura foi ativada com sucesso! Você será redirecionado automaticamente para o blog em instantes...'
-                : 'Pagamento aprovado! Processando sua assinatura. Você será redirecionado automaticamente em alguns segundos...'
+                ? 'Sua assinatura foi ativada com sucesso!'
+                : 'Pagamento aprovado! Processando sua assinatura...'
               : statusFinal === 'pending'
               ? 'Seu pagamento está pendente. Você receberá um e-mail quando for aprovado.'
               : 'Seu pagamento foi processado, mas o status não é aprovado. Entre em contato com o suporte.'
@@ -598,9 +598,6 @@ export default function PagamentoSucesso() {
             <Text style={styles.titulo}>Pagamento Aprovado!</Text>
             <Text style={styles.descricao}>
               {mensagem || 'Sua assinatura foi ativada com sucesso. Agora você tem acesso completo ao blog e todos os conteúdos exclusivos.'}
-            </Text>
-            <Text style={styles.textoRedirecionamento}>
-              Você será redirecionado automaticamente para o blog em instantes...
             </Text>
             <TouchableOpacity
               style={styles.botao}
