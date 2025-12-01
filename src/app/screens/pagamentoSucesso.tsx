@@ -589,7 +589,7 @@ export default function PagamentoSucesso() {
   }
 
   return (
-    <View >
+    <View style={styles.container}>
       <Topo />
       <View style={styles.content}>
         {sucesso ? (
