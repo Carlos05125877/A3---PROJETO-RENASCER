@@ -70,29 +70,21 @@ app.use((req, res, next) => {
 
 // Endpoint de teste (GET) - Para verificar se está funcionando
 app.get('/webhook/mercadopago', (req, res) => {
-  console.log('✅ ===== ENDPOINT DE TESTE ACESSADO VIA GET =====');
-  console.log('📋 Timestamp:', new Date().toISOString());
-  console.log('📋 Query params:', JSON.stringify(req.query, null, 2));
-  console.log('✅ ===============================================');
+  console.log('✅ Endpoint de teste acessado via GET');
   res.status(200).json({ 
     message: 'Webhook endpoint está ativo e funcionando!',
     timestamp: new Date().toISOString(),
-    method: 'GET',
-    logs: 'Verifique os logs da função server.js no Vercel para ver esta mensagem'
+    method: 'GET'
   });
 });
 
 // Endpoint do webhook (POST) - Recebe notificações do Mercado Pago
 app.post('/webhook/mercadopago', async (req, res) => {
   try {
-    console.log('\n');
-    console.log('🔔 ============================================');
-    console.log('🔔 === WEBHOOK MERCADO PAGO RECEBIDO ===');
-    console.log('🔔 ============================================');
-    console.log('📋 Timestamp:', new Date().toISOString());
-    console.log('📋 Headers:', JSON.stringify(req.headers, null, 2));
-    console.log('📋 Query:', JSON.stringify(req.query, null, 2));
-    console.log('📋 Body:', JSON.stringify(req.body, null, 2));
+    console.log('\n🔔 === WEBHOOK MERCADO PAGO RECEBIDO ===');
+    console.log('Headers:', JSON.stringify(req.headers, null, 2));
+    console.log('Query:', req.query);
+    console.log('Body:', JSON.stringify(req.body, null, 2));
 
     // O Mercado Pago pode enviar dados no body ou na query string
     const notificationData = {
@@ -103,40 +95,49 @@ app.post('/webhook/mercadopago', async (req, res) => {
 
     console.log('📋 Dados processados:', JSON.stringify(notificationData, null, 2));
 
-    // IMPORTANTE: Responder imediatamente com 200 para evitar timeout
-    // O Mercado Pago espera resposta em até 22 segundos
-    res.status(200).json({ 
-      status: 'received',
-      message: 'Notificação recebida com sucesso',
-      timestamp: new Date().toISOString(),
-      paymentId: notificationData.id || 'N/A'
-    });
-
     // Log de confirmação
-    console.log('✅ Notificação recebida e confirmada com sucesso');
+    console.log('✅ Notificação recebida');
     console.log('📋 ID do pagamento:', notificationData.id || 'N/A');
 
-    // Processar webhook de forma assíncrona (após responder)
-    // Isso garante que o Mercado Pago receba a resposta rapidamente
-    console.log('🔄 Iniciando processamento assíncrono do webhook...');
-    processarWebhookMercadoPago(notificationData)
-      .then(resultado => {
-        console.log('📋 ===== RESULTADO DO PROCESSAMENTO DO WEBHOOK =====');
-        if (resultado.sucesso) {
-          console.log('✅ Webhook processado com sucesso:', resultado.mensagem);
-        } else {
-          console.error('❌ Erro ao processar webhook:', resultado.mensagem);
-          console.error('📋 Resultado completo:', JSON.stringify(resultado, null, 2));
-        }
-        console.log('📋 =================================================');
-      })
-      .catch(error => {
-        console.error('❌ ===== ERRO INESPERADO AO PROCESSAR WEBHOOK =====');
-        console.error('❌ Error message:', error.message);
-        console.error('❌ Error stack:', error.stack);
-        console.error('❌ Error completo:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
-        console.error('❌ ===============================================');
+    // IMPORTANTE: No Vercel, funções serverless podem ser encerradas após a resposta
+    // Para garantir que os logs apareçam, vamos processar ANTES de responder
+    // O Mercado Pago espera resposta em até 22 segundos, então temos tempo
+    console.log('🔄 Iniciando processamento do webhook (antes de responder)...');
+    
+    try {
+      const resultado = await processarWebhookMercadoPago(notificationData);
+      
+      console.log('📋 ===== RESULTADO DO PROCESSAMENTO DO WEBHOOK =====');
+      if (resultado.sucesso) {
+        console.log('✅ Webhook processado com sucesso:', resultado.mensagem);
+      } else {
+        console.error('❌ Erro ao processar webhook:', resultado.mensagem);
+        console.error('📋 Resultado completo:', JSON.stringify(resultado, null, 2));
+      }
+      console.log('📋 =================================================');
+      
+      // Agora responder com o resultado
+      res.status(200).json({ 
+        status: resultado.sucesso ? 'processed' : 'error',
+        message: resultado.mensagem,
+        timestamp: new Date().toISOString(),
+        paymentId: notificationData.id || 'N/A'
       });
+    } catch (error) {
+      console.error('❌ ===== ERRO INESPERADO AO PROCESSAR WEBHOOK =====');
+      console.error('❌ Error message:', error.message);
+      console.error('❌ Error stack:', error.stack);
+      console.error('❌ Error completo:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      console.error('❌ ===============================================');
+      
+      // Responder mesmo em caso de erro
+      res.status(200).json({ 
+        status: 'error',
+        message: error.message,
+        timestamp: new Date().toISOString(),
+        paymentId: notificationData.id || 'N/A'
+      });
+    }
 
   } catch (error) {
     console.error('❌ Erro ao processar webhook:', error);
