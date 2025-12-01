@@ -70,21 +70,29 @@ app.use((req, res, next) => {
 
 // Endpoint de teste (GET) - Para verificar se está funcionando
 app.get('/webhook/mercadopago', (req, res) => {
-  console.log('✅ Endpoint de teste acessado via GET');
+  console.log('✅ ===== ENDPOINT DE TESTE ACESSADO VIA GET =====');
+  console.log('📋 Timestamp:', new Date().toISOString());
+  console.log('📋 Query params:', JSON.stringify(req.query, null, 2));
+  console.log('✅ ===============================================');
   res.status(200).json({ 
     message: 'Webhook endpoint está ativo e funcionando!',
     timestamp: new Date().toISOString(),
-    method: 'GET'
+    method: 'GET',
+    logs: 'Verifique os logs da função server.js no Vercel para ver esta mensagem'
   });
 });
 
 // Endpoint do webhook (POST) - Recebe notificações do Mercado Pago
 app.post('/webhook/mercadopago', async (req, res) => {
   try {
-    console.log('\n🔔 === WEBHOOK MERCADO PAGO RECEBIDO ===');
-    console.log('Headers:', JSON.stringify(req.headers, null, 2));
-    console.log('Query:', req.query);
-    console.log('Body:', JSON.stringify(req.body, null, 2));
+    console.log('\n');
+    console.log('🔔 ============================================');
+    console.log('🔔 === WEBHOOK MERCADO PAGO RECEBIDO ===');
+    console.log('🔔 ============================================');
+    console.log('📋 Timestamp:', new Date().toISOString());
+    console.log('📋 Headers:', JSON.stringify(req.headers, null, 2));
+    console.log('📋 Query:', JSON.stringify(req.query, null, 2));
+    console.log('📋 Body:', JSON.stringify(req.body, null, 2));
 
     // O Mercado Pago pode enviar dados no body ou na query string
     const notificationData = {
