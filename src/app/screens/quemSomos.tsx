@@ -46,7 +46,6 @@ export default function QuemSomos() {
           <Text style={styles.subtitulo}>Equipe</Text>
           <View style={styles.blocoEquipe}>
             <View style={styles.membro}>
-<<<<<<< HEAD
               <View style={styles.infoMembro}>
                 <Text style={styles.nomeMembro}>Alex Fernandes</Text>
                 <Text style={styles.cargoMembro}>Estudante Ciência da Computação</Text>
@@ -56,17 +55,10 @@ export default function QuemSomos() {
               <View style={styles.infoMembro}>
                 <Text style={styles.nomeMembro}>Carlos Souza</Text>
                 <Text style={styles.cargoMembro}>Estudante Ciência da Computação</Text>
-=======
-              <View style={styles.fotoPlaceholder} />
-              <View style={styles.infoMembro}>
-                <Text style={styles.nomeMembro}>Carla Souza</Text>
-                <Text style={styles.cargoMembro}>Psicóloga (conteúdo e revisão)</Text>
->>>>>>> 6dd7b27 (Adicao da confirmação de agendamento)
               </View>
             </View>
 
             <View style={styles.membro}>
-<<<<<<< HEAD
               <View style={styles.infoMembro}>
                 <Text style={styles.nomeMembro}>Samira Reis</Text>
                 <Text style={styles.cargoMembro}>Estudante Análise e Desenvolvimento de Sistemas</Text>
@@ -94,20 +86,6 @@ export default function QuemSomos() {
               <View style={styles.infoMembro}>
                 <Text style={styles.nomeMembro}>Késia Figueiredo</Text>
                 <Text style={styles.cargoMembro}>Estudante Ciências Contábeis</Text>
-=======
-              <View style={styles.fotoPlaceholder} />
-              <View style={styles.infoMembro}>
-                <Text style={styles.nomeMembro}>Lucas Pereira</Text>
-                <Text style={styles.cargoMembro}>Desenvolvedor (frontend)</Text>
-              </View>
-            </View>
-
-            <View style={styles.membro}>
-              <View style={styles.fotoPlaceholder} />
-              <View style={styles.infoMembro}>
-                <Text style={styles.nomeMembro}>Mariana Lima</Text>
-                <Text style={styles.cargoMembro}>Design e UX</Text>
->>>>>>> 6dd7b27 (Adicao da confirmação de agendamento)
               </View>
             </View>
           </View>
