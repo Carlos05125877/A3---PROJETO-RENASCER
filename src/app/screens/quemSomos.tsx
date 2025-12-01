@@ -93,7 +93,7 @@ export default function QuemSomos() {
 
           <TouchableOpacity
             style={styles.botaoContato}
-            onPress={() => Linking.openURL("mailto:contato@renascer.org?subject=Interesse%20Beta")}
+            onPress={() => Linking.openURL("https://www.instagram.com/renascer_apoiopsicologico/")}
           >
             <Text style={styles.textoBotao}>Contato</Text>
           </TouchableOpacity>
