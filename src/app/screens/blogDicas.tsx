@@ -6,6 +6,7 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "rea
 
 const router = useRouter();
 
+
 export default function BlogDicas() {
     return (
         <View style={{flex: 1}}>
@@ -15,7 +16,6 @@ export default function BlogDicas() {
         <BloqueioAssinatura>
           <ScrollView >
             <View style={styles.containerPrincipal}>
-
             <View>
                 <Text style={styles.titulo}>Ações Imediatas</Text>
               </View>
