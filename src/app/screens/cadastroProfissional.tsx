@@ -1,6 +1,7 @@
 import { criarPreferenciaPagamento } from '@/back-end/api.assinatura';
 import { configuracaoUsuario } from '@/back-end/api.cadastroLogin';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Alert, Image, Linking, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
@@ -9,7 +10,7 @@ import { useCpfInvalido, useEmailInvalido, useImagemLocal, verificarDados } from
 
 
 export default function CadastroProfissional() {
-
+    const router = useRouter();
     const [nome, setNome] = useState('');
     const [cpf, setCpf] = useState('');
     const [telefone, setTelefone] = useState('');
@@ -221,67 +222,92 @@ export default function CadastroProfissional() {
                                 }
 
                                 // Após criar o usuário, redirecionar para pagamento
-                                Alert.alert(
-                                    'Cadastro realizado!',
-                                    'Agora você precisa realizar o pagamento da assinatura profissional (R$ 39,00) para ativar sua conta.',
-                                    [
-                                        {
-                                            text: 'Pagar Agora',
-                                            onPress: async () => {
-                                                try {
-                                                    const resultado = await criarPreferenciaPagamento(
-                                                        39.00,
-                                                        'Assinatura Profissional - Renascer',
-                                                        user.uid,
-                                                        'profissional'
-                                                    );
-                                                    
-                                                    const checkoutUrl = resultado.checkoutUrl;
-                                                    
-                                                    try {
-                                                        const canOpen = await Linking.canOpenURL(checkoutUrl);
-                                                        if (canOpen) {
-                                                            await Linking.openURL(checkoutUrl);
-                                                            Alert.alert(
-                                                                'Redirecionando',
-                                                                'Você será redirecionado para o Mercado Pago para finalizar o pagamento. Após o pagamento, sua assinatura será ativada automaticamente.',
-                                                                [{ text: 'OK' }]
-                                                            );
-                                                        } else {
-                                                            // Fallback para web
-                                                            if (typeof window !== 'undefined') {
-                                                                window.location.href = checkoutUrl;
-                                                            } else {
-                                                                Alert.alert('Erro', 'Não foi possível abrir o link de pagamento');
-                                                            }
-                                                        }
-                                                    } catch (error: any) {
-                                                        // Fallback para web
-                                                        if (typeof window !== 'undefined') {
-                                                            window.location.href = checkoutUrl;
-                                                        } else {
-                                                            Alert.alert('Erro', 'Não foi possível abrir o link de pagamento');
-                                                        }
-                                                    }
-                                                } catch (error: any) {
-                                                    console.error('Erro ao processar pagamento:', error);
-                                                    Alert.alert('Erro', 'Não foi possível processar o pagamento. Você pode fazer o pagamento depois na tela de assinatura.');
+                                try {
+                                    console.log('=== INICIANDO PAGAMENTO PROFISSIONAL ===');
+                                    console.log('UserId:', user.uid);
+                                    
+                                    const resultado = await criarPreferenciaPagamento(
+                                        39.00,
+                                        'Assinatura Profissional - Renascer',
+                                        user.uid,
+                                        'profissional'
+                                    );
+                                    
+                                    const checkoutUrl = resultado.checkoutUrl;
+                                    const preferenceId = resultado.preferenceId;
+                                    const externalReference = resultado.externalReference;
+                                    
+                                    console.log('✅ Preferência criada:', { preferenceId, externalReference });
+                                    
+                                    // Salvar preferenceId e externalReference no localStorage para diagnóstico
+                                    if (typeof window !== 'undefined' && window.localStorage) {
+                                        if (preferenceId) {
+                                            localStorage.setItem('last_preference_id', preferenceId);
+                                            console.log('💾 Preference ID salvo no localStorage:', preferenceId);
+                                        }
+                                        if (externalReference) {
+                                            localStorage.setItem('last_external_reference', externalReference);
+                                            console.log('💾 External Reference salvo no localStorage:', externalReference);
+                                        }
+                                    }
+                                    
+                                    // Redirecionar para tela de pagamentoSucesso com status=waiting
+                                    // A tela verificará automaticamente quando o pagamento for confirmado
+                                    const pagamentoSucessoUrl = `/screens/pagamentoSucesso?user_id=${encodeURIComponent(user.uid)}&tipo=profissional&status=waiting&preference_id=${encodeURIComponent(preferenceId)}&external_reference=${encodeURIComponent(externalReference)}`;
+                                    
+                                    // Para web, abrir checkout em nova aba e redirecionar para pagamentoSucesso
+                                    if (typeof window !== 'undefined') {
+                                        console.log('🌐 Ambiente web detectado - abrindo checkout em nova aba');
+                                        
+                                        // Abrir checkout em nova aba
+                                        const newWindow = window.open(
+                                            checkoutUrl, 
+                                            '_blank',
+                                            'noopener,noreferrer'
+                                        );
+                                        
+                                        if (newWindow) {
+                                            console.log('✅ Nova aba aberta com sucesso!');
+                                            
+                                            // Redirecionar para tela de pagamentoSucesso na aba atual
+                                            router.push(pagamentoSucessoUrl);
+                                        } else {
+                                            // Se não conseguiu abrir nova aba, abrir na mesma aba
+                                            console.warn('⚠️ Não foi possível abrir nova aba, redirecionando na mesma aba');
+                                            window.location.href = checkoutUrl;
+                                        }
+                                    } else {
+                                        // Para React Native, usar Linking
+                                        try {
+                                            const canOpen = await Linking.canOpenURL(checkoutUrl);
+                                            if (canOpen) {
+                                                await Linking.openURL(checkoutUrl);
+                                                // Redirecionar para pagamentoSucesso
+                                                router.push(pagamentoSucessoUrl);
+                                            } else {
+                                                Alert.alert('Erro', 'Não foi possível abrir o link de pagamento');
+                                            }
+                                        } catch (error: any) {
+                                            console.error('Erro ao abrir link:', error);
+                                            Alert.alert('Erro', 'Não foi possível abrir o link de pagamento');
+                                        }
+                                    }
+                                } catch (error: any) {
+                                    console.error('❌ Erro ao processar pagamento:', error);
+                                    Alert.alert(
+                                        'Erro', 
+                                        `Não foi possível processar o pagamento: ${error.message || 'Erro desconhecido'}. Você pode fazer o pagamento depois na tela de assinatura.`,
+                                        [
+                                            {
+                                                text: 'OK',
+                                                onPress: () => {
+                                                    // Redirecionar para home mesmo com erro
+                                                    router.push('/');
                                                 }
                                             }
-                                        },
-                                        {
-                                            text: 'Pagar Depois',
-                                            style: 'cancel',
-                                            onPress: () => {
-                                                Alert.alert(
-                                                    'Atenção',
-                                                    'Você precisará realizar o pagamento para acessar todas as funcionalidades. Acesse a tela de assinatura quando estiver pronto.',
-                                                    [{ text: 'OK' }]
-                                                );
-                                            }
-                                        }
-                                    ]
-                                );
+                                        ]
+                                    );
+                                }
                             } catch (error: any) {
                                 console.error('Erro ao cadastrar:', error);
                                 Alert.alert('Erro', 'Não foi possível completar o cadastro. Tente novamente.');
