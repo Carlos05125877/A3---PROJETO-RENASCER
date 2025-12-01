@@ -51,23 +51,51 @@ async function atualizarAssinaturaNoFirestore(userId, assinatura, colecao = 'use
   try {
     console.log('💾 Atualizando assinatura no Firestore...');
     console.log('Coleção:', colecao, 'UserId:', userId);
-    console.log('Dados da assinatura:', assinatura);
+    console.log('Dados da assinatura:', JSON.stringify(assinatura, null, 2));
 
     if (!admin.apps.length) {
+      console.error('❌ Firebase Admin não está inicializado!');
+      console.error('📋 Verificando variáveis de ambiente...');
+      console.error('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID || 'NÃO DEFINIDO');
+      console.error('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL ? 'DEFINIDO' : 'NÃO DEFINIDO');
+      console.error('FIREBASE_PRIVATE_KEY:', process.env.FIREBASE_PRIVATE_KEY ? 'DEFINIDO' : 'NÃO DEFINIDO');
       throw new Error('Firebase Admin não está inicializado. Configure as credenciais.');
     }
 
     const db = admin.firestore();
     const docRef = db.collection(colecao).doc(userId);
     
-    await docRef.update({
-      assinatura: assinatura
-    });
+    // Verificar se o documento existe
+    const docSnapshot = await docRef.get();
+    if (!docSnapshot.exists) {
+      console.warn('⚠️ Documento não existe, criando novo documento...');
+      await docRef.set({
+        assinatura: assinatura
+      }, { merge: true });
+    } else {
+      console.log('✅ Documento existe, atualizando...');
+      await docRef.update({
+        assinatura: assinatura
+      });
+    }
 
     console.log('✅ Assinatura atualizada com sucesso no Firestore');
+    
+    // Verificar se foi realmente atualizado
+    const docVerificado = await docRef.get();
+    if (docVerificado.exists) {
+      const dadosAtualizados = docVerificado.data();
+      console.log('📋 Dados atualizados no Firestore:', JSON.stringify(dadosAtualizados.assinatura, null, 2));
+    }
+    
     return true;
   } catch (error) {
     console.error('❌ Erro ao atualizar assinatura no Firestore:', error);
+    console.error('📋 Detalhes do erro:', {
+      message: error.message,
+      code: error.code,
+      stack: error.stack
+    });
     throw error;
   }
 }
@@ -135,6 +163,7 @@ async function processarWebhookMercadoPago(notificationData) {
     const externalReference = paymentData.external_reference;
     if (!externalReference) {
       console.error('❌ external_reference não encontrado no pagamento');
+      console.error('📋 Dados completos do pagamento:', JSON.stringify(paymentData, null, 2));
       return {
         sucesso: false,
         mensagem: 'external_reference não encontrado no pagamento'
@@ -146,14 +175,20 @@ async function processarWebhookMercadoPago(notificationData) {
     const parts = externalReference.split('_');
     if (parts.length < 2) {
       console.error('❌ external_reference em formato inválido:', externalReference);
+      console.error('📋 Partes extraídas:', parts);
       return {
         sucesso: false,
         mensagem: 'external_reference em formato inválido'
       };
     }
 
+    // Pegar userId (primeira parte) e tipo (segunda parte)
+    // Ignorar timestamp (terceira parte e além, se houver)
     const userId = parts[0];
     const tipo = parts[1]; // 'usuario' ou 'profissional'
+    
+    console.log('📋 Partes do external_reference:', parts);
+    console.log('📋 Total de partes:', parts.length);
 
     console.log('📋 UserId extraído:', userId);
     console.log('📋 Tipo extraído:', tipo);

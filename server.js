@@ -116,10 +116,12 @@ app.post('/webhook/mercadopago', async (req, res) => {
           console.log('✅ Webhook processado com sucesso:', resultado.mensagem);
         } else {
           console.error('❌ Erro ao processar webhook:', resultado.mensagem);
+          console.error('📋 Resultado completo:', JSON.stringify(resultado, null, 2));
         }
       })
       .catch(error => {
         console.error('❌ Erro inesperado ao processar webhook:', error);
+        console.error('📋 Stack trace:', error.stack);
       });
 
   } catch (error) {
