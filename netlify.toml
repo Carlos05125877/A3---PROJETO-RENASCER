@@ -2,6 +2,86 @@
   publish = "dist"
   command = "npx expo export --platform web"
 
+# Redirecionar rotas com case incorreto para o case correto
+[[redirects]]
+  from = "/screens/blogdicas"
+  to = "/screens/blogDicas"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/blogansiedade"
+  to = "/screens/blogAnsiedade"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/blogdepressao"
+  to = "/screens/blogDepressao"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/blogestresse"
+  to = "/screens/blogEstresse"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/pagamentosucesso"
+  to = "/screens/pagamentoSucesso"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/cadastrousuarios"
+  to = "/screens/cadastroUsuarios"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/cadastroprofissional"
+  to = "/screens/cadastroProfissional"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/quemsomos"
+  to = "/screens/quemSomos"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/emdesenvolvimento"
+  to = "/screens/emDesenvolvimento"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/listaprofissionais"
+  to = "/screens/listaProfissionais"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/agendadorusuario"
+  to = "/screens/agendadorUsuario"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/agendadorprofissional"
+  to = "/screens/agendadorProfissional"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/diagnosticopagamento"
+  to = "/screens/diagnosticoPagamento"
+  status = 301
+  force = true
+
+# Redirecionamento catch-all para index.html (deve ser o último)
 [[redirects]]
   from = "/*"
   to = "/index.html"
