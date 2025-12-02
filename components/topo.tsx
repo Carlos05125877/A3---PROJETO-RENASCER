@@ -152,9 +152,12 @@ export default function Topo() {
             </Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity onPress={() => router.push(
-            dadosUser.current?.colecao === 'profissionais' ?
-            '/screens/agendadorProfissional' : '/screens/agendadorUsuario')}>
+          <TouchableOpacity onPress={() => {
+            const rota = dadosUser.current?.colecao === 'profissionais' 
+              ? '/screens/agendadorProfissional' 
+              : '/screens/agendadorUsuario';
+            router.push(rota as any);
+          }}>
           <Image
             source={{ uri: urlImagem }}
             style={{ width: 40, height: 40, borderRadius: 20 }}
@@ -288,5 +291,3 @@ const styles = StyleSheet.create({
 
 }
 )
-
-

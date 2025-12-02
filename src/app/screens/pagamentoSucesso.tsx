@@ -22,6 +22,26 @@ export default function PagamentoSucesso() {
   const [user, setUser] = useState<any>(null);
   const [mensagem, setMensagem] = useState('');
 
+  // Garantir que a rota seja reconhecida pelo Expo Router quando acessada via redirecionamento externo
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location) {
+      const path = window.location.pathname;
+      const search = window.location.search;
+      const hash = window.location.hash;
+      
+      // Normalizar a URL para garantir compatibilidade com Expo Router
+      // Se não começar com /screens/pagamentoSucesso, corrigir
+      if (!path.startsWith('/screens/pagamentoSucesso')) {
+        // Se contém pagamentoSucesso mas em formato diferente, corrigir
+        if (path.includes('pagamentoSucesso') || path.includes('pagamento')) {
+          const newPath = '/screens/pagamentoSucesso';
+          window.history.replaceState({}, '', `${newPath}${search}${hash}`);
+          console.log('✅ URL corrigida para:', `${newPath}${search}${hash}`);
+        }
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (usuario) => {
       if (usuario) {

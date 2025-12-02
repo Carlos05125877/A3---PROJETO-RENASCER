@@ -260,19 +260,17 @@ export const criarPreferenciaPagamento = async (
     // Garantir que o valor está no formato correto (número com 2 casas decimais)
     const valorFormatado = parseFloat(valor.toFixed(2));
     
-    // Preparar URLs de retorno - TODAS apontam para PagamentoSucesso
-    // Após o pagamento, o Mercado Pago redirecionará para PagamentoSucesso
-    // IMPORTANTE: No Expo Router, a rota é baseada no caminho do arquivo
-    // src/app/screens/pagamentoSucesso.tsx = /screens/pagamentoSucesso
+    // Preparar URLs de retorno - todas apontam para PagamentoSucesso
+    // A tela de sucesso verificará automaticamente o status do pagamento
     const basePathSucesso = '/screens/pagamentoSucesso';
     
     // Garantir que origin não tenha barra no final
     const originClean = origin.replace(/\/$/, '');
     
-    // TODAS as URLs de retorno apontam para PagamentoSucesso para garantir processamento
-    const successUrl = `${originClean}${basePathSucesso}?user_id=${encodeURIComponent(userId)}&tipo=${encodeURIComponent(tipoAssinatura)}&status=approved`;
-    const failureUrl = `${originClean}${basePathSucesso}?user_id=${encodeURIComponent(userId)}&tipo=${encodeURIComponent(tipoAssinatura)}&status=failure`;
-    const pendingUrl = `${originClean}${basePathSucesso}?user_id=${encodeURIComponent(userId)}&tipo=${encodeURIComponent(tipoAssinatura)}&status=pending`;
+    // URLs simplificadas - a tela de sucesso determinará o status automaticamente
+    const successUrl = `${originClean}${basePathSucesso}`;
+    const failureUrl = `${originClean}${basePathSucesso}`;
+    const pendingUrl = `${originClean}${basePathSucesso}`;
     
     console.log('=== URLs DE RETORNO CONFIGURADAS ===');
     console.log('Origin:', originClean);
