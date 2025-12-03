@@ -2,13 +2,15 @@ import { configuracaoUsuario, loginComGoogle } from '@/back-end/api.cadastroLogi
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import Topo from '../../../components/topo';
 import { useCpfInvalido, useEmailInvalido } from '../hooks/validaçõesDeUsuario';
 
 
 export default function CadastroUsuarios() {
+    const { width } = useWindowDimensions();
+    const isMobile = width < 768;
     const router = useRouter();
     const [nome, setNome] = useState('');
     const [cpf, setCpf] = useState('');
@@ -47,175 +49,330 @@ export default function CadastroUsuarios() {
                 <Topo />
             </View>
 
-            <View style={styles.areaCadastroBanner}>
-
-
-                <View style={styles.areaCadastro}>
-                    <View style={styles.caixaCadastro}>
-
-                        <View>
-                            <Text style={styles.TextoCadastro}>Cadastro de Usuário</Text>
-                        </View>
-
-                        <View style={{ gap: 10 }}>
-
-                            <View style={styles.boxTextInput}>
-                                <TextInput style={styles.TextInput}
-                                    value={nome}
-                                    onChangeText={setNome}
-                                    placeholder='Nome *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'} secureTextEntry={false} />
+            {isMobile ? (
+                <ScrollView 
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollContentMobile}
+                >
+                    <View style={[styles.areaCadastro, styles.areaCadastroMobile]}>
+                        <View style={[styles.caixaCadastro, styles.caixaCadastroMobile]}>
+                            <View>
+                                <Text style={[styles.TextoCadastro, styles.TextoCadastroMobile]}>Cadastro de Usuário</Text>
                             </View>
 
+                            <View style={{ gap: 10, width: '100%', alignItems: 'center' }}>
 
-                            <View style={styles.boxTextInput}>
-                                <TextInputMask
-                                    style={styles.TextInput}
-                                    type={'cpf'}
-                                    value={cpf}
-                                    onChangeText={setCpf}
-                                    placeholder='CPF *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={false}
-
-                                />
-                            </View>
-                            {cpfInvalido && <Text style={{ color: 'red' }}>CPF inválido</Text>}
-                            {cpfCadastrado && <Text style={{ color: 'red' }}>CPF já cadastrado</Text>}
-
-                            <View style={styles.boxTextInput}>
-                                <TextInputMask
-                                    type={'cel-phone'}
-                                    options={{
-                                        maskType: 'BRL',
-                                        withDDD: true,
-                                    }
-                                    }
-                                    style={styles.TextInput}
-                                    value={telefone}
-                                    onChangeText={setTelefone}
-                                    placeholder='Telefone'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={false}
-                                />
-
-                            </View>
-                            <View style={styles.boxTextInput}>
-                                <TextInput style={styles.TextInput}
-                                    value={email}
-                                    onChangeText={setEmail}
-                                    placeholder='E-mail *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={false}
-                                />
-
-                            </View>
-                            {!emailInvalido ? '' : <Text style={{ color: 'red' }}>E-mail Invalido</Text>}
-                            <View style={styles.boxTextInput}>
-                                <TextInputMask
-                                    type={'datetime'}
-                                    options={{
-                                        format: 'dd/MM/aaaa'
-                                    }}
-                                    style={styles.TextInput}
-                                    value={dataNascimento}
-                                    onChangeText={setDataNascimento}
-                                    placeholder='Data de Nascimento *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={false}
-                                />
-
-                            </View>
-                            <View style={styles.boxTextInput}>
-                                <TextInput style={styles.TextInput}
-                                    value={senha}
-                                    onChangeText={setSenha}
-                                    placeholder='Senha *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={mostrarSenha}
-                                />
-                                <TouchableOpacity onPress={() => { setmostrarSenha(!mostrarSenha) }}>
-                                    <View style={{ padding: 10, opacity: 0.5 }}>
-                                        {mostrarSenha ? (
-                                            <AntDesign name="eye-invisible" size={24} color="black" />
-                                        ) : (
-                                            <AntDesign name="eye" size={24} color="black" />
-                                        )}
-                                    </View>
-                                </TouchableOpacity>
+                                <View style={[styles.boxTextInput, isMobile && styles.boxTextInputMobile]}>
+                                    <TextInput style={[styles.TextInput, isMobile && styles.TextInputMobile]}
+                                        value={nome}
+                                        onChangeText={setNome}
+                                        placeholder='Nome *'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'} secureTextEntry={false} />
+                                </View>
 
 
-                            </View>
-                            <View style={styles.boxTextInput}>
-                                <TextInput style={styles.TextInput}
-                                    value={confirmarSenha}
-                                    onChangeText={setConfirmarSenha}
-                                    placeholder='Confirmar Senha *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={mostrarSenha}
-                                />
-                                <TouchableOpacity onPress={() => { setmostrarSenha(!mostrarSenha) }}>
-                                    <View style={{ padding: 10, opacity: 0.5 }}>
-                                        {mostrarSenha ? (
-                                            <AntDesign name="eye-invisible" size={24} color="black" />
-                                        ) : (
-                                            <AntDesign name="eye" size={24} color="black" />
-                                        )}
-                                    </View>
-                                </TouchableOpacity>
+                                <View style={[styles.boxTextInput, isMobile && styles.boxTextInputMobile]}>
+                                    <TextInputMask
+                                        style={[styles.TextInput, isMobile && styles.TextInputMobile]}
+                                        type={'cpf'}
+                                        value={cpf}
+                                        onChangeText={setCpf}
+                                        placeholder='CPF *'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                        secureTextEntry={false}
 
-                            </View>
-                            {senha !== confirmarSenha && <Text style={{ color: 'red' }}>Senhas não conferem</Text>}
+                                    />
+                                </View>
+                                {cpfInvalido && <Text style={{ color: 'red' }}>CPF inválido</Text>}
+                                {cpfCadastrado && <Text style={{ color: 'red' }}>CPF já cadastrado</Text>}
 
-
-                            <View style={styles.botoes}>
-
-                                <TouchableOpacity style={styles.botaoCadastrar}
-                                    onPress={async () => {
-                                        if (bloquarBotaoConfirmar.current) {
-                                            alert('Preencha todos os campos obrigatórios');
-                                        } else {
-                                            configuracaoUsuario({
-                                                'email': email,
-                                                'senha': senha,
-                                                'confirmarSenha': confirmarSenha,
-                                                'nome': nome, 'cpf': cpf,
-                                                'telefone': telefone,
-                                                'dataNascimento': dataNascimento,
-                                                'colecao': 'users'
-                                            }, null, 'users');
+                                <View style={[styles.boxTextInput, isMobile && styles.boxTextInputMobile]}>
+                                    <TextInputMask
+                                        type={'cel-phone'}
+                                        options={{
+                                            maskType: 'BRL',
+                                            withDDD: true,
                                         }
-                                    }}>
-                                    <Text style={styles.textoBotaoCadastrar}>Confirmar</Text>
-                                </TouchableOpacity>
+                                        }
+                                        style={[styles.TextInput, isMobile && styles.TextInputMobile]}
+                                        value={telefone}
+                                        onChangeText={setTelefone}
+                                        placeholder='Telefone'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                        secureTextEntry={false}
+                                    />
 
-                                <Text style={styles.textoCadastrarCom}>Cadastrar com</Text>
+                                </View>
+                                <View style={[styles.boxTextInput, isMobile && styles.boxTextInputMobile]}>
+                                    <TextInput style={[styles.TextInput, isMobile && styles.TextInputMobile]}
+                                        value={email}
+                                        onChangeText={setEmail}
+                                        placeholder='E-mail *'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                        secureTextEntry={false}
+                                    />
 
-                                <TouchableOpacity style={styles.botaoGoogle}
-                                    onPress={async () => {
-                                        const user = await loginComGoogle(bloquearBotaoGoogle)
-                                        user && router.push('/')
-                                    }}>
-                                    <Image style={{ width: 25, height: 25 }} source={require
-                                        ('../../../assets/images/images.png')} />
-                                </TouchableOpacity>
+                                </View>
+                                {!emailInvalido ? '' : <Text style={{ color: 'red' }}>E-mail Invalido</Text>}
+                                <View style={[styles.boxTextInput, isMobile && styles.boxTextInputMobile]}>
+                                    <TextInputMask
+                                        type={'datetime'}
+                                        options={{
+                                            format: 'dd/MM/aaaa'
+                                        }}
+                                        style={[styles.TextInput, isMobile && styles.TextInputMobile]}
+                                        value={dataNascimento}
+                                        onChangeText={setDataNascimento}
+                                        placeholder='Data de Nascimento *'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                        secureTextEntry={false}
+                                    />
+
+                                </View>
+                                <View style={[styles.boxTextInput, isMobile && styles.boxTextInputMobile]}>
+                                    <TextInput style={[styles.TextInput, isMobile && styles.TextInputMobile]}
+                                        value={senha}
+                                        onChangeText={setSenha}
+                                        placeholder='Senha *'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                        secureTextEntry={mostrarSenha}
+                                    />
+                                    <TouchableOpacity onPress={() => { setmostrarSenha(!mostrarSenha) }}>
+                                        <View style={{ padding: 10, opacity: 0.5 }}>
+                                            {mostrarSenha ? (
+                                                <AntDesign name="eye-invisible" size={24} color="black" />
+                                            ) : (
+                                                <AntDesign name="eye" size={24} color="black" />
+                                            )}
+                                        </View>
+                                    </TouchableOpacity>
+
+
+                                </View>
+                                <View style={[styles.boxTextInput, isMobile && styles.boxTextInputMobile]}>
+                                    <TextInput style={[styles.TextInput, isMobile && styles.TextInputMobile]}
+                                        value={confirmarSenha}
+                                        onChangeText={setConfirmarSenha}
+                                        placeholder='Confirmar Senha *'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                        secureTextEntry={mostrarSenha}
+                                    />
+                                    <TouchableOpacity onPress={() => { setmostrarSenha(!mostrarSenha) }}>
+                                        <View style={{ padding: 10, opacity: 0.5 }}>
+                                            {mostrarSenha ? (
+                                                <AntDesign name="eye-invisible" size={24} color="black" />
+                                            ) : (
+                                                <AntDesign name="eye" size={24} color="black" />
+                                            )}
+                                        </View>
+                                    </TouchableOpacity>
+
+                                </View>
+                                {senha !== confirmarSenha && <Text style={{ color: 'red' }}>Senhas não conferem</Text>}
+
+
+                                <View style={styles.botoes}>
+
+                                    <TouchableOpacity style={[styles.botaoCadastrar, isMobile && styles.botaoCadastrarMobile]}
+                                        onPress={async () => {
+                                            if (bloquarBotaoConfirmar.current) {
+                                                alert('Preencha todos os campos obrigatórios');
+                                            } else {
+                                                configuracaoUsuario({
+                                                    'email': email,
+                                                    'senha': senha,
+                                                    'confirmarSenha': confirmarSenha,
+                                                    'nome': nome, 'cpf': cpf,
+                                                    'telefone': telefone,
+                                                    'dataNascimento': dataNascimento,
+                                                    'colecao': 'users'
+                                                }, null, 'users');
+                                            }
+                                        }}>
+                                        <Text style={styles.textoBotaoCadastrar}>Confirmar</Text>
+                                    </TouchableOpacity>
+
+                                    <Text style={styles.textoCadastrarCom}>Cadastrar com</Text>
+
+                                    <TouchableOpacity style={styles.botaoGoogle}
+                                        onPress={async () => {
+                                            const user = await loginComGoogle(bloquearBotaoGoogle)
+                                            user && router.push('/')
+                                        }}>
+                                        <Image style={{ width: 25, height: 25 }} source={require
+                                            ('../../../assets/images/images.png')} />
+                                    </TouchableOpacity>
+                                </View>
+
+
+                            </View>
+                        </View>
+                    </View>
+                </ScrollView>
+            ) : (
+                <View style={styles.areaCadastroBanner}>
+                    <View style={styles.areaCadastro}>
+                        <View style={styles.caixaCadastro}>
+                            <View>
+                                <Text style={styles.TextoCadastro}>Cadastro de Usuário</Text>
+                            </View>
+
+                            <View style={{ gap: 10 }}>
+                                <View style={styles.boxTextInput}>
+                                    <TextInput style={styles.TextInput}
+                                        value={nome}
+                                        onChangeText={setNome}
+                                        placeholder='Nome *'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'} secureTextEntry={false} />
+                                </View>
+
+
+                                <View style={styles.boxTextInput}>
+                                    <TextInputMask
+                                        style={styles.TextInput}
+                                        type={'cpf'}
+                                        value={cpf}
+                                        onChangeText={setCpf}
+                                        placeholder='CPF *'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                        secureTextEntry={false}
+
+                                    />
+                                </View>
+                                {cpfInvalido && <Text style={{ color: 'red' }}>CPF inválido</Text>}
+                                {cpfCadastrado && <Text style={{ color: 'red' }}>CPF já cadastrado</Text>}
+
+                                <View style={styles.boxTextInput}>
+                                    <TextInputMask
+                                        type={'cel-phone'}
+                                        options={{
+                                            maskType: 'BRL',
+                                            withDDD: true,
+                                        }
+                                        }
+                                        style={styles.TextInput}
+                                        value={telefone}
+                                        onChangeText={setTelefone}
+                                        placeholder='Telefone'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                        secureTextEntry={false}
+                                    />
+
+                                </View>
+                                <View style={styles.boxTextInput}>
+                                    <TextInput style={styles.TextInput}
+                                        value={email}
+                                        onChangeText={setEmail}
+                                        placeholder='E-mail *'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                        secureTextEntry={false}
+                                    />
+
+                                </View>
+                                {!emailInvalido ? '' : <Text style={{ color: 'red' }}>E-mail Invalido</Text>}
+                                <View style={styles.boxTextInput}>
+                                    <TextInputMask
+                                        type={'datetime'}
+                                        options={{
+                                            format: 'dd/MM/aaaa'
+                                        }}
+                                        style={styles.TextInput}
+                                        value={dataNascimento}
+                                        onChangeText={setDataNascimento}
+                                        placeholder='Data de Nascimento *'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                        secureTextEntry={false}
+                                    />
+
+                                </View>
+                                <View style={styles.boxTextInput}>
+                                    <TextInput style={styles.TextInput}
+                                        value={senha}
+                                        onChangeText={setSenha}
+                                        placeholder='Senha *'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                        secureTextEntry={mostrarSenha}
+                                    />
+                                    <TouchableOpacity onPress={() => { setmostrarSenha(!mostrarSenha) }}>
+                                        <View style={{ padding: 10, opacity: 0.5 }}>
+                                            {mostrarSenha ? (
+                                                <AntDesign name="eye-invisible" size={24} color="black" />
+                                            ) : (
+                                                <AntDesign name="eye" size={24} color="black" />
+                                            )}
+                                        </View>
+                                    </TouchableOpacity>
+
+
+                                </View>
+                                <View style={styles.boxTextInput}>
+                                    <TextInput style={styles.TextInput}
+                                        value={confirmarSenha}
+                                        onChangeText={setConfirmarSenha}
+                                        placeholder='Confirmar Senha *'
+                                        placeholderTextColor={'rgba(0,0,0,0.5)'}
+                                        secureTextEntry={mostrarSenha}
+                                    />
+                                    <TouchableOpacity onPress={() => { setmostrarSenha(!mostrarSenha) }}>
+                                        <View style={{ padding: 10, opacity: 0.5 }}>
+                                            {mostrarSenha ? (
+                                                <AntDesign name="eye-invisible" size={24} color="black" />
+                                            ) : (
+                                                <AntDesign name="eye" size={24} color="black" />
+                                            )}
+                                        </View>
+                                    </TouchableOpacity>
+
+                                </View>
+                                {senha !== confirmarSenha && <Text style={{ color: 'red' }}>Senhas não conferem</Text>}
+
+
+                                <View style={styles.botoes}>
+
+                                    <TouchableOpacity style={styles.botaoCadastrar}
+                                        onPress={async () => {
+                                            if (bloquarBotaoConfirmar.current) {
+                                                alert('Preencha todos os campos obrigatórios');
+                                            } else {
+                                                configuracaoUsuario({
+                                                    'email': email,
+                                                    'senha': senha,
+                                                    'confirmarSenha': confirmarSenha,
+                                                    'nome': nome, 'cpf': cpf,
+                                                    'telefone': telefone,
+                                                    'dataNascimento': dataNascimento,
+                                                    'colecao': 'users'
+                                                }, null, 'users');
+                                            }
+                                        }}>
+                                        <Text style={styles.textoBotaoCadastrar}>Confirmar</Text>
+                                    </TouchableOpacity>
+
+                                    <Text style={styles.textoCadastrarCom}>Cadastrar com</Text>
+
+                                    <TouchableOpacity style={styles.botaoGoogle}
+                                        onPress={async () => {
+                                            const user = await loginComGoogle(bloquearBotaoGoogle)
+                                            user && router.push('/')
+                                        }}>
+                                        <Image style={{ width: 25, height: 25 }} source={require
+                                            ('../../../assets/images/images.png')} />
+                                    </TouchableOpacity>
+                                </View>
+
+
                             </View>
 
 
                         </View>
+                    </View>
 
-
+                    <View style={styles.areaBanner}>
+                        <Image style={{ width: '100%', height: '100%', alignContent: 'center', justifyContent: 'center' }}
+                            source={require('../../../assets/images/imagemCadastro.png')} />
                     </View>
                 </View>
-
-
-                <View style={styles.areaBanner}>
-                    <Image style={{ width: '100%', height: '100%', alignContent: 'center', justifyContent: 'center' }}
-                        source={require('../../../assets/images/imagemCadastro.png')} />
-
-                </View>
-
-            </View>
+            )}
 
         </View>
 
@@ -322,6 +479,45 @@ const styles = StyleSheet.create({
         fontFamily: 'Arial',
         fontSize: 20,
         fontWeight: 700,
+    },
+
+    // Estilos Mobile
+    scrollContentMobile: {
+        paddingBottom: 30,
+    },
+
+    areaCadastroMobile: {
+        flex: 1,
+        width: '100%',
+        paddingVertical: 10,
+        alignItems: 'center',
+    },
+
+    caixaCadastroMobile: {
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 15,
+    },
+
+    TextoCadastroMobile: {
+        fontSize: 24,
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+
+    boxTextInputMobile: {
+        width: '100%',
+        maxWidth: 400,
+    },
+
+    TextInputMobile: {
+        width: '100%',
+    },
+
+    botaoCadastrarMobile: {
+        width: '90%',
+        maxWidth: 400,
     },
 
 })
