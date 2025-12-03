@@ -1,10 +1,10 @@
+import { firestore } from '@/back-end/Api';
 import { ativarAssinaturaPorEmail } from '@/back-end/ativarAssinaturaManual';
 import Topo from '@/components/topo';
-import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useRouter } from 'expo-router';
+import { collection, getDocs } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { Alert, ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { firestore } from '@/back-end/Api';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface Metricas {
   totalAssinantes: number;
@@ -43,10 +43,10 @@ export default function DashboardAdmin() {
           } else {
             window.localStorage.removeItem('admin_logged_in');
             window.localStorage.removeItem('admin_timestamp');
-            router.replace('/admin/loginAdmin');
+            router.replace('/admin/loginAdmin' as any);
           }
         } else {
-          router.replace('/admin/loginAdmin');
+          router.replace('/admin/loginAdmin' as any);
         }
       }
     };
@@ -150,7 +150,7 @@ export default function DashboardAdmin() {
       window.localStorage.removeItem('admin_logged_in');
       window.localStorage.removeItem('admin_timestamp');
     }
-    router.replace('/admin/loginAdmin');
+    router.replace('/admin/loginAdmin' as any);
   };
 
   if (!autenticado) {
@@ -288,7 +288,7 @@ export default function DashboardAdmin() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    
     backgroundColor: '#f3f3f3',
   },
   scrollView: {

@@ -22,7 +22,7 @@ export default function LoginAdmin() {
         window.localStorage.setItem('admin_logged_in', 'true');
         window.localStorage.setItem('admin_timestamp', Date.now().toString());
       }
-      router.push('/admin/dashboard');
+      router.push('/admin/dashboard' as any);
     } else {
       Alert.alert('Erro', 'Usuário ou senha incorretos');
     }
@@ -73,7 +73,6 @@ export default function LoginAdmin() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#f3f3f3',
   },
   content: {
