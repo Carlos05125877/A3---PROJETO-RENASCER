@@ -75,6 +75,12 @@ export default function QuemSomos() {
             </View>
             <View style={styles.membro}>
               <View style={styles.infoMembro}>
+                <Text style={styles.nomeMembro}>Ana Luiza Moreira da Silva</Text>
+                <Text style={styles.cargoMembro}>Estudante Administração</Text>
+              </View>
+            </View>
+            <View style={styles.membro}>
+              <View style={styles.infoMembro}>
                 <Text style={styles.nomeMembro}>Ana Julia Garcia</Text>
                 <Text style={styles.cargoMembro}>Estudante Administração</Text>
               </View>

@@ -2,7 +2,7 @@ import { adicaoDadosFirestore, auth, buscarDadosFirestore, criarArquivoStorage }
 import ConfirmarConsulta from '@/components/confirmarConsulta'
 import Topo from '@/components/topo'
 import { useEffect, useRef, useState } from 'react'
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
 import { TextInputMask } from 'react-native-masked-text'
 
@@ -10,6 +10,8 @@ import { TextInputMask } from 'react-native-masked-text'
 
 
 export default function EditorPerfil() {
+    const { width } = useWindowDimensions();
+    const isMobile = width < 768;
     const [nome, setNome] = useState('')
     const [profissao, setProfissao] = useState('')
     const [crp, setCrp] = useState('')
@@ -98,19 +100,23 @@ export default function EditorPerfil() {
 
 
     return (
-        <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
-            <View style={{ width: '100%' }}>
+        <View style={styles.containerPrincipal}>
+            <View style={styles.topoContainer}>
                 <Topo />
             </View>
+            <ScrollView 
+                contentContainerStyle={[styles.scrollContent, isMobile && styles.scrollContentMobile]}
+                showsVerticalScrollIndicator={false}
+            >
 
-            <Text style={styles.meuPerfil}>Meu Perfil</Text>
-            <View style={styles.box}>
-                <View style={styles.dadosProfissional}>
+            <Text style={[styles.meuPerfil, isMobile && styles.meuPerfilMobile]}>Meu Perfil</Text>
+            <View style={[styles.box, isMobile && styles.boxMobile]}>
+                <View style={[styles.dadosProfissional, isMobile && styles.dadosProfissionalMobile]}>
                     <TouchableOpacity
                         onPress={() => selecionadorImagem.current?.click()}
                     >
                         <Image
-                            style={styles.imagemProfissional}
+                            style={[styles.imagemProfissional, isMobile && styles.imagemProfissionalMobile]}
                             source={{ uri: urlImagem }}
                         />
                         <>
@@ -125,10 +131,10 @@ export default function EditorPerfil() {
                             />
                         </>
                     </TouchableOpacity>
-                    <View style={styles.infoProfissional}>
-                        <View style={styles.boxNomeProfissaoCrp}>
+                    <View style={[styles.infoProfissional, isMobile && styles.infoProfissionalMobile]}>
+                        <View style={[styles.boxNomeProfissaoCrp, isMobile && styles.boxNomeProfissaoCrpMobile]}>
                             <TextInput
-                                style={styles.nomeProfissional}
+                                style={[styles.nomeProfissional, isMobile && styles.nomeProfissionalMobile]}
                                 value={nome}
                                 onChangeText={setNome}
                                 placeholder='Nome*'
@@ -136,9 +142,9 @@ export default function EditorPerfil() {
 
                             />
                         </View>
-                        <View style={styles.boxNomeProfissaoCrp}>
+                        <View style={[styles.boxNomeProfissaoCrp, isMobile && styles.boxNomeProfissaoCrpMobile]}>
                             <TextInput
-                                style={styles.profissãoProfissional}
+                                style={[styles.profissãoProfissional, isMobile && styles.profissãoProfissionalMobile]}
                                 value={profissao}
                                 onChangeText={setProfissao}
                                 placeholder='Profissão'
@@ -146,9 +152,9 @@ export default function EditorPerfil() {
 
                             />
                         </View>
-                        <View style={styles.boxNomeProfissaoCrp}>
+                        <View style={[styles.boxNomeProfissaoCrp, isMobile && styles.boxNomeProfissaoCrpMobile]}>
                             <TextInputMask
-                                style={styles.crp}
+                                style={[styles.crp, isMobile && styles.crpMobile]}
                                 type={'custom'}
                                 options={{
                                     mask: '99/99999'
@@ -161,11 +167,11 @@ export default function EditorPerfil() {
                         </View>
                     </View>
                 </View>
-                <Text style={styles.subtitulo}>Biografia</Text>
-                <View style={styles.boxDescricao}>
+                <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Biografia</Text>
+                <View style={[styles.boxDescricao, isMobile && styles.boxDescricaoMobile]}>
                     <TextInput
                         multiline
-                        style={styles.inputDescricao}
+                        style={[styles.inputDescricao, isMobile && styles.inputDescricaoMobile]}
                         maxLength={400}
                         placeholder='Esse campo será visivel para todos'
                         placeholderTextColor={'rgba(0,0,0,0.5'}
@@ -173,42 +179,42 @@ export default function EditorPerfil() {
                         onChangeText={setBiografia}
                     />
                 </View>
-                <Text style={styles.subtitulo}>Endereço</Text>
-                <View style={styles.boxEndereco}>
+                <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Endereço</Text>
+                <View style={[styles.boxEndereco, isMobile && styles.boxEnderecoMobile]}>
                     <TextInput
-                        style={styles.inputEndereco}
+                        style={[styles.inputEndereco, isMobile && styles.inputEnderecoMobile]}
                         value={endereco}
                         onChangeText={setEndereco}
                     />
                 </View>
-                <View style={styles.whstsInsta}>
+                <View style={[styles.whstsInsta, isMobile && styles.whstsInstaMobile]}>
                     <View
-                        style={{
-                            width: '45%',
-                            gap: 5
-                        }}
+                        style={[
+                            { width: '45%', gap: 5 },
+                            isMobile && { width: '100%' }
+                        ]}
                     >
-                        <Text style={styles.subtitulo}>Whatsapp</Text>
-                        <View style={styles.boxWhats}>
+                        <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Whatsapp</Text>
+                        <View style={[styles.boxWhats, isMobile && styles.boxWhatsMobile]}>
                             <TextInputMask
                                 type='cel-phone'
                                 value={whatsapp}
                                 onChangeText={setWhatsapp}
-                                style={styles.inputWhats}
+                                style={[styles.inputWhats, isMobile && styles.inputWhatsMobile]}
                             />
                         </View>
                     </View>
                     <View
-                        style={{
-                            width: '45%',
-                            gap: 5
-                        }}
+                        style={[
+                            { width: '45%', gap: 5 },
+                            isMobile && { width: '100%' }
+                        ]}
                     >
-                        <Text style={styles.subtitulo}>Instagram</Text>
-                        <View style={styles.boxInsta}>
+                        <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Instagram</Text>
+                        <View style={[styles.boxInsta, isMobile && styles.boxInstaMobile]}>
                             <TextInputMask
                                 type='custom'
-                                style={styles.inputInsta}
+                                style={[styles.inputInsta, isMobile && styles.inputInstaMobile]}
                                 options={{
                                     mask: '@******************************'
                                 }}
@@ -217,22 +223,25 @@ export default function EditorPerfil() {
                         </View>
                     </View>
                 </View>
-                <Text style={styles.subtitulo}>Preço</Text>
-                <View style={styles.boxPreco}>
+                <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Preço</Text>
+                <View style={[styles.boxPreco, isMobile && styles.boxPrecoMobile]}>
                     <TextInputMask
                         value={preco}
                         onChangeText={setPreco}
                         type='money'
-                        style={styles.inputPreco} />
+                        style={[styles.inputPreco, isMobile && styles.inputPrecoMobile]} />
                 </View>
-                <Text style={styles.subtitulo}>Disponibilidade de Horários</Text>
+                <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Disponibilidade de Horários</Text>
                 <View
-                    style={{
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        justifyContent: 'center',
-                        height: '10%',
-                    }}
+                    style={[
+                        {
+                            flexDirection: 'row',
+                            flexWrap: 'wrap',
+                            justifyContent: 'center',
+                            height: isMobile ? 'auto' : '10%',
+                        },
+                        isMobile && styles.horariosContainerMobile
+                    ]}
                 >
                     {
                         horarios.map((horario, index) => {
@@ -240,14 +249,17 @@ export default function EditorPerfil() {
                             return (
                                 <TouchableOpacity
                                     key={index}
-                                    style={[styles.selecionarHorario,
-                                    horarioSelecionado.includes(horario) && styles.horarioSelecionado]}
+                                    style={[
+                                        styles.selecionarHorario,
+                                        isMobile && styles.selecionarHorarioMobile,
+                                        horarioSelecionado.includes(horario) && styles.horarioSelecionado
+                                    ]}
                                     onPress={() => {
                                         horariosClicados(horario)
                                     }
                                     }
                                 >
-                                    <Text style={styles.textoHorario}>
+                                    <Text style={[styles.textoHorario, isMobile && styles.textoHorarioMobile]}>
                                         {horario}
                                     </Text>
                                 </TouchableOpacity>
@@ -256,16 +268,25 @@ export default function EditorPerfil() {
                         })
                     }
                 </View>
-                <View style={styles.botaoSalvar}>
-                    <TouchableOpacity style={styles.botao}
+                <View style={[styles.botaoSalvar, isMobile && styles.botaoSalvarMobile]}>
+                    <TouchableOpacity style={[styles.botao, isMobile && styles.botaoMobile]}
                         onPress={enviarDados}
                     >
-                        <Text style={styles.textoSalvar}>Salvar</Text>
+                        <Text style={[styles.textoSalvar, isMobile && styles.textoSalvarMobile]}>Salvar</Text>
                     </TouchableOpacity>
                 </View>
             </View>
-            <ConfirmarConsulta style={{width: 1250, marginVertical: 100}} tipo='profissionais'  />
-        </ScrollView >
+                <View style={[styles.containerConsulta, isMobile && styles.containerConsultaMobile]}>
+                    <ConfirmarConsulta 
+                        style={[
+                            styles.consulta, 
+                            isMobile && styles.consultaMobile
+                        ]} 
+                        tipo='profissionais'  
+                    />
+                </View>
+            </ScrollView>
+        </View>
 
 
     )
@@ -273,6 +294,20 @@ export default function EditorPerfil() {
 }
 
 const styles = StyleSheet.create({
+    containerPrincipal: {
+        flex: 1,
+    },
+    topoContainer: {
+        zIndex: 1,
+        width: '100%',
+    },
+    scrollContent: {
+        alignItems: 'center',
+        paddingTop: 20,
+    },
+    scrollContentMobile: {
+        paddingTop: 10,
+    },
     componentePai: {
         alignItems: 'center',
         flex: 1,
@@ -530,5 +565,153 @@ const styles = StyleSheet.create({
         fontFamily: 'Arial',
         fontSize: 14,
         fontWeight: 700
-    }
+    },
+
+    // Estilos Mobile
+    meuPerfilMobile: {
+        fontSize: 18,
+        marginTop: 10,
+        marginBottom: 10,
+    },
+
+    boxMobile: {
+        width: '100%',
+        padding: 15,
+        borderRadius: 20,
+    },
+
+    dadosProfissionalMobile: {
+        flexDirection: 'column',
+        gap: 15,
+        alignItems: 'center',
+    },
+
+    imagemProfissionalMobile: {
+        width: 120,
+        height: 120,
+    },
+
+    infoProfissionalMobile: {
+        width: '100%',
+    },
+
+    boxNomeProfissaoCrpMobile: {
+        height: 45,
+        marginBottom: 10,
+    },
+
+    nomeProfissionalMobile: {
+        fontSize: 18,
+    },
+
+    profissãoProfissionalMobile: {
+        fontSize: 16,
+    },
+
+    crpMobile: {
+        fontSize: 12,
+    },
+
+    subtituloMobile: {
+        fontSize: 14,
+        marginTop: 10,
+        marginBottom: 5,
+    },
+
+    boxDescricaoMobile: {
+        height: 80,
+    },
+
+    inputDescricaoMobile: {
+        fontSize: 14,
+    },
+
+    boxEnderecoMobile: {
+        height: 45,
+    },
+
+    inputEnderecoMobile: {
+        fontSize: 14,
+    },
+
+    whstsInstaMobile: {
+        flexDirection: 'column',
+        height: 'auto',
+        gap: 15,
+    },
+
+    boxWhatsMobile: {
+        height: 45,
+    },
+
+    inputWhatsMobile: {
+        fontSize: 14,
+    },
+
+    boxInstaMobile: {
+        height: 45,
+    },
+
+    inputInstaMobile: {
+        fontSize: 14,
+    },
+
+    boxPrecoMobile: {
+        width: '100%',
+        height: 45,
+    },
+
+    inputPrecoMobile: {
+        fontSize: 14,
+    },
+
+    horariosContainerMobile: {
+        paddingVertical: 10,
+    },
+
+    selecionarHorarioMobile: {
+        width: '30%',
+        height: 35,
+        margin: 3,
+    },
+
+    textoHorarioMobile: {
+        fontSize: 12,
+    },
+
+    botaoSalvarMobile: {
+        height: 'auto',
+        marginTop: 15,
+    },
+
+    botaoMobile: {
+        width: '100%',
+        height: 45,
+    },
+
+    textoSalvarMobile: {
+        fontSize: 14,
+    },
+
+    containerConsulta: {
+        alignItems: 'center',
+        paddingVertical: 100,
+        paddingHorizontal: 20,
+    },
+
+    consulta: {
+        width: 1250,
+        maxWidth: '100%',
+    },
+
+    containerConsultaMobile: {
+        paddingTop: 20,
+        paddingBottom: 20,
+        paddingHorizontal: 10,
+        width: '100%',
+    },
+
+    consultaMobile: {
+        width: '100%',
+    },
 })

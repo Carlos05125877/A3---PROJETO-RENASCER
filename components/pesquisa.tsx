@@ -34,7 +34,7 @@ export default function Pesquisa({ onNomeChange, onLocalizacaoChange }: Pesquisa
         />
         <TextInput
           style={[styles.input, isMobile && styles.inputMobile]}
-          placeholder="Procure por nome do especialista"
+          placeholder={isMobile ? "Nome do especialista" : "Procure por nome do especialista"}
           placeholderTextColor="#999999"
           value={nome}
           onChangeText={handleNomeChange}
@@ -44,22 +44,24 @@ export default function Pesquisa({ onNomeChange, onLocalizacaoChange }: Pesquisa
       {/* Separador vertical */}
       {!isMobile && <View style={styles.separador} />}
 
-      {/* Campo de busca por localização */}
-      <View style={styles.campoBusca}>
-        <MaterialCommunityIcons 
-          name="magnify" 
-          size={isMobile ? 20 : 24} 
-          color="#336BF7" 
-          style={styles.icone}
-        />
-        <TextInput
-          style={[styles.input, isMobile && styles.inputMobile]}
-          placeholder="Procure por localização"
-          placeholderTextColor="#999999"
-          value={localizacao}
-          onChangeText={handleLocalizacaoChange}
-        />
-      </View>
+      {/* Campo de busca por localização - apenas no desktop */}
+      {!isMobile && (
+        <View style={styles.campoBusca}>
+          <MaterialCommunityIcons 
+            name="magnify" 
+            size={24} 
+            color="#336BF7" 
+            style={styles.icone}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Procure por localização"
+            placeholderTextColor="#999999"
+            value={localizacao}
+            onChangeText={handleLocalizacaoChange}
+          />
+        </View>
+      )}
     </View>
   )
 }

@@ -56,7 +56,7 @@ export default function ConfirmarConsulta({ tipo, ...resto }: props) {
 
 
     return (
-        <View {...resto}>
+        <View {...resto} style={[resto.style, isMobile && { marginTop: 0 }]}>
             <Text style={[styles.titulo, isMobile && styles.tituloMobile]}>Agenda</Text>
             <View style={[{
                 backgroundColor: '#E8E8E8ff',
@@ -234,6 +234,8 @@ const styles = StyleSheet.create({
     // Estilos Mobile
     tituloMobile: {
         fontSize: 20,
+        marginTop: 10,
+        marginBottom: 10,
     },
 
     containerMobile: {
