@@ -15,7 +15,6 @@ const routeMapping: Record<string, string> = {
   '/screens/listaprofissionais': '/screens/listaProfissionais',
   '/screens/agendadorusuario': '/screens/agendadorUsuario',
   '/screens/agendadorprofissional': '/screens/agendadorProfissional',
-  '/screens/diagnosticopagamento': '/screens/diagnosticoPagamento',
 };
 
 /**

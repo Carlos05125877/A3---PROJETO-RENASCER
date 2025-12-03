@@ -113,6 +113,6 @@ if (typeof window !== 'undefined') {
   console.log('💡 Use: ativarAssinaturaPorEmail("email@exemplo.com")');
   
   // Executar automaticamente para o email especificado quando o módulo for importado
-  // Isso será executado quando a página /screens/ativarAssinatura for carregada
+  // Função disponível para uso via console do navegador ou importação em outros módulos
 }
 

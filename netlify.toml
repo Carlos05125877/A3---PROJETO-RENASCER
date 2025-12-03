@@ -75,12 +75,6 @@
   status = 301
   force = true
 
-[[redirects]]
-  from = "/screens/diagnosticopagamento"
-  to = "/screens/diagnosticoPagamento"
-  status = 301
-  force = true
-
 # Redirecionamento catch-all para index.html (deve ser o último)
 [[redirects]]
   from = "/*"
