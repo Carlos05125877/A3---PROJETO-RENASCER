@@ -81,6 +81,12 @@
   status = 301
   force = true
 
+[[redirects]]
+  from = "/admin/dashboard"
+  to = "/admin/dashboard"
+  status = 301
+  force = true
+
 # Redirecionamento catch-all para index.html (deve ser o último)
 [[redirects]]
   from = "/*"

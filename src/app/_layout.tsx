@@ -26,7 +26,7 @@ const routeMapping: Record<string, string> = {
 function normalizeUrl(path: string): string | null {
   const lowerPath = path.toLowerCase();
   
-  // Verificar se há uma correspondência no mapeamento
+  // Verificar se há uma correspondência exata no mapeamento
   if (routeMapping[lowerPath]) {
     return routeMapping[lowerPath];
   }
@@ -39,6 +39,28 @@ function normalizeUrl(path: string): string | null {
       // Tentar encontrar correspondência parcial
       for (const [lowerRoute, correctRoute] of Object.entries(routeMapping)) {
         if (lowerRoute.includes(screenName)) {
+          return correctRoute;
+        }
+      }
+    }
+  }
+  
+  // Verificar rotas que começam com /admin/ e têm case incorreto
+  if (lowerPath.startsWith('/admin/')) {
+    // Primeiro, tentar correspondência exata
+    for (const [lowerRoute, correctRoute] of Object.entries(routeMapping)) {
+      if (lowerRoute.toLowerCase() === lowerPath) {
+        return correctRoute;
+      }
+    }
+    
+    // Se não encontrou, tentar correspondência parcial
+    const parts = lowerPath.split('/');
+    if (parts.length >= 3) {
+      const adminPage = parts[2];
+      for (const [lowerRoute, correctRoute] of Object.entries(routeMapping)) {
+        const routeParts = lowerRoute.toLowerCase().split('/');
+        if (routeParts.length >= 3 && routeParts[2] === adminPage) {
           return correctRoute;
         }
       }
