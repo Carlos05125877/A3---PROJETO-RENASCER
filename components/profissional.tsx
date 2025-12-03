@@ -1,7 +1,5 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-const { width, height } = Dimensions.get('window');
+import { Image, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 
 interface ProfissionalProps {
   nome: string;
@@ -26,37 +24,38 @@ export default function Profissional({
   onWhatsApp,
   onInstagram
 }: ProfissionalProps) {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+  
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isMobile && styles.containerMobile]}>
       {/* Header do perfil */}
-      <View style={styles.header}>
-        <View style={styles.avatarContainer}>
-          <Image source={{uri: imagem}} style={{width: 75, height: 75, borderRadius: 8}}/>
+      <View style={[styles.header, isMobile && styles.headerMobile]}>
+        <View style={[styles.avatarContainer, isMobile && styles.avatarContainerMobile]}>
+          <Image source={{uri: imagem}} style={[styles.avatarImage, isMobile && styles.avatarImageMobile]}/>
         </View>
 
 
-        <View>
+        <View style={styles.infoWrapper}>
           <View style={styles.infoContainer}>
-            <View style={styles.infoContainer}>
-              <Text style={styles.nome}>{nome}</Text>
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 8 }}>
+            <Text style={[styles.nome, isMobile && styles.nomeMobile]}>{nome}</Text>
+            <View style={[styles.infoRow, isMobile && styles.infoRowMobile]}>
               <View style={styles.infoContainer}>
-                <Text style={styles.especialidade}>{especialidade}</Text>
-                <Text style={styles.crp}>{crp}</Text>
+                <Text style={[styles.especialidade, isMobile && styles.especialidadeMobile]}>{especialidade}</Text>
+                <Text style={[styles.crp, isMobile && styles.crpMobile]}>{crp}</Text>
               </View>
               <View style={styles.iconsContainer}>
                 <TouchableOpacity onPress={onWhatsApp} style={styles.iconButton}>
                   <MaterialCommunityIcons
                     name="whatsapp"
-                    size={20}
+                    size={isMobile ? 18 : 20}
                     color="#000"
                   />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={onInstagram} style={styles.iconButton}>
                   <MaterialCommunityIcons
                     name="instagram"
-                    size={20}
+                    size={isMobile ? 18 : 20}
                     color="#000"
                   />
                 </TouchableOpacity>
@@ -67,22 +66,15 @@ export default function Profissional({
       </View>
 
 
-      <View style={styles.descricaoContainer}>
-        <Text style={styles.descricao}>{descricao}</Text>
+      <View style={[styles.descricaoContainer, isMobile && styles.descricaoContainerMobile]}>
+        <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>{descricao}</Text>
       </View>
       <View style={{
          width: '100%' }}>
-        <Text style={{
-          marginTop: 50,
-          textAlign: 'center',
-          fontFamily: 'Arial',
-          fontWeight: 'bold',
-          color: '#4285F4',
-          fontSize: 25
-        }}>{preco}</Text>
+        <Text style={[styles.preco, isMobile && styles.precoMobile]}>{preco}</Text>
       </View>
-      <TouchableOpacity style={styles.botaoAgendar} onPress={onAgendar}>
-        <Text style={styles.textoBotao}>Agendar</Text>
+      <TouchableOpacity style={[styles.botaoAgendar, isMobile && styles.botaoAgendarMobile]} onPress={onAgendar}>
+        <Text style={[styles.textoBotao, isMobile && styles.textoBotaoMobile]}>Agendar</Text>
       </TouchableOpacity>
     </View>
   )
@@ -126,9 +118,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  avatarImage: {
+    width: 75,
+    height: 75,
+    borderRadius: 8
+  },
+
+  infoWrapper: {
+    flex: 1,
+  },
+
   infoContainer: {
     flex: 1,
     gap: 8,
+  },
+
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    gap: 8
   },
 
   nome: {
@@ -173,6 +183,15 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
 
+  preco: {
+    marginTop: 50,
+    textAlign: 'center',
+    fontFamily: 'Arial',
+    fontWeight: 'bold',
+    color: '#4285F4',
+    fontSize: 25
+  },
+
   botaoAgendar: {
     alignSelf: 'center',
     backgroundColor: '#4285F4',
@@ -187,5 +206,76 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     fontFamily: 'Inria Sans',
+  },
+
+  // Estilos Mobile
+  containerMobile: {
+    width: '100%',
+    height: 'auto',
+    padding: 15,
+    paddingHorizontal: 20,
+    marginBottom: 15,
+  },
+
+  headerMobile: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 12,
+  },
+
+  avatarContainerMobile: {
+    width: 100,
+    height: 100,
+  },
+
+  avatarImageMobile: {
+    width: 100,
+    height: 100,
+  },
+
+  infoRowMobile: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 10,
+  },
+
+  nomeMobile: {
+    fontSize: 22,
+    textAlign: 'center',
+  },
+
+  especialidadeMobile: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+
+  crpMobile: {
+    fontSize: 12,
+    textAlign: 'center',
+  },
+
+  descricaoContainerMobile: {
+    height: 'auto',
+    minHeight: 100,
+  },
+
+  descricaoMobile: {
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+  },
+
+  precoMobile: {
+    marginTop: 20,
+    fontSize: 20,
+  },
+
+  botaoAgendarMobile: {
+    width: '100%',
+    paddingHorizontal: 20,
+  },
+
+  textoBotaoMobile: {
+    fontSize: 14,
   },
 })

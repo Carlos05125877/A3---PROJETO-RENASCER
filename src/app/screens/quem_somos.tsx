@@ -1,8 +1,11 @@
 import Topo from "@/components/topo";
 import React from "react";
-import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 
 export default function QuemSomos() {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+  
   return (
     <View style={styles.containerPrincipal}>
       <View style={{ zIndex: 1 }}>
@@ -11,40 +14,40 @@ export default function QuemSomos() {
 
       <ScrollView
         style={styles.containerPrincipal}
-        contentContainerStyle={styles.containerConteudo}
+        contentContainerStyle={[styles.containerConteudo, isMobile && styles.containerConteudoMobile]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.wrapperConteudo}>
-          <Text style={styles.titulo}>Quem Somos</Text>
+        <View style={[styles.wrapperConteudo, isMobile && styles.wrapperConteudoMobile]}>
+          <Text style={[styles.titulo, isMobile && styles.tituloMobile]}>Quem Somos</Text>
           <View style={styles.linha} />
 
-          <Text style={styles.subtitulo}>Nossa missão</Text>
-          <Text style={styles.texto}>
+          <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Nossa missão</Text>
+          <Text style={[styles.texto, isMobile && styles.textoMobile]}>
             Promover acolhimento, informação e ferramentas práticas para saúde mental, oferecendo conteúdos e recursos acessíveis que apoiem a autorregulação e o acesso a cuidados quando necessário. Faz parte da nossa missão disponibilizar um sistema confiável de agendamento e uma lista de profissionais cadastrados para facilitar o acesso a atendimento qualificado.
           </Text>
 
-          <Text style={styles.subtitulo}>Nossa visão</Text>
-          <Text style={styles.texto}>
+          <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Nossa visão</Text>
+          <Text style={[styles.texto, isMobile && styles.textoMobile]}>
             Ser uma plataforma de referência em suporte emocional e prevenção, conectando pessoas a informações confiáveis e atitudes que favoreçam o bem-estar. Visamos consolidar um ecossistema que reúne conteúdo, profissionais e, em breve, uma comunidade estruturada para suporte mútuo.
           </Text>
 
-          <Text style={styles.subtitulo}>O que fazemos</Text>
-          <Text style={styles.texto}>
+          <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>O que fazemos</Text>
+          <Text style={[styles.texto, isMobile && styles.textoMobile]}>
             Produzimos artigos educativos, guias de autocuidado e materiais práticos para situações de crise. Além disso, já oferecemos um sistema de agendamento e uma lista de profissionais cadastrados com perfis e disponibilidade para facilitar o acesso a cuidados (online e presencial). Trabalhamos para reduzir o estigma ligado à busca por ajuda profissional e para aumentar a literacia em saúde mental.
           </Text>
 
-          <Text style={styles.subtitulo}>Agendamento e lista de profissionais</Text>
-          <Text style={styles.texto}>
+          <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Agendamento e lista de profissionais</Text>
+          <Text style={[styles.texto, isMobile && styles.textoMobile]}>
             Nosso sistema de agendamento e a lista de profissionais já estão disponíveis na plataforma. Cada profissional possui perfil com especialidade, breve biografia, idiomas atendidos e disponibilidade. Usuários podem filtrar por especialidade, região e modalidade (online/presencial) e salvar profissionais favoritos para contato rápido.
           </Text>
 
-          <Text style={styles.subtitulo}>Comunidade (em desenvolvimento)</Text>
-          <Text style={styles.texto}>
+          <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Comunidade (em desenvolvimento)</Text>
+          <Text style={[styles.texto, isMobile && styles.textoMobile]}>
             Estamos desenvolvendo uma comunidade segura e moderada onde usuários poderão participar de grupos de apoio, discutir conteúdos, compartilhar estratégias de autocuidado e participar de eventos e rodas temáticas online. A comunidade será construída com foco em privacidade, respeito e suporte mútuo.
           </Text>
 
-          <Text style={styles.subtitulo}>Equipe</Text>
-          <View style={styles.blocoEquipe}>
+          <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Equipe</Text>
+          <View style={[styles.blocoEquipe, isMobile && styles.blocoEquipeMobile]}>
             <View style={styles.membro}>
               <View style={styles.infoMembro}>
                 <Text style={styles.nomeMembro}>Alex Fernandes</Text>
@@ -92,10 +95,10 @@ export default function QuemSomos() {
           
 
           <TouchableOpacity
-            style={styles.botaoContato}
+            style={[styles.botaoContato, isMobile && styles.botaoContatoMobile]}
             onPress={() => Linking.openURL("https://www.instagram.com/renascer_apoiopsicologico/")}
           >
-            <Text style={styles.textoBotao}>Contato</Text>
+            <Text style={[styles.textoBotao, isMobile && styles.textoBotaoMobile]}>Contato</Text>
           </TouchableOpacity>
 
           <View style={{ height: 40 }} />
@@ -194,5 +197,47 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "700",
+  },
+
+  // Estilos Mobile
+  containerConteudoMobile: {
+    paddingTop: 8,
+    paddingBottom: 20,
+  },
+
+  wrapperConteudoMobile: {
+    paddingHorizontal: 12,
+  },
+
+  tituloMobile: {
+    fontSize: 24,
+    marginBottom: 6,
+  },
+
+  subtituloMobile: {
+    fontSize: 18,
+    marginTop: 10,
+    marginBottom: 6,
+  },
+
+  textoMobile: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 10,
+  },
+
+  blocoEquipeMobile: {
+    marginTop: 6,
+    marginBottom: 12,
+  },
+
+  botaoContatoMobile: {
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    alignSelf: "center",
+  },
+
+  textoBotaoMobile: {
+    fontSize: 14,
   },
 });

@@ -1,11 +1,12 @@
 import { auth, buscarDadosFirestore } from '@/back-end/Api';
 import { deslogar } from '@/back-end/api.cadastroLogin';
 import Entypo from '@expo/vector-icons/Entypo';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 
 
 
@@ -15,7 +16,10 @@ export default function Topo() {
   const [user, setUser] = useState<any>(null);
   const [urlImagem, setUrlImagem] = useState<string | undefined>(undefined);
   const [criarConta, setCriarConta] = useState(false);
+  const [menuAberto, setMenuAberto] = useState(false);
   const dadosUser = useRef <Record<string, string> | undefined>({})
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
 
   useEffect(
     () => {
@@ -56,99 +60,114 @@ export default function Topo() {
   const router = useRouter();
 
   return (
-    <View style={styles.topoPagina}>
+    <View style={[styles.topoPagina, isMobile && styles.topoPaginaMobile]}>
       {/* Lado esquerdo */}
-      <View style={styles.topoPaginaEsquerda}>
+      <View style={[styles.topoPaginaEsquerda, isMobile && styles.topoPaginaEsquerdaMobile]}>
         <View>
-          <TouchableOpacity style={ {flexDirection: 'row', alignItems: 'center', gap: 10} }
+          <TouchableOpacity style={ {flexDirection: 'row', alignItems: 'center', gap: isMobile ? 5 : 10} }
             onPress={ () => router.push('/')}>
-            <Image style={styles.logo}
+            <Image style={[styles.logo, isMobile && styles.logoMobile]}
               source={require('../assets/images/Logo.png')} />
-            <View>
-              <Text style={styles.textoLogo}>
-                Renascer
-              </Text>
-              <Text style={styles.subtituloLogo}>
-                Apoio Psicológico Digital
-              </Text>
-            </View>
+            {!isMobile && (
+              <View>
+                <Text style={styles.textoLogo}>
+                  Renascer
+                </Text>
+                <Text style={styles.subtituloLogo}>
+                  Apoio Psicológico Digital
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => (router.push('/screens/quem_somos' as any))}>
-          <Text style={styles.textoComoFuncionaBlog}>
-            Quem somos
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => (router.push('/screens/blog_dicas' as any))}>
-          <Text style={styles.textoComoFuncionaBlog}>
-            Blog
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => (router.push('/screens/em_desenvolvimento' as any))}>
-          <Text style={styles.textoComoFuncionaBlog}>
-            Comunidade
-          </Text>
-        </TouchableOpacity>
+        {!isMobile ? (
+          <>
+            <TouchableOpacity onPress={() => (router.push('/screens/quem_somos' as any))}>
+              <Text style={styles.textoComoFuncionaBlog}>
+                Quem somos
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => (router.push('/screens/blog_dicas' as any))}>
+              <Text style={styles.textoComoFuncionaBlog}>
+                Blog
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => (router.push('/screens/em_desenvolvimento' as any))}>
+              <Text style={styles.textoComoFuncionaBlog}>
+                Comunidade
+              </Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <TouchableOpacity 
+            onPress={() => setMenuAberto(!menuAberto)}
+            style={styles.menuHamburguer}
+          >
+            <Ionicons name={menuAberto ? "close" : "menu"} size={28} color="#000" />
+          </TouchableOpacity>
+        )}
 
       </View>
 
       {/* Lado direito */}
-      <View
-        style={styles.topoPaginaDireita}>
-        <TouchableOpacity style={styles.botaoAgendamentoEntrar} 
-        onPress={() => (router.push('/screens/lista_profissionais' as any))}>
-          <MaterialCommunityIcons name='calendar' size={24} color='#FFFFFF' />
-          <Text style={styles.textoBotaoAgendamentoEntrar}>
-            Agendar Consulta
-          </Text>
-        </TouchableOpacity>
-        <View>
-          <TouchableOpacity
-            onPress={() => {
-              !logado ? setCriarConta(!criarConta)
-                : deslogar()
-            }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.textoBotaoCriarConta}>
-                {!logado ? 'Criar Conta' : 'Sair'}
-              </Text>
-              {!logado && (
-                criarConta ?
-                  <Entypo name="chevron-small-up" size={24} color="#336BF7" />
-                  :
-                  <Entypo name="chevron-small-down" size={24} color="#336BF7" />
-              )}
-            </View>
+      <View style={[styles.topoPaginaDireita, isMobile && styles.topoPaginaDireitaMobile]}>
+        {!isMobile && (
+          <TouchableOpacity style={styles.botaoAgendamentoEntrar} 
+          onPress={() => (router.push('/screens/lista_profissionais' as any))}>
+            <MaterialCommunityIcons name='calendar' size={24} color='#FFFFFF' />
+            <Text style={styles.textoBotaoAgendamentoEntrar}>
+              Agendar Consulta
+            </Text>
           </TouchableOpacity>
-          {criarConta && (
-            <View style={{width: 95, height: 50, gap: 5, position: 'absolute', marginTop: '25%', marginLeft:'0%' }}>
-              <TouchableOpacity
-                onPress={() => router.push('/screens/cadastro_usuarios' as any)} 
-                style={styles.boxBotoesCriarConta}>
-                <Text style={{color:'#ffff'}}>
-                 Usuario
+        )}
+        {!isMobile && (
+          <View>
+            <TouchableOpacity
+              onPress={() => {
+                !logado ? setCriarConta(!criarConta)
+                  : deslogar()
+              }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.textoBotaoCriarConta}>
+                  {!logado ? 'Criar Conta' : 'Sair'}
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => router.push('/screens/cadastro_profissional' as any)}
-                style={styles.boxBotoesCriarConta}>
-                <Text style={{color: '#fff'}}>
-                  Profissional
-                </Text>
-              </TouchableOpacity>
-            </View>)}
-        </View>
+                {!logado && (
+                  criarConta ?
+                    <Entypo name="chevron-small-up" size={24} color="#336BF7" />
+                    :
+                    <Entypo name="chevron-small-down" size={24} color="#336BF7" />
+                )}
+              </View>
+            </TouchableOpacity>
+            {criarConta && (
+              <View style={{width: 95, height: 50, gap: 5, position: 'absolute', marginTop: '25%', marginLeft:'0%' }}>
+                <TouchableOpacity
+                  onPress={() => router.push('/screens/cadastro_usuarios' as any)} 
+                  style={styles.boxBotoesCriarConta}>
+                  <Text style={{color:'#ffff'}}>
+                   Usuario
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => router.push('/screens/cadastro_profissional' as any)}
+                  style={styles.boxBotoesCriarConta}>
+                  <Text style={{color: '#fff'}}>
+                    Profissional
+                  </Text>
+                </TouchableOpacity>
+              </View>)}
+          </View>
+        )}
 
         {!logado ? (
           <TouchableOpacity
             onPress={() => router.push('/screens/login')}
-            style={[styles.botaoAgendamentoEntrar, { width: '15%' }]}
+            style={[styles.botaoAgendamentoEntrar, isMobile && styles.botaoEntrarMobile]}
           >
-            <Text
-              style={styles.textoBotaoAgendamentoEntrar}>
-              Entrar
+            <Text style={styles.textoBotaoAgendamentoEntrar}>
+              {isMobile ? 'Entrar' : 'Entrar'}
             </Text>
           </TouchableOpacity>
         ) : (
@@ -158,13 +177,111 @@ export default function Topo() {
               : '/screens/agendador_usuario';
             router.push(rota as any);
           }}>
-          <Image
-            source={{ uri: urlImagem }}
-            style={{ width: 40, height: 40, borderRadius: 20 }}
-          />
+          {urlImagem ? (
+            <Image
+              source={{ uri: urlImagem }}
+              style={[styles.avatar, isMobile && styles.avatarMobile]}
+            />
+          ) : (
+            <View style={[styles.avatar, isMobile && styles.avatarMobile, { backgroundColor: '#336BF7', justifyContent: 'center', alignItems: 'center' }]}>
+              <Text style={{ color: '#FFF', fontSize: isMobile ? 14 : 16, fontWeight: 'bold' }}>
+                {user?.email?.charAt(0).toUpperCase() || 'U'}
+              </Text>
+            </View>
+          )}
           </TouchableOpacity>
         )}
       </View>
+
+      {/* Menu Mobile */}
+      {isMobile && menuAberto && (
+        <View style={styles.menuMobile}>
+          <TouchableOpacity 
+            onPress={() => {
+              router.push('/screens/quem_somos' as any);
+              setMenuAberto(false);
+            }}
+            style={styles.itemMenuMobile}
+          >
+            <Text style={styles.textoMenuMobile}>Quem somos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => {
+              router.push('/screens/blog_dicas' as any);
+              setMenuAberto(false);
+            }}
+            style={styles.itemMenuMobile}
+          >
+            <Text style={styles.textoMenuMobile}>Blog</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => {
+              router.push('/screens/em_desenvolvimento' as any);
+              setMenuAberto(false);
+            }}
+            style={styles.itemMenuMobile}
+          >
+            <Text style={styles.textoMenuMobile}>Comunidade</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => {
+              router.push('/screens/lista_profissionais' as any);
+              setMenuAberto(false);
+            }}
+            style={styles.itemMenuMobile}
+          >
+            <MaterialCommunityIcons name='calendar' size={20} color='#336BF7' />
+            <Text style={styles.textoMenuMobile}>Agendar Consulta</Text>
+          </TouchableOpacity>
+          {!logado && (
+            <>
+              <TouchableOpacity 
+                onPress={() => {
+                  setCriarConta(!criarConta);
+                }}
+                style={styles.itemMenuMobile}
+              >
+                <Text style={styles.textoMenuMobile}>
+                  {criarConta ? 'Criar Conta ▲' : 'Criar Conta ▼'}
+                </Text>
+              </TouchableOpacity>
+              {criarConta && (
+                <View style={styles.subMenuMobile}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      router.push('/screens/cadastro_usuarios' as any);
+                      setMenuAberto(false);
+                    }}
+                    style={styles.itemSubMenuMobile}
+                  >
+                    <Text style={styles.textoSubMenuMobile}>Usuario</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      router.push('/screens/cadastro_profissional' as any);
+                      setMenuAberto(false);
+                    }}
+                    style={styles.itemSubMenuMobile}
+                  >
+                    <Text style={styles.textoSubMenuMobile}>Profissional</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </>
+          )}
+          {logado && (
+            <TouchableOpacity 
+              onPress={() => {
+                deslogar();
+                setMenuAberto(false);
+              }}
+              style={styles.itemMenuMobile}
+            >
+              <Text style={styles.textoMenuMobile}>Sair</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
     </View>
   );
 }
@@ -287,7 +404,107 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '50%',
     zIndex: 10
-  }
+  },
+
+  // Estilos Mobile
+  topoPaginaMobile: {
+    flexDirection: 'column',
+    padding: 8,
+    minHeight: 60,
+  },
+
+  topoPaginaEsquerdaMobile: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'space-between',
+    gap: 0,
+  },
+
+  logoMobile: {
+    width: 30,
+    height: 30,
+  },
+
+  menuHamburguer: {
+    padding: 5,
+  },
+
+  topoPaginaDireitaMobile: {
+    flex: 1,
+    width: '100%',
+    marginRight: 0,
+    marginTop: 10,
+    justifyContent: 'flex-end',
+    gap: 10,
+  },
+
+  botaoEntrarMobile: {
+    width: 'auto',
+    minWidth: 80,
+    paddingHorizontal: 15,
+    height: 35,
+  },
+
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+
+  avatarMobile: {
+    width: 35,
+    height: 35,
+    borderRadius: 17.5,
+  },
+
+  menuMobile: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    backgroundColor: '#FFF',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+    paddingVertical: 10,
+    zIndex: 1000,
+    boxShadow: '0px 4px 8px rgba(100, 100, 100, 0.2)',
+  },
+
+  itemMenuMobile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    gap: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+
+  textoMenuMobile: {
+    color: '#000',
+    fontFamily: "Inria Sans",
+    fontSize: 16,
+    fontWeight: 400,
+  },
+
+  subMenuMobile: {
+    backgroundColor: '#f8f8f8',
+    paddingLeft: 20,
+  },
+
+  itemSubMenuMobile: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e8e8e8',
+  },
+
+  textoSubMenuMobile: {
+    color: '#336BF7',
+    fontFamily: "Inria Sans",
+    fontSize: 14,
+    fontWeight: 400,
+  },
 
 }
 )

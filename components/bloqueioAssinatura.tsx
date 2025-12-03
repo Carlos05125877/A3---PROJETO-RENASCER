@@ -3,13 +3,15 @@ import { verificarAssinatura } from '@/back-end/api.assinatura';
 import { useRouter } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, AppState, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 
 interface BloqueioAssinaturaProps {
   children: React.ReactNode;
 }
 
 export default function BloqueioAssinatura({ children }: BloqueioAssinaturaProps) {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [isAssinante, setIsAssinante] = useState(false);
@@ -141,25 +143,25 @@ export default function BloqueioAssinatura({ children }: BloqueioAssinaturaProps
       <View style={styles.container}>
         
         <View style={styles.bloqueioContainer}>
-          <View style={styles.cardBloqueio}>
-            <Text style={styles.iconeBloqueio}>🔒</Text>
-            <Text style={styles.tituloBloqueio}>Conteúdo Exclusivo</Text>
-            <Text style={styles.descricaoBloqueio}>
+          <View style={[styles.cardBloqueio, isMobile && styles.cardBloqueioMobile]}>
+            <Text style={[styles.iconeBloqueio, isMobile && styles.iconeBloqueioMobile]}>🔒</Text>
+            <Text style={[styles.tituloBloqueio, isMobile && styles.tituloBloqueioMobile]}>Conteúdo Exclusivo</Text>
+            <Text style={[styles.descricaoBloqueio, isMobile && styles.descricaoBloqueioMobile]}>
               Este conteúdo está disponível apenas para assinantes. Assine agora para ter acesso completo ao blog com artigos exclusivos sobre saúde mental.
             </Text>
             
-            <View style={styles.beneficiosContainer}>
-              <Text style={styles.beneficiosTitulo}>Com a assinatura você tem:</Text>
-              <Text style={styles.beneficioItem}>✓ Acesso ilimitado a todos os artigos</Text>
-              <Text style={styles.beneficioItem}>✓ Conteúdo exclusivo e atualizado</Text>
-              <Text style={styles.beneficioItem}>✓ Suporte prioritário</Text>
+            <View style={[styles.beneficiosContainer, isMobile && styles.beneficiosContainerMobile]}>
+              <Text style={[styles.beneficiosTitulo, isMobile && styles.beneficiosTituloMobile]}>Com a assinatura você tem:</Text>
+              <Text style={[styles.beneficioItem, isMobile && styles.beneficioItemMobile]}>✓ Acesso ilimitado a todos os artigos</Text>
+              <Text style={[styles.beneficioItem, isMobile && styles.beneficioItemMobile]}>✓ Conteúdo exclusivo e atualizado</Text>
+              <Text style={[styles.beneficioItem, isMobile && styles.beneficioItemMobile]}>✓ Suporte prioritário</Text>
             </View>
 
             <TouchableOpacity
-              style={styles.botaoAssinar}
+              style={[styles.botaoAssinar, isMobile && styles.botaoAssinarMobile]}
               onPress={() => router.push('/screens/assinatura')}
             >
-              <Text style={styles.textoBotaoAssinar}>Assinar por R$ 9,99</Text>
+              <Text style={[styles.textoBotaoAssinar, isMobile && styles.textoBotaoAssinarMobile]}>Assinar por R$ 9,99</Text>
             </TouchableOpacity>
 
             {!user && (
@@ -167,7 +169,7 @@ export default function BloqueioAssinatura({ children }: BloqueioAssinaturaProps
                 style={styles.botaoLogin}
                 onPress={() => router.push('/screens/login')}
               >
-                <Text style={styles.textoBotaoLogin}>Já tem conta? Faça login</Text>
+                <Text style={[styles.textoBotaoLogin, isMobile && styles.textoBotaoLoginMobile]}>Já tem conta? Faça login</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -271,6 +273,57 @@ const styles = StyleSheet.create({
     color: '#336BF7',
     fontSize: 16,
     fontWeight: '600',
+  },
+
+  // Estilos Mobile
+  cardBloqueioMobile: {
+    padding: 20,
+    maxWidth: '100%',
+  },
+
+  iconeBloqueioMobile: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+
+  tituloBloqueioMobile: {
+    fontSize: 22,
+    marginBottom: 12,
+  },
+
+  descricaoBloqueioMobile: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 20,
+  },
+
+  beneficiosContainerMobile: {
+    padding: 12,
+    marginBottom: 20,
+  },
+
+  beneficiosTituloMobile: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+
+  beneficioItemMobile: {
+    fontSize: 14,
+    marginBottom: 6,
+    lineHeight: 20,
+  },
+
+  botaoAssinarMobile: {
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+  },
+
+  textoBotaoAssinarMobile: {
+    fontSize: 16,
+  },
+
+  textoBotaoLoginMobile: {
+    fontSize: 14,
   },
 });
 

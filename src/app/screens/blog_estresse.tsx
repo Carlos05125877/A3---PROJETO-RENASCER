@@ -2,10 +2,12 @@ import BloqueioAssinatura from "@/components/bloqueioAssinatura";
 import Topo from "@/components/topo";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 
 export default function blogEstresse() {
     const router = useRouter();
+    const { width } = useWindowDimensions();
+    const isMobile = width < 768;
     
     return (
       <BloqueioAssinatura>
@@ -16,140 +18,131 @@ export default function blogEstresse() {
           <ScrollView >
             <View style={styles.containerPrincipal}>
                 <View>
-                    <Text style={styles.titulo}>Estresse</Text>
+                    <Text style={[styles.titulo, isMobile && styles.tituloMobile]}>Estresse</Text>
                 </View>
                     
                 <View style={styles.linha}/>
                 
-                <View style={[styles.conteudoPrincipal, {width: '64%',}]}>
-                    <Text style={styles.subtitulo}>Estresse: Entenda as Causas, Sintomas e Como Prevenir – Interaja e Descubra Seu Nível de Bem-Estar</Text>
-                    <Text style={styles.descricao}>
+                <View style={[styles.conteudoPrincipal, {width: isMobile ? '100%' : '64%'}, isMobile && styles.conteudoPrincipalMobile]}>
+                    <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Estresse: Entenda as Causas, Sintomas e Como Prevenir – Interaja e Descubra Seu Nível de Bem-Estar</Text>
+                    <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>
                         O estresse faz parte da vida moderna, mas isso não significa que devemos aceitá-lo como algo normal. De alerta, o estresse é uma resposta natural do corpo e da mente a situações desafiadoras. Neste conteúdo, você vai descobrir o que está por trás do estresse, identificar sinais no seu dia a dia e aprender estratégias práticas para preveni-lo.
                     </Text>
                     
                     <View style={styles.conteudoSegundario}>
-                        <View style={styles.linhaConteudo}>
+                        <View style={[styles.linhaConteudo, isMobile && styles.linhaConteudoMobile]}>
                             <View style={styles.textoLado}>
                                 <View style={styles.iconeComTitulo}>
-                                    
-                                    <Text style={styles.subtitulo}>O que é Estresse?</Text>
+                                    <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>O que é Estresse?</Text>
                                 </View>
-                                <Text style={styles.descricao}>O estresse é uma reação natural do corpo diante de situações que exigem adaptação. Ele ativa o chamado "modo alerta", preparando você para lidar com desafios. O problema aparece quando essa ativação é constante — o que chamamos de estresse crônico.</Text>
-                                <Text style={styles.labelInteraja}>Interaja:</Text>
-                                <Text style={styles.pausaReflexao}>Quando você pensa na sua rotina, qual palavra vem primeiro à sua mente: "pressão", "correria" ou "tranquilidade"?</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>O estresse é uma reação natural do corpo diante de situações que exigem adaptação. Ele ativa o chamado "modo alerta", preparando você para lidar com desafios. O problema aparece quando essa ativação é constante — o que chamamos de estresse crônico.</Text>
+                                <Text style={[styles.labelInteraja, isMobile && styles.labelInterajaMobile]}>Interaja:</Text>
+                                <Text style={[styles.pausaReflexao, isMobile && styles.pausaReflexaoMobile]}>Quando você pensa na sua rotina, qual palavra vem primeiro à sua mente: "pressão", "correria" ou "tranquilidade"?</Text>
                             </View>
                             
                         </View>
                     </View>
 
                     <View style={styles.conteudoSegundario}>
-                        <View style={styles.linhaConteudo}>
-                            <Image source={require("../../../assets/images/estresse2.png")} style={styles.imagemConteudo2} />
+                        <View style={[styles.linhaConteudo, isMobile && styles.linhaConteudoMobile]}>
+                            {!isMobile && (
+                                <Image source={require("../../../assets/images/estresse2.png")} style={styles.imagemConteudo2} />
+                            )}
                             <View style={styles.textoLado}>
-                                <Text style={styles.subtitulo}>Principais Causas do Estresse</Text>
-                                <Text style={styles.descricao}>O estresse pode ter diversas origens. Aqui estão algumas das mais comuns:</Text>
-                                <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>1. Excesso de responsabilidades</Text> - Trabalho, família, prazos - tudo acumulando ao mesmo tempo.</Text>
-                                <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>2. Problemas financeiros</Text> - Desemprego, dívidas e gastos podem desestabilizar.</Text>
-                                <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>3. Conflitos pessoais</Text> - Desentendimentos em relacionamentos e amizades.</Text>
-                                <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>4. Saúde física debilitada</Text> - Cansaço extremo ou falta de sono afetam drasticamente.</Text>
-                                <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>5. Mudanças significativas</Text> - Mudanças de emprego, término de relacionamento, etc.</Text>
-                                <Text style={styles.pausaReflexao}>Pergunta para você: Alguma dessas causas está presente na sua vida agora?</Text>
+                                <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Principais Causas do Estresse</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>O estresse pode ter diversas origens. Aqui estão algumas das mais comuns:</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}><Text style={{fontWeight: '700'}}>1. Excesso de responsabilidades</Text> - Trabalho, família, prazos - tudo acumulando ao mesmo tempo.</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}><Text style={{fontWeight: '700'}}>2. Problemas financeiros</Text> - Desemprego, dívidas e gastos podem desestabilizar.</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}><Text style={{fontWeight: '700'}}>3. Conflitos pessoais</Text> - Desentendimentos em relacionamentos e amizades.</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}><Text style={{fontWeight: '700'}}>4. Saúde física debilitada</Text> - Cansaço extremo ou falta de sono afetam drasticamente.</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}><Text style={{fontWeight: '700'}}>5. Mudanças significativas</Text> - Mudanças de emprego, término de relacionamento, etc.</Text>
+                                <Text style={[styles.pausaReflexao, isMobile && styles.pausaReflexaoMobile]}>Pergunta para você: Alguma dessas causas está presente na sua vida agora?</Text>
                             </View>
                         </View>
                     </View>
 
                     <View style={styles.conteudoPrincipal}>
                         <View style={styles.iconeComTitulo}>
-                            
-                            <Text style={styles.subtitulo}>Sintomas do Estresse: Fique Atento ao Seu Corpo e à Sua Mente</Text>
+                            <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Sintomas do Estresse: Fique Atento ao Seu Corpo e à Sua Mente</Text>
                         </View>
-                        <Text style={styles.descricao}>O estresse se manifesta de maneiras diferentes. Veja os sintomas mais frequentes:</Text>
+                        <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>O estresse se manifesta de maneiras diferentes. Veja os sintomas mais frequentes:</Text>
                         
-                        <View style={styles.linhaConteudo}>
+                        <View style={[styles.linhaConteudo, isMobile && styles.linhaConteudoMobile]}>
                             <View style={styles.textoLado}>
-                                <Text style={styles.labelSintomas}>Sintomas físicos</Text>
-                                <Text style={styles.itemSintoma}>• Dor de cabeça</Text>
-                                <Text style={styles.itemSintoma}>• Tensão muscular</Text>
-                                <Text style={styles.itemSintoma}>• Insônia</Text>
-                                <Text style={styles.itemSintoma}>• Cansaço constante</Text>
-                                <Text style={styles.itemSintoma}>• Problemas digestivos</Text>
-                                <Text style={styles.itemSintoma}>• Alterações no apetite</Text>
+                                <Text style={[styles.labelSintomas, isMobile && styles.labelSintomasMobile]}>Sintomas físicos</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Dor de cabeça</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Tensão muscular</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Insônia</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Cansaço constante</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Problemas digestivos</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Alterações no apetite</Text>
                                 
-                                <Text style={[styles.labelSintomas, {marginTop: 16}]}>Sintomas emocionais</Text>
-                                <Text style={styles.itemSintoma}>• Irritabilidade</Text>
-                                <Text style={styles.itemSintoma}>• Ansiedade</Text>
-                                <Text style={styles.itemSintoma}>• Sensação de sobrecarga</Text>
-                                <Text style={styles.itemSintoma}>• Falta de motivação</Text>
-                                <Text style={styles.itemSintoma}>• Tristeza sem motivo claro</Text>
+                                <Text style={[styles.labelSintomas, {marginTop: 16}, isMobile && styles.labelSintomasMobile]}>Sintomas emocionais</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Irritabilidade</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Ansiedade</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Sensação de sobrecarga</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Falta de motivação</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Tristeza sem motivo claro</Text>
                                 
-                                <Text style={[styles.labelSintomas, {marginTop: 16}]}>Sintomas comportamentais</Text>
-                                <Text style={styles.itemSintoma}>• Procrastinação</Text>
-                                <Text style={styles.itemSintoma}>• Agressividade</Text>
-                                <Text style={styles.itemSintoma}>• Isolamento</Text>
-                                <Text style={styles.itemSintoma}>• Uso exagerado de comida, álcool ou telas como "escape"</Text>
+                                <Text style={[styles.labelSintomas, {marginTop: 16}, isMobile && styles.labelSintomasMobile]}>Sintomas comportamentais</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Procrastinação</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Agressividade</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Isolamento</Text>
+                                <Text style={[styles.itemSintoma, isMobile && styles.itemSintomaMobile]}>• Uso exagerado de comida, álcool ou telas como "escape"</Text>
                             </View>
                             
-                            <Image source={require("../../../assets/images/estresse3.png")} style={styles.imagemConteudo} />
+                            {!isMobile && (
+                                <Image source={require("../../../assets/images/estresse3.png")} style={styles.imagemConteudo} />
+                            )}
                         </View>
                     </View>
 
                     <View style={styles.conteudoPrincipal}>
-                        <Text style={styles.subtitulo}>Principais Causas do Estresse</Text>
-                        <Text style={styles.descricao}>O estresse pode ter diversas origens. Aqui estão algumas das mais comuns:</Text>
-                        <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>1. Excesso de responsabilidades</Text> - Trabalho, família, prazos - tudo acumulando ao mesmo tempo.</Text>
-                        <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>2. Problemas financeiros</Text> - Desemprego, dívidas e gastos podem desestabilizar.</Text>
-                        <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>3. Conflitos pessoais</Text> - Desentendimentos em relacionamentos e amizades.</Text>
-                        <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>4. Saúde física debilitada</Text> - Cansaço extremo ou falta de sono afetam drasticamente.</Text>
-                        <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>5. Mudanças significativas</Text> - Mudanças de emprego, término de relacionamento, etc.</Text>
-                        <Text style={styles.pausaReflexao}>Pergunta para você: Alguma dessas causas está presente na sua vida agora?</Text>
-                    </View>
-
-                    <View style={styles.conteudoPrincipal}>
-                        <Text style={styles.subtitulo}>Como Prevenir o Estresse: Estratégias Práticas</Text>
-                        <Text style={styles.descricao}>A prevenção começa com pequenas ações diárias. Aqui estão estratégias eficazes:</Text>
+                        <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Como Prevenir o Estresse: Estratégias Práticas</Text>
+                        <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>A prevenção começa com pequenas ações diárias. Aqui estão estratégias eficazes:</Text>
                         
                         <View style={{marginVertical: 12}}>
-                            <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>A. Hábitos básicos</Text> - Aprenda a dizer "não" quando necessário. Isso agora não quer dizer sempre "não" - significa priorizar sua saúde mental.</Text>
-                            <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>B. Rotina de sono</Text> - Use toalhas, calendários e blocos de tarefas, isso otimiza seu plano mental.</Text>
-                            <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>C. Invista em pausa consciente</Text> - Tire um tempo diariamente, ainda que cinco minutos. Pequenos momentos podem fazer grandes diferenças.</Text>
-                            <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>D. Durma melhor</Text> - Durma à noite como prioridade - não coma tarde.</Text>
-                            <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>E. Conecte-se com pessoas</Text> - Converse com amigos e familiares e fortalecam vínculos pessoais.</Text>
-                            <Text style={styles.descricao}><Text style={{fontWeight: '700'}}>F. Use Técnicas de relaxamento</Text></Text>
-                            <Text style={styles.descricao}>   • Meditação</Text>
-                            <Text style={styles.descricao}>   • Respiração 4-7-8</Text>
-                            <Text style={styles.descricao}>   • Alongamento</Text>
-                            <Text style={styles.descricao}>   • Música relaxante</Text>
+                            <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}><Text style={{fontWeight: '700'}}>A. Hábitos básicos</Text> - Aprenda a dizer "não" quando necessário. Isso agora não quer dizer sempre "não" - significa priorizar sua saúde mental.</Text>
+                            <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}><Text style={{fontWeight: '700'}}>B. Rotina de sono</Text> - Use toalhas, calendários e blocos de tarefas, isso otimiza seu plano mental.</Text>
+                            <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}><Text style={{fontWeight: '700'}}>C. Invista em pausa consciente</Text> - Tire um tempo diariamente, ainda que cinco minutos. Pequenos momentos podem fazer grandes diferenças.</Text>
+                            <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}><Text style={{fontWeight: '700'}}>D. Durma melhor</Text> - Durma à noite como prioridade - não coma tarde.</Text>
+                            <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}><Text style={{fontWeight: '700'}}>E. Conecte-se com pessoas</Text> - Converse com amigos e familiares e fortalecam vínculos pessoais.</Text>
+                            <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}><Text style={{fontWeight: '700'}}>F. Use Técnicas de relaxamento</Text></Text>
+                            <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>   • Meditação</Text>
+                            <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>   • Respiração 4-7-8</Text>
+                            <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>   • Alongamento</Text>
+                            <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>   • Música relaxante</Text>
                         </View>
                     </View>
 
-                    <View style={styles.cardImportante}>
+                    <View style={[styles.cardImportante, isMobile && styles.cardImportanteMobile]}>
                         <View style={styles.textoCardImportante}>
-                            <Text style={styles.labelCardImportante}>Lembrete importante:</Text>
-                            <Text style={styles.descricaoCardImportante}>Se você está constantemente estressado, não hesite em buscar apoio profissional. Um psicólogo pode ajudá-lo a desenvolver estratégias personalizadas.</Text>
+                            <Text style={[styles.labelCardImportante, isMobile && styles.labelCardImportanteMobile]}>Lembrete importante:</Text>
+                            <Text style={[styles.descricaoCardImportante, isMobile && styles.descricaoCardImportanteMobile]}>Se você está constantemente estressado, não hesite em buscar apoio profissional. Um psicólogo pode ajudá-lo a desenvolver estratégias personalizadas.</Text>
                         </View>
                         
                     </View>
 
                     <View style={styles.conteudoPrincipal}>
-                        <Text style={styles.subtitulo}>Cuidar do Estresse é Cuidar de Você</Text>
-                        <Text style={styles.descricao}>Identificar e prevenir o estresse é um ato de autocuidado. Pequenas mudanças na rotina podem transformar a qualidade de vida. Lembre-se: buscar ajuda profissional também faz parte do autocuidado, e não um sinal de fraqueza.</Text>
+                        <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Cuidar do Estresse é Cuidar de Você</Text>
+                        <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>Identificar e prevenir o estresse é um ato de autocuidado. Pequenas mudanças na rotina podem transformar a qualidade de vida. Lembre-se: buscar ajuda profissional também faz parte do autocuidado, e não um sinal de fraqueza.</Text>
                     </View>
 
-                    <Text style={styles.tituloSecao}>Últimos artigos</Text>
-                                    <View style={{ flexDirection: "column", gap: 12, alignItems: "flex-start" , width: '64%'}}>
-                                        <View style={styles.cartaoArtigo}>
-                                            <Image source={require("../../../assets/images/depression.png")} style={styles.imagemArtigo} />
+                    <Text style={[styles.tituloSecao, isMobile && styles.tituloSecaoMobile]}>Últimos artigos</Text>
+                                    <View style={{ flexDirection: "column", gap: 12, alignItems: "flex-start" , width: isMobile ? '100%' : '64%'}}>
+                                        <View style={[styles.cartaoArtigo, isMobile && styles.cartaoArtigoMobile]}>
+                                            <Image source={require("../../../assets/images/depression.png")} style={[styles.imagemArtigo, isMobile && styles.imagemArtigoMobile]} />
                                             <TouchableOpacity onPress={() => (router.push('/screens/blog_depressao' as any))}>
-                                            <Text style={styles.tituloArtigo}>
+                                            <Text style={[styles.tituloArtigo, isMobile && styles.tituloArtigoMobile]}>
                                                 Depressão: entendendo suas causas, sintomas e caminhos de tratamento
                                             </Text>
                                             </TouchableOpacity>
                                         </View>
                     
-                                        <View style={styles.cartaoArtigo}>
-                                            <Image source={require("../../../assets/images/anxiety.png")} style={styles.imagemArtigo} />
+                                        <View style={[styles.cartaoArtigo, isMobile && styles.cartaoArtigoMobile]}>
+                                            <Image source={require("../../../assets/images/anxiety.png")} style={[styles.imagemArtigo, isMobile && styles.imagemArtigoMobile]} />
                                             <TouchableOpacity onPress={() => (router.push('/screens/blog_ansiedade' as any))}>
-                                            <Text style={styles.tituloArtigo}>
+                                            <Text style={[styles.tituloArtigo, isMobile && styles.tituloArtigoMobile]}>
                                                 Ansiedade: entendendo suas origens, sintomas e como encontrar o equilíbrio
                                             </Text>
                                             </TouchableOpacity>
@@ -350,4 +343,78 @@ const styles = StyleSheet.create({
         lineHeight: 20,
         marginBottom: 4,
     },
+
+    // Estilos Mobile
+    tituloMobile: {
+        fontSize: 24,
+    },
+
+    conteudoPrincipalMobile: {
+        paddingHorizontal: 15,
+    },
+
+    subtituloMobile: {
+        fontSize: 18,
+    },
+
+    descricaoMobile: {
+        fontSize: 14,
+        lineHeight: 20,
+        marginBottom: 10,
+    },
+
+    linhaConteudoMobile: {
+        flexDirection: 'column',
+        gap: 15,
+    },
+
+    labelInterajaMobile: {
+        fontSize: 14,
+    },
+
+    pausaReflexaoMobile: {
+        fontSize: 12,
+    },
+
+    labelSintomasMobile: {
+        fontSize: 12,
+    },
+
+    itemSintomaMobile: {
+        fontSize: 12,
+        lineHeight: 18,
+    },
+
+    cardImportanteMobile: {
+        flexDirection: 'column',
+        padding: 12,
+    },
+
+    labelCardImportanteMobile: {
+        fontSize: 14,
+    },
+
+    descricaoCardImportanteMobile: {
+        fontSize: 12,
+    },
+
+    tituloSecaoMobile: {
+        fontSize: 18,
+    },
+
+    cartaoArtigoMobile: {
+        width: '100%',
+        flexDirection: 'column',
+    },
+
+    imagemArtigoMobile: {
+        width: '100%',
+        height: 150,
+    },
+
+    tituloArtigoMobile: {
+        fontSize: 12,
+        width: '100%',
+    },
 });
+

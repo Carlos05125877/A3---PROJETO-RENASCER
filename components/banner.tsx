@@ -1,43 +1,52 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 
 
 export default function Banner() {
     const route = useRouter()
+    const { width } = useWindowDimensions();
+    const isMobile = width < 768;
+    
     return (
-        <View style={styles.box}>
-            <View style={{ flex: 0.65, gap: 40, paddingHorizontal: 25 }}>
-                <Text style={styles.titulo}> Cuide da sua saúde mental
+        <View style={[styles.box, isMobile && styles.boxMobile]}>
+            <View style={[styles.conteudoTexto, isMobile && styles.conteudoTextoMobile]}>
+                <Text style={[styles.titulo, isMobile && styles.tituloMobile]}> 
+                    Cuide da sua saúde mental
                     de maneira prática com{'\n'}Renascer
                 </Text>
-                <Text style={styles.subtitulo}>
+                <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>
                     Agende sessões, descubra insights sobre psicologia
                     e faça parte de uma rede com profissionais de
                     saúde
                 </Text>
             </View>
-            <View>
+            <View style={[styles.containerImagem, isMobile && styles.containerImagemMobile]}>
                 <Image source={require('../assets/images/Baneer.png')}
-                    style={{
-                        width: 400,
-                        height: 600,
-                        borderRadius: 20,
-                        marginRight: 175,
-                        marginBottom: 75,
-                        overflow: 'hidden'
-                    }} />
-                <View style={styles.miniBox}>
-                    <Text style={styles.tituloBox}>Agendamento de Sessões</Text>
-                    <Text style={styles.subtituloBox}>
+                    style={[
+                        styles.imagem,
+                        isMobile && {
+                            width: width * 0.8,
+                            height: width * 1.2,
+                            maxWidth: 300,
+                            maxHeight: 450,
+                            marginRight: 0,
+                            marginBottom: 0,
+                        }
+                    ]} />
+                <View style={[styles.miniBox, isMobile && styles.miniBoxMobile]}>
+                    <Text style={[styles.tituloBox, isMobile && styles.tituloBoxMobile]}>
+                        Agendamento de Sessões
+                    </Text>
+                    <Text style={[styles.subtituloBox, isMobile && styles.subtituloBoxMobile]}>
                         Encontre os melhores profissionais
                         com facilidade, veja valores, e datas
                         disponiveis e marque o melhor horário para
                         você.
                     </Text>
-                    <TouchableOpacity style={styles.botao}
+                    <TouchableOpacity style={[styles.botao, isMobile && styles.botaoMobile]}
                     onPress={() => route.push('/screens/lista_profissionais')}>
-                        <AntDesign name="arrow-right" size={24} color="white" />
+                        <AntDesign name="arrow-right" size={isMobile ? 20 : 24} color="white" />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -52,6 +61,12 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop: '4%',
         justifyContent: 'space-around'
+    },
+
+    conteudoTexto: {
+        flex: 0.65,
+        gap: 40,
+        paddingHorizontal: 25
     },
 
     titulo: {
@@ -70,6 +85,19 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: 'medium',
         marginHorizontal: 90
+    },
+
+    containerImagem: {
+        // Container para imagem e miniBox
+    },
+
+    imagem: {
+        width: 400,
+        height: 600,
+        borderRadius: 20,
+        marginRight: 175,
+        marginBottom: 75,
+        overflow: 'hidden'
     },
 
     miniBox: {
@@ -111,6 +139,69 @@ const styles = StyleSheet.create({
         height: '22%',
         alignItems: 'center',
         justifyContent: 'center',
-    }
+    },
+
+    // Estilos Mobile
+    boxMobile: {
+        flexDirection: 'column',
+        marginTop: '2%',
+        paddingHorizontal: 15,
+        alignItems: 'center',
+    },
+
+    conteudoTextoMobile: {
+        flex: 0,
+        gap: 20,
+        paddingHorizontal: 0,
+        width: '100%',
+        alignItems: 'center',
+    },
+
+    tituloMobile: {
+        fontSize: 28,
+        marginTop: 20,
+        paddingHorizontal: 10,
+    },
+
+    subtituloMobile: {
+        fontSize: 16,
+        marginHorizontal: 0,
+        paddingHorizontal: 10,
+    },
+
+    containerImagemMobile: {
+        width: '100%',
+        alignItems: 'center',
+        marginTop: 20,
+        position: 'relative',
+    },
+
+
+    miniBoxMobile: {
+        width: '90%',
+        height: 'auto',
+        minHeight: 150,
+        position: 'relative',
+        marginTop: -80,
+        marginLeft: 0,
+        paddingVertical: 15,
+        paddingHorizontal: 15,
+        gap: 15,
+    },
+
+    tituloBoxMobile: {
+        fontSize: 18,
+        paddingTop: 0,
+    },
+
+    subtituloBoxMobile: {
+        fontSize: 12,
+        paddingHorizontal: 15,
+    },
+
+    botaoMobile: {
+        width: 50,
+        height: 50,
+    },
 
 })

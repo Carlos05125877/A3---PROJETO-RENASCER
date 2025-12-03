@@ -1,11 +1,13 @@
 import Entypo from '@expo/vector-icons/Entypo';
 import React, { useRef } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 
 export default function Relatos() {
     //hook que permite avançar ou retroceder o carrossel pelo botao
     const manualCarrosel = useRef<ICarouselInstance> (null);
+    const { width } = useWindowDimensions();
+    const isMobile = width < 768;
     let anteriorProximo: boolean = true;
 
     const animacaoBotao = () => {
@@ -22,68 +24,74 @@ export default function Relatos() {
         autor: "Dra. Mariana Souza, Psicóloga CRP: 000000/MG"
     } ]
 
+    const carouselWidth = isMobile ? width * 0.9 : 823;
+    const carouselHeight = isMobile ? 300 : 500;
+
     return (
         //parte azul da view
-        <View style={styles.fundo}>
-            <View style={styles.boxTitulo} >
-                <Text style={styles.titulo}>
+        <View style={[styles.fundo, isMobile && styles.fundoMobile]}>
+            <View style={[styles.boxTitulo, isMobile && styles.boxTituloMobile]} >
+                <Text style={[styles.titulo, isMobile && styles.tituloMobile]}>
                     Relatos Profissionais
                 </Text>
                 <View
-                    style={{
-                        width: 400,
-                        height: 1,
-                        backgroundColor: 'white',
-                        opacity: 0.5
-                    }}>
+                    style={[
+                        styles.linhaTitulo,
+                        isMobile && styles.linhaTituloMobile
+                    ]}>
                 </View>
             </View>
 
             {/* area do carrossel que abrange desde os botoes até o carrossel em si*/}
-            <View style={styles.areaCarrosel}>
+            <View style={[styles.areaCarrosel, isMobile && styles.areaCarroselMobile]}>
                 {/*botao esquerdo*/}
-                <View style={styles.botao}>
-                    <TouchableOpacity
-                        onPress={() => { anteriorProximo = false; animacaoBotao() }}>
-                        <Entypo name="chevron-small-left" size={75} color="#336BF7" />
-                    </TouchableOpacity>
-                </View>
+                {!isMobile && (
+                    <View style={styles.botao}>
+                        <TouchableOpacity
+                            onPress={() => { anteriorProximo = false; animacaoBotao() }}>
+                            <Entypo name="chevron-small-left" size={75} color="#336BF7" />
+                        </TouchableOpacity>
+                    </View>
+                )}
 
                 <Carousel
                     ref={manualCarrosel}
-                    width={823} //é necessario ser do tamanho do elemento atual do carrossel. Caso seja menor buga 
-                    //a exibição. Valor quebrado porque depois diminui 15% do width para ser possivel exibir
-                    //uma parte do proximo elemento
-                    height={500}
+                    width={carouselWidth}
+                    height={carouselHeight}
                     data={relato}
-                    //mapa declarado la em cima com os dados
                     loop
-                    autoPlay //serve para de tempo em tempos se mover sozinho
+                    autoPlay
                     autoPlayInterval={15000}
                     scrollAnimationDuration={800}
-
-                    mode="parallax"
-                    modeConfig={{
-                        parallaxScrollingScale: 0.85, //elemento principal
-                        parallaxScrollingOffset: 150, //parte do elemento secundario visivel
-                        parallaxAdjacentItemScale: 0.75, // tamanho do elemento secundario
+                    mode={isMobile ? "horizontal-stack" : "parallax"}
+                    modeConfig={isMobile ? {
+                        snapDirection: 'left',
+                    } : {
+                        parallaxScrollingScale: 0.85,
+                        parallaxScrollingOffset: 150,
+                        parallaxAdjacentItemScale: 0.75,
                     }}
-
                     renderItem={({ item }) => (
-                        <View style={styles.caixaCarrossel}>
-                            <Text style={styles.textoRelato}>{item.texto}</Text>
-                            <Text style={styles.textoRelato}>{item.autor}</Text>
+                        <View style={[styles.caixaCarrossel, isMobile && styles.caixaCarrosselMobile]}>
+                            <Text style={[styles.textoRelato, isMobile && styles.textoRelatoMobile]}>
+                                {item.texto}
+                            </Text>
+                            <Text style={[styles.textoRelato, isMobile && styles.textoRelatoMobile]}>
+                                {item.autor}
+                            </Text>
                         </View>
                     )}
                 />
 
                 {/* Botão Direito */}
-                <View style={styles.botao}>
-                    <TouchableOpacity
-                        onPress={() => { anteriorProximo = true; animacaoBotao() }}>
-                        <Entypo name="chevron-small-right" size={75} color="#336BF7" />
-                    </TouchableOpacity>
-                </View>
+                {!isMobile && (
+                    <View style={styles.botao}>
+                        <TouchableOpacity
+                            onPress={() => { anteriorProximo = true; animacaoBotao() }}>
+                            <Entypo name="chevron-small-right" size={75} color="#336BF7" />
+                        </TouchableOpacity>
+                    </View>
+                )}
 
             </View>
         </View >
@@ -112,7 +120,13 @@ const styles = StyleSheet.create({
         fontFamily: 'Arial',
         fontSize: 36,
         fontWeight: 'bold',
+    },
 
+    linhaTitulo: {
+        width: 400,
+        height: 1,
+        backgroundColor: 'white',
+        opacity: 0.5
     },
 
     areaCarrosel: {
@@ -132,7 +146,6 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         alignItems: 'center',
         justifyContent: 'center',
-
     },
 
     textoRelato: {
@@ -151,5 +164,45 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: 15,
         opacity: 0.5,
+    },
+
+    // Estilos Mobile
+    fundoMobile: {
+        paddingVertical: 30,
+    },
+
+    boxTituloMobile: {
+        marginTop: 30,
+        gap: 15,
+    },
+
+    tituloMobile: {
+        fontSize: 24,
+    },
+
+    linhaTituloMobile: {
+        width: '80%',
+        maxWidth: 300,
+    },
+
+    areaCarroselMobile: {
+        width: '100%',
+        height: 300,
+        marginTop: 20,
+        paddingHorizontal: 10,
+    },
+
+    caixaCarrosselMobile: {
+        width: '100%',
+        height: 'auto',
+        minHeight: 250,
+        borderRadius: 20,
+        paddingVertical: 20,
+    },
+
+    textoRelatoMobile: {
+        fontSize: 14,
+        padding: 15,
+        lineHeight: 20,
     },
 });

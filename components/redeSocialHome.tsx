@@ -1,23 +1,28 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 
 export default function RedeSocialHome() {
+    const { width } = useWindowDimensions();
+    const isMobile = width < 768;
+    
     return (
-        <View style={styles.box}>
-            <Image source={require('../assets/images/redeSocial.png')}
-                style={styles.imagem} />
-            <View style={styles.caixaTexto}>
-                <Text style={styles.titulo}>
+        <View style={[styles.box, isMobile && styles.boxMobile]}>
+            {!isMobile && (
+                <Image source={require('../assets/images/redeSocial.png')}
+                    style={styles.imagem} />
+            )}
+            <View style={[styles.caixaTexto, isMobile && styles.caixaTextoMobile]}>
+                <Text style={[styles.titulo, isMobile && styles.tituloMobile]}>
                     Transforme conversas em {'\n'} conexões e bem-estar.
                 </Text>
-                <Text style={styles.subTitulo}>
+                <Text style={[styles.subTitulo, isMobile && styles.subTituloMobile]}>
                     Participe de uma comuidade dedicada à saúde 
                     mental. Converse com profissionais, compartilhe
                     experiências e descubra, em tempo real, o que
                     está sendo discutido sobre bem-estar emocioanl
                 </Text>
 
-                <TouchableOpacity style={styles.botao}>
-                    <Text style={styles.textoBotao}>
+                <TouchableOpacity style={[styles.botao, isMobile && styles.botaoMobile]}>
+                    <Text style={[styles.textoBotao, isMobile && styles.textoBotaoMobile]}>
                         Em Breve
                     </Text>
                 </TouchableOpacity>
@@ -85,7 +90,45 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontStyle: 'normal',
         fontWeight: '700',
-    }
+    },
+
+    // Estilos Mobile
+    boxMobile: {
+        flexDirection: 'column',
+        marginVertical: '3%',
+        marginHorizontal: '5%',
+        rowGap: 30,
+        paddingVertical: 20,
+    },
+
+    caixaTextoMobile: {
+        flex: 0,
+        gap: 25,
+        width: '100%',
+        alignItems: 'center',
+    },
+
+    tituloMobile: {
+        fontSize: 24,
+        width: '100%',
+        paddingHorizontal: 10,
+    },
+
+    subTituloMobile: {
+        fontSize: 16,
+        width: '100%',
+        paddingHorizontal: 15,
+        lineHeight: 22,
+    },
+
+    botaoMobile: {
+        width: 120,
+        height: 45,
+    },
+
+    textoBotaoMobile: {
+        fontSize: 18,
+    },
 
 }
 )

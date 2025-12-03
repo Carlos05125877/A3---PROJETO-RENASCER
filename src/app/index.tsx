@@ -7,10 +7,10 @@ import Topo from '../../components/topo';
 
 export default function Index() {
   const { width } = useWindowDimensions();
-  // bloqueia apenas em dispositivos móveis reais (não em web resimensionado)
-  const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
+  // Permite acesso via navegadores mobile, mas bloqueia apenas apps nativos
+  const isNativeMobile = Platform.OS === 'ios' || Platform.OS === 'android';
 
-  if (isMobile) {
+  if (isNativeMobile) {
     return (
       <View style={styles.mobileContainer}>
         <Text style={styles.mobileTitulo}>Acesso apenas via computador</Text>

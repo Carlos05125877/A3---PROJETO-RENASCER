@@ -2,10 +2,12 @@ import BloqueioAssinatura from "@/components/bloqueioAssinatura";
 import Topo from "@/components/topo";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 
 export default function blogAnsiedade() {
     const router = useRouter();
+    const { width } = useWindowDimensions();
+    const isMobile = width < 768;
     
     return (
       <BloqueioAssinatura>
@@ -16,18 +18,18 @@ export default function blogAnsiedade() {
           <ScrollView >
             <View style={styles.containerPrincipal}>
                 <View>
-                    <Text style={styles.titulo}>Ansiedade</Text>
+                    <Text style={[styles.titulo, isMobile && styles.tituloMobile]}>Ansiedade</Text>
                 </View>
                     <View style={styles.linha}/>
-                <View style={[styles.conteudoPrincipal, {width: '64%',}]}>
-                    <Text style={styles.subtitulo}>Ansiedade: entendendo suas origens, sintomas e como encontrar equilíbrio</Text>
-                    <Text style={styles.descricao}>
+                <View style={[styles.conteudoPrincipal, {width: isMobile ? '100%' : '64%'}, isMobile && styles.conteudoPrincipalMobile]}>
+                    <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Ansiedade: entendendo suas origens, sintomas e como encontrar equilíbrio</Text>
+                    <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>
                        A ansiedade faz parte da experiência humana. Sentir-se ansioso antes de uma prova, de uma entrevista ou de uma decisão importante é absolutamente normal. Porém, quando essa sensação se torna constante, intensa ou começa a interferir no bem-estar e na rotina, é sinal de que algo merece mais atenção e cuidado. Neste texto, vamos explorar de forma clara e acolhedora o que está por trás da ansiedade, como ela se manifesta e quais caminhos podem ajudar no processo de equilíbrio emocional. 
                     </Text>
                     
                     
                     <View style={styles.conteudoSegundario}>
-                        <View style={styles.duasColunasLayout}>
+                        <View style={[styles.duasColunasLayout, isMobile && styles.duasColunasLayoutMobile]}>
                             <View style={styles.coluna}>
                                 <Text style={styles.subtitulo}>Como a ansiedade se manifesta?</Text>
                                 <Text style={styles.descricao}>A ansiedade não aparece da mesma maneira em todas as pessoas. Às vezes ela se instala de forma silenciosa; outras vezes, surge de forma intensa. Entre os sintomas mais comuns estão:</Text> 
@@ -53,52 +55,55 @@ export default function blogAnsiedade() {
                     </View>
 
                     <View style={{alignItems: 'center',width: '100%', marginBottom: 20,}}>
-                    <Image source={require("../../../assets/images/cicloAnsiedadeMed.png")} style={{width: 600, height: 500,}} />
+                    <Image source={require("../../../assets/images/cicloAnsiedadeMed.png")} 
+                        style={isMobile ? {width: width * 0.9, height: width * 0.75, maxWidth: 400, maxHeight: 300} : {width: 600, height: 500}} />
                     </View>
                     <View style={styles.conteudoPrincipal}>
-                        <Text style={styles.subtitulo}>Caminhos para o tratamento e alívio da ansiedade</Text>
-                        <Text style={styles.descricao}>A ansiedade tem tratamento — e ele é altamente eficaz quando realizado de forma adequada. A psicoterapia é um dos principais recursos, auxiliando a identificar padrões de pensamento, compreender gatilhos emocionais e desenvolver estratégias para lidar com momentos de tensão. A Terapia Cognitivo-Comportamental (TCC), por exemplo, é muito utilizada nesses casos.</Text>
-                        <Text style={styles.descricao}>Em algumas situações, o acompanhamento psiquiátrico e o uso de medicações podem ser recomendados, especialmente quando os sintomas são intensos ou persistentes. Não se trata de "fraqueza", e sim de uma ferramenta de cuidado.</Text>
+                        <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Caminhos para o tratamento e alívio da ansiedade</Text>
+                        <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>A ansiedade tem tratamento — e ele é altamente eficaz quando realizado de forma adequada. A psicoterapia é um dos principais recursos, auxiliando a identificar padrões de pensamento, compreender gatilhos emocionais e desenvolver estratégias para lidar com momentos de tensão. A Terapia Cognitivo-Comportamental (TCC), por exemplo, é muito utilizada nesses casos.</Text>
+                        <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>Em algumas situações, o acompanhamento psiquiátrico e o uso de medicações podem ser recomendados, especialmente quando os sintomas são intensos ou persistentes. Não se trata de "fraqueza", e sim de uma ferramenta de cuidado.</Text>
                     </View>
 
                     <View style={styles.conteudoSegundario}>
-                        <View style={styles.linhaConteudo}>
+                        <View style={[styles.linhaConteudo, isMobile && styles.linhaConteudoMobile]}>
                             <View style={styles.textoLado}>
-                                <Text style={styles.subtituloSecundario}>Além disso, mudanças de hábitos fazem diferença real no dia a dia:</Text>
-                                <Text style={styles.descricao}>• Prática regular de atividades físicas</Text>
-                                <Text style={styles.descricao}>• Melhora da qualidade do sono</Text>
-                                <Text style={styles.descricao}>• Técnicas de respiração e relaxamento</Text>
-                                <Text style={styles.descricao}>• Organização da rotina</Text>
-                                <Text style={styles.descricao}>• Redução de estímulos excessivos (como uso prolongado de telas)</Text>
-                                <Text style={styles.descricao}>• Alimentação equilibrada</Text>
-                                <Text style={styles.descricao}>• Fortalecimento das relações sociais</Text>
+                                <Text style={[styles.subtituloSecundario, isMobile && styles.subtituloSecundarioMobile]}>Além disso, mudanças de hábitos fazem diferença real no dia a dia:</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>• Prática regular de atividades físicas</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>• Melhora da qualidade do sono</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>• Técnicas de respiração e relaxamento</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>• Organização da rotina</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>• Redução de estímulos excessivos (como uso prolongado de telas)</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>• Alimentação equilibrada</Text>
+                                <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>• Fortalecimento das relações sociais</Text>
                                 
-                                <Text style={[styles.pausaReflexao, {marginTop: 16}]}>Experimente agora: Feche os olhos, inspire profundamente por 4 segundos, segure por 2 e solte lentamente por 6. Repita algumas vezes e observe como seu corpo responde.</Text>
+                                <Text style={[styles.pausaReflexao, {marginTop: 16}, isMobile && styles.pausaReflexaoMobile]}>Experimente agora: Feche os olhos, inspire profundamente por 4 segundos, segure por 2 e solte lentamente por 6. Repita algumas vezes e observe como seu corpo responde.</Text>
                             </View>
-                            <Image source={require("../../../assets/images/ansiedadeAlivio.png")} style={styles.imagemConteudo} />
+                            {!isMobile && (
+                                <Image source={require("../../../assets/images/ansiedadeAlivio.png")} style={styles.imagemConteudo} />
+                            )}
                         </View>
                     </View>
 
                     <View style={styles.conteudoPrincipal}>
-                        <Text style={styles.subtitulo}>O valor de reconhecer e buscar ajuda</Text>
-                        <Text style={styles.descricao}>Falar sobre ansiedade é importante porque ela afeta milhões de pessoas — muitas delas em silêncio, achando que “é normal” viver sempre tenso. Não é. E ninguém precisa enfrentar isso sozinho. </Text>
+                        <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>O valor de reconhecer e buscar ajuda</Text>
+                        <Text style={[styles.descricao, isMobile && styles.descricaoMobile]}>Falar sobre ansiedade é importante porque ela afeta milhões de pessoas — muitas delas em silêncio, achando que "é normal" viver sempre tenso. Não é. E ninguém precisa enfrentar isso sozinho. </Text>
                     </View>
 
-                    <Text style={styles.tituloSecao}>Últimos artigos</Text>
-                                    <View style={{ flexDirection: "column", gap: 12, alignItems: "flex-start" , width: '64%'}}>
-                                        <View style={styles.cartaoArtigo}>
-                                            <Image source={require("../../../assets/images/depression.png")} style={styles.imagemArtigo} />
+                    <Text style={[styles.tituloSecao, isMobile && styles.tituloSecaoMobile]}>Últimos artigos</Text>
+                                    <View style={{ flexDirection: "column", gap: 12, alignItems: "flex-start" , width: isMobile ? '100%' : '64%'}}>
+                                        <View style={[styles.cartaoArtigo, isMobile && styles.cartaoArtigoMobile]}>
+                                            <Image source={require("../../../assets/images/depression.png")} style={[styles.imagemArtigo, isMobile && styles.imagemArtigoMobile]} />
                                             <TouchableOpacity onPress={() => (router.push('/screens/blog_depressao' as any))}>
-                                            <Text style={styles.tituloArtigo}>
+                                            <Text style={[styles.tituloArtigo, isMobile && styles.tituloArtigoMobile]}>
                                                 Depressão: entendendo suas causas, sintomas e caminhos de tratamento
                                             </Text>
                                             </TouchableOpacity>
                                         </View>
                     
-                                        <View style={styles.cartaoArtigo}>
-                                            <Image source={require("../../../assets/images/stress.png")} style={styles.imagemArtigo} />
+                                        <View style={[styles.cartaoArtigo, isMobile && styles.cartaoArtigoMobile]}>
+                                            <Image source={require("../../../assets/images/stress.png")} style={[styles.imagemArtigo, isMobile && styles.imagemArtigoMobile]} />
                                             <TouchableOpacity onPress={() => (router.push('/screens/blog_estresse' as any))}>
-                                            <Text style={styles.tituloArtigo}>
+                                            <Text style={[styles.tituloArtigo, isMobile && styles.tituloArtigoMobile]}>
                                                 Estresse: Entenda as causas e como prevenir
                                             </Text>
                                             </TouchableOpacity>
@@ -263,5 +268,59 @@ const styles = StyleSheet.create({
         color: "#0b2157",
         marginBottom: 8,
         alignItems: 'flex-start',
+    },
+
+    // Estilos Mobile
+    tituloMobile: {
+        fontSize: 24,
+    },
+
+    conteudoPrincipalMobile: {
+        paddingHorizontal: 15,
+    },
+
+    subtituloMobile: {
+        fontSize: 18,
+    },
+
+    descricaoMobile: {
+        fontSize: 14,
+        lineHeight: 20,
+    },
+
+    duasColunasLayoutMobile: {
+        flexDirection: 'column',
+    },
+
+    linhaConteudoMobile: {
+        flexDirection: 'column',
+        gap: 15,
+    },
+
+    subtituloSecundarioMobile: {
+        fontSize: 16,
+    },
+
+    pausaReflexaoMobile: {
+        fontSize: 12,
+    },
+
+    tituloSecaoMobile: {
+        fontSize: 18,
+    },
+
+    cartaoArtigoMobile: {
+        width: '100%',
+        flexDirection: 'column',
+    },
+
+    imagemArtigoMobile: {
+        width: '100%',
+        height: 150,
+    },
+
+    tituloArtigoMobile: {
+        fontSize: 12,
+        width: '100%',
     },
 });

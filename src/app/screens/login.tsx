@@ -2,7 +2,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 import { User } from 'firebase/auth';
 import { useRef, useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import Modal from 'react-native-modal';
 import Topo from '../../..//components/topo';
 import { esqueciMinhaSenha, loginComEmailSenha, loginComGoogle } from '../../../back-end/api.cadastroLogin';
@@ -11,6 +11,8 @@ import { esqueciMinhaSenha, loginComEmailSenha, loginComGoogle } from '../../../
 {/*-----------------------------------------------------------------------------------*/ }
 
 export default function Login() {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
   const bloquearBotaoGoogle = useRef(false);
   const [mostrarSenha, setmostrarSenha] = useState(true);
   const [email, setEmail] = useState('');
@@ -50,21 +52,21 @@ export default function Login() {
         <Topo />
       </View>
 
-      <View style={styles.areaLoginBanner}>
+      <View style={[styles.areaLoginBanner, isMobile && styles.areaLoginBannerMobile]}>
 
 
-        <View style={styles.areaLogin}>
-          <View style={styles.caixaLogin}>
+        <View style={[styles.areaLogin, isMobile && styles.areaLoginMobile]}>
+          <View style={[styles.caixaLogin, isMobile && styles.caixaLoginMobile]}>
 
             <View style={{ gap: 10, alignItems: 'center' }}>
-              <Text style={styles.TextoLogin}>Login</Text>
-              <Text style={styles.TextoLoginInformeEmail}>Informe seu e-mail e senha abaixo:</Text>
+              <Text style={[styles.TextoLogin, isMobile && styles.TextoLoginMobile]}>Login</Text>
+              <Text style={[styles.TextoLoginInformeEmail, isMobile && styles.TextoLoginInformeEmailMobile]}>Informe seu e-mail e senha abaixo:</Text>
             </View>
 
             <View style={{ gap: 20 }}>
 
-              <View style={styles.boxTextInput}>
-                <TextInput style={styles.TextInput}
+              <View style={[styles.boxTextInput, isMobile && styles.boxTextInputMobile]}>
+                <TextInput style={[styles.TextInput, isMobile && styles.TextInputMobile]}
                   value={email}
                   onChangeText={setEmail}
                   placeholder='E-mail'
@@ -72,8 +74,8 @@ export default function Login() {
               </View>
 
 
-              <View style={styles.boxTextInput}>
-                <TextInput style={styles.TextInput}
+              <View style={[styles.boxTextInput, isMobile && styles.boxTextInputMobile]}>
+                <TextInput style={[styles.TextInput, isMobile && styles.TextInputMobile]}
                   value={senha}
                   onChangeText={setSenha}
                   placeholder='Senha'
@@ -88,44 +90,44 @@ export default function Login() {
                 <TouchableOpacity onPress={() => { setmostrarSenha(!mostrarSenha) }}>
                   <View style={{ padding: 10, opacity: 0.5 }}>
                     {mostrarSenha ? (
-                      <AntDesign name="eye-invisible" size={24} color="black" />
+                      <AntDesign name="eye-invisible" size={isMobile ? 20 : 24} color="black" />
                     ) : (
-                      <AntDesign name="eye" size={24} color="black" />
+                      <AntDesign name="eye" size={isMobile ? 20 : 24} color="black" />
                     )}
                   </View>
                 </TouchableOpacity>
               </View>
               <View style={{ alignItems: 'flex-start' }}>
                 {senhaIncorreta && (
-                  <Text style={{ color: 'red', fontSize: 14 }}>Senha Incorreta</Text>
+                  <Text style={{ color: 'red', fontSize: isMobile ? 12 : 14 }}>Senha Incorreta</Text>
                 )}
               </View>
 
 
               <View style={styles.botoes}>
 
-                <TouchableOpacity style={styles.botaoLogin}
+                <TouchableOpacity style={[styles.botaoLogin, isMobile && styles.botaoLoginMobile]}
                   onPress={loginComEmaileSenha}>
-                  <Text style={styles.textoBotaoLogin}>Entrar</Text>
+                  <Text style={[styles.textoBotaoLogin, isMobile && styles.textoBotaoLoginMobile]}>Entrar</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.botaoGoogle}
+                <TouchableOpacity style={[styles.botaoGoogle, isMobile && styles.botaoGoogleMobile]}
                   onPress={async () => {
                     const user = await loginComGoogle(bloquearBotaoGoogle)
                     user && router.push('/')
                   }}>
-                  <Image style={{ width: 25, height: 25 }} source={require('../../../assets/images/images.png')} />
+                  <Image style={{ width: isMobile ? 20 : 25, height: isMobile ? 20 : 25 }} source={require('../../../assets/images/images.png')} />
                 </TouchableOpacity>
 
                 <TouchableOpacity>
-                  <Text style={{ color: '#336BF7' }}
+                  <Text style={[styles.textoLink, isMobile && styles.textoLinkMobile]}
                     onPress={() => setBotaoEsqueciMinhaSenha(true)
                     }
                   >Esqueci minha senha</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity>
-                  <Text style={{ color: '#336BF7' }}
+                  <Text style={[styles.textoLink, isMobile && styles.textoLinkMobile]}
                     onPress={() => router.push('/screens/cadastro_usuarios' as any)}
                   >Criar Conta</Text>
                 </TouchableOpacity>
@@ -137,11 +139,11 @@ export default function Login() {
           </View>
         </View>
 
-
-        <View style={styles.areaBanner}>
-          <Image style={{ width: '100%', height: '100%', }} source={require('../../../assets/images/ImagemTelaLogin.png')} />
-
-        </View>
+        {!isMobile && (
+          <View style={styles.areaBanner}>
+            <Image style={{ width: '100%', height: '100%', }} source={require('../../../assets/images/ImagemTelaLogin.png')} />
+          </View>
+        )}
 
       </View>
       <Modal
@@ -153,28 +155,28 @@ export default function Login() {
         backdropColor="black"
         backdropOpacity={0.8}>
         <View
-          style={styles.modal}>
+          style={[styles.modal, isMobile && styles.modalMobile]}>
           <Text
-            style={styles.recuperarSenha}>
+            style={[styles.recuperarSenha, isMobile && styles.recuperarSenhaMobile]}>
             Recuperar Senha
           </Text>
           <Text
-            style={styles.textoInformativoModal}>
+            style={[styles.textoInformativoModal, isMobile && styles.textoInformativoModalMobile]}>
             Digite o email cadastrado e aguarde o envio do link para recuperar sua senha
           </Text>
           <View
-            style={[styles.boxTextInput, { width: '92%' }]}>
+            style={[styles.boxTextInput, { width: '92%' }, isMobile && styles.boxTextInputMobile]}>
             <TextInput
-              style={[styles.TextInput, { width: '100%' }]}
+              style={[styles.TextInput, { width: '100%' }, isMobile && styles.TextInputMobile]}
               value={redefinirEmail}
               onChangeText={setRedefinirEmail}
               placeholder='E-mail'
               placeholderTextColor={'rgba(0,0,0,0.5)'} secureTextEntry={false} />
           </View>
           <TouchableOpacity
-            style={[styles.botaoLogin, { width: '40%', height: '15%', borderRadius: 8 }]}
+            style={[styles.botaoLogin, { width: '40%', height: '15%', borderRadius: 8 }, isMobile && styles.botaoLoginMobile]}
             onPress={() => esqueciMinhaSenha(redefinirEmail)}>
-            <Text style={styles.textoBotaoLogin}>
+            <Text style={[styles.textoBotaoLogin, isMobile && styles.textoBotaoLoginMobile]}>
               Confirmar
             </Text>
           </TouchableOpacity>
@@ -311,6 +313,81 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontFamily: 'Arial',
     marginHorizontal: 20
-  }
+  },
+
+  textoLink: {
+    color: '#336BF7'
+  },
+
+  // Estilos Mobile
+  areaLoginBannerMobile: {
+    flexDirection: 'column',
+  },
+
+  areaLoginMobile: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+
+  caixaLoginMobile: {
+    width: '100%',
+    height: 'auto',
+    gap: 25,
+    paddingVertical: 20,
+  },
+
+  TextoLoginMobile: {
+    fontSize: 40,
+  },
+
+  TextoLoginInformeEmailMobile: {
+    fontSize: 16,
+    textAlign: 'center',
+    paddingHorizontal: 10,
+  },
+
+  boxTextInputMobile: {
+    width: '100%',
+    maxWidth: 375,
+  },
+
+  TextInputMobile: {
+    width: '100%',
+    fontSize: 16,
+  },
+
+  botaoLoginMobile: {
+    width: 120,
+    height: 45,
+  },
+
+  textoBotaoLoginMobile: {
+    fontSize: 16,
+  },
+
+  botaoGoogleMobile: {
+    width: 60,
+    height: 45,
+  },
+
+  textoLinkMobile: {
+    fontSize: 14,
+  },
+
+  modalMobile: {
+    width: '90%',
+    height: 'auto',
+    minHeight: 300,
+    paddingVertical: 20,
+  },
+
+  recuperarSenhaMobile: {
+    fontSize: 24,
+  },
+
+  textoInformativoModalMobile: {
+    fontSize: 16,
+    marginHorizontal: 15,
+  },
 
 })
