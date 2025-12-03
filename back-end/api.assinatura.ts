@@ -511,7 +511,7 @@ export const criarPreferenciaPagamento = async (
     }
 
     const preferenceId = responseData.id;
-    const externalReference = preferenceData.external_reference;
+    // externalReference já foi declarado anteriormente na linha 342
 
     console.log('✅ Preferência criada com sucesso!', {
       preference_id: preferenceId,
