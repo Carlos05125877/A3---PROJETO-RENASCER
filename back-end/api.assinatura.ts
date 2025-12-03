@@ -309,7 +309,13 @@ export const criarPreferenciaPagamento = async (
       },
       external_reference: `${userId}_${tipoAssinatura}_${Date.now()}`,
       statement_descriptor: 'RENASCER',
-      binary_mode: false
+      binary_mode: false,
+      // Configurações adicionais para garantir que o checkout funcione corretamente
+      payment_methods: {
+        excluded_payment_types: [],
+        excluded_payment_methods: [],
+        installments: 12 // Permitir até 12 parcelas
+      }
     };
     
     // Configurar auto_return apenas se não for localhost
