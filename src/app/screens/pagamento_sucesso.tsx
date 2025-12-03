@@ -4,7 +4,7 @@ import { buscarPagamentoPorPreferencia, buscarPagamentoPorReferencia, verificarS
 import Topo from '@/components/topo';
 import { useRouter } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // Função helper para obter parâmetros da URL
@@ -137,67 +137,114 @@ export default function PagamentoSucesso() {
           return;
         }
 
-        // Se temos paymentId, verificar o status real via API do Mercado Pago
-        let statusFinal = status;
-        if (paymentId && (paymentId.startsWith('MP-') || !isNaN(Number(paymentId)))) {
-          try {
-            console.log('Verificando status do pagamento via API...');
-            const paymentData = await verificarStatusPagamento(paymentId);
-            statusFinal = paymentData.status || paymentData.collection_status || status;
-            console.log('Status verificado via API:', statusFinal);
-            console.log('Dados completos do pagamento:', paymentData);
-          } catch (error: any) {
-            console.warn('Não foi possível verificar status via API, usando status da URL:', error.message);
-            // Continuar com o status da URL
-          }
-        }
-
-        // Processar o callback APENAS se tiver parâmetros REAIS do Mercado Pago
-        // Não processar apenas por verificar assinatura - precisa ter confirmação do Mercado Pago
+        // Verificar se temos parâmetros REAIS do Mercado Pago na URL
+        // Isso indica que o usuário foi redirecionado pelo Mercado Pago após o pagamento
         const hasRealPaymentParams = paymentId || 
                                      params.get('collection_id') || 
                                      params.get('preference_id') ||
-                                     params.get('collection_status') ||
-                                     externalReference;
+                                     params.get('collection_status');
         
-        if (finalUserId && !isWaiting && hasRealPaymentParams) {
-          console.log('✅ Processando callback com parâmetros REAIS do Mercado Pago:', { paymentId, statusFinal, userId: finalUserId, tipo });
-          await processarCallbackPagamento(paymentId || 'pending', statusFinal, finalUserId, tipo);
-          console.log('✅ Callback processado com sucesso');
+        // Se temos parâmetros do Mercado Pago, processar IMEDIATAMENTE
+        if (hasRealPaymentParams && finalUserId && !isWaiting) {
+          console.log('✅ PARÂMETROS DO MERCADO PAGO DETECTADOS! Processando imediatamente...');
+          console.log('Parâmetros encontrados:', {
+            payment_id: params.get('payment_id'),
+            collection_id: params.get('collection_id'),
+            preference_id: params.get('preference_id'),
+            collection_status: params.get('collection_status'),
+            status: params.get('status')
+          });
           
-          // Aguardar um pouco e verificar novamente para garantir
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          
-          // Verificar múltiplas vezes para garantir que foi salvo
-          let verificado = false;
-          for (let tentativa = 0; tentativa < 3; tentativa++) {
-            verificado = await verificarAssinatura(finalUserId);
-            console.log(`Verificação ${tentativa + 1}/3:`, verificado ? '✅ Confirmado' : '❌ Não confirmado');
-            if (verificado) break;
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Aguardar 1s entre tentativas
+          // Verificar o status real via API do Mercado Pago
+          let statusFinal = status;
+          if (paymentId && (paymentId.startsWith('MP-') || !isNaN(Number(paymentId)) || paymentId.length > 5)) {
+            try {
+              console.log('🔍 Verificando status do pagamento via API do Mercado Pago...');
+              const paymentData = await verificarStatusPagamento(paymentId);
+              statusFinal = paymentData.status || paymentData.collection_status || status;
+              console.log('✅ Status verificado via API:', statusFinal);
+              console.log('📋 Dados completos do pagamento:', {
+                id: paymentData.id,
+                status: paymentData.status,
+                collection_status: paymentData.collection_status,
+                external_reference: paymentData.external_reference
+              });
+            } catch (error: any) {
+              console.warn('⚠️ Não foi possível verificar status via API, usando status da URL:', error.message);
+              // Continuar com o status da URL
+            }
           }
           
-          setSucesso(statusFinal === 'approved');
-          setMensagem(
-            statusFinal === 'approved'
-              ? verificado
-                ? 'Sua assinatura foi ativada com sucesso!'
-                : 'Pagamento aprovado! Processando sua assinatura...'
-              : statusFinal === 'pending'
-              ? 'Seu pagamento está pendente. Você receberá um e-mail quando for aprovado.'
-              : 'Seu pagamento foi processado, mas o status não é aprovado. Entre em contato com o suporte.'
-          );
+          // Normalizar status
+          if (statusFinal === 'aprovado' || statusFinal === 'approved') {
+            statusFinal = 'approved';
+          } else if (statusFinal === 'pendente' || statusFinal === 'pending') {
+            statusFinal = 'pending';
+          }
           
-          // Se foi aprovado, mostrar mensagem de sucesso (sem redirecionamento automático)
-          // IMPORTANTE: Usuário pode escolher quando navegar
-          if (statusFinal === 'approved' && hasRealPaymentParams) {
-            console.log('✅ Pagamento confirmado pelo Mercado Pago!');
-            setSucesso(true);
-            setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
+          console.log('🔄 Processando callback com parâmetros do Mercado Pago:', { 
+            paymentId, 
+            statusFinal, 
+            userId: finalUserId, 
+            tipo 
+          });
+          
+          // Processar o pagamento
+          try {
+            await processarCallbackPagamento(
+              paymentId || params.get('collection_id') || 'pending', 
+              statusFinal, 
+              finalUserId, 
+              tipo
+            );
+            console.log('✅ Callback processado com sucesso');
+            
+            // Aguardar um pouco e verificar novamente para garantir
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Verificar múltiplas vezes para garantir que foi salvo
+            let verificado = false;
+            for (let tentativa = 0; tentativa < 5; tentativa++) {
+              verificado = await verificarAssinatura(finalUserId);
+              console.log(`🔍 Verificação ${tentativa + 1}/5:`, verificado ? '✅ Confirmado' : '❌ Não confirmado');
+              if (verificado) break;
+              await new Promise(resolve => setTimeout(resolve, 1000)); // Aguardar 1s entre tentativas
+            }
+            
+            if (statusFinal === 'approved') {
+              setSucesso(true);
+              setMensagem(verificado 
+                ? 'Pagamento confirmado! Sua assinatura foi ativada com sucesso!'
+                : 'Pagamento aprovado! Processando sua assinatura...');
+              setProcessando(false);
+              
+              // Se não foi verificado ainda, continuar verificando em background
+              if (!verificado) {
+                setTimeout(async () => {
+                  const verificadoNovo = await verificarAssinatura(finalUserId);
+                  if (verificadoNovo) {
+                    setSucesso(true);
+                    setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
+                    setProcessando(false);
+                  }
+                }, 3000);
+              }
+            } else if (statusFinal === 'pending') {
+              setSucesso(false);
+              setMensagem('Seu pagamento está pendente. Você receberá um e-mail quando for aprovado.');
+              setProcessando(false);
+            } else {
+              setSucesso(false);
+              setMensagem('Seu pagamento foi processado, mas o status não é aprovado. Entre em contato com o suporte.');
+              setProcessando(false);
+            }
+            
+            return; // Sair aqui para não continuar com outras verificações
+          } catch (error: any) {
+            console.error('❌ Erro ao processar callback:', error);
+            setMensagem(`Erro ao processar pagamento: ${error.message || 'Erro desconhecido'}`);
             setProcessando(false);
-          } else if (statusFinal === 'approved' && !hasRealPaymentParams) {
-            console.warn('⚠️ Status aprovado mas sem parâmetros do Mercado Pago');
-            setMensagem('Pagamento aprovado, mas aguardando confirmação completa do Mercado Pago...');
+            return;
           }
         } else if (finalUserId && !isWaiting && !hasRealPaymentParams) {
           console.warn('⚠️ Usuário encontrado mas sem parâmetros do Mercado Pago. Verificando se webhook já processou...');
@@ -327,6 +374,70 @@ export default function PagamentoSucesso() {
     return () => clearTimeout(timer);
   }, [user]);
   
+  // Função auxiliar para verificar pagamento
+  const verificarPagamentoCompleto = useCallback(async (
+    userId: string,
+    externalReference: string,
+    preferenceId: string,
+    tipo: 'usuario' | 'profissional'
+  ): Promise<boolean> => {
+    try {
+      // PRIORIDADE 1: Verificar Firestore primeiro (mais rápido)
+      const assinante = await verificarAssinatura(userId);
+      if (assinante) {
+        console.log('✅ Assinatura já ativada no Firestore!');
+        setSucesso(true);
+        setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
+        setProcessando(false);
+        return true;
+      }
+
+      // PRIORIDADE 2: Buscar via API do Mercado Pago
+      let paymentData = null;
+      
+      if (externalReference) {
+        try {
+          paymentData = await buscarPagamentoPorReferencia(externalReference);
+        } catch (error) {
+          console.warn('Erro ao buscar por external_reference:', error);
+        }
+      }
+      
+      if (!paymentData && preferenceId) {
+        try {
+          paymentData = await buscarPagamentoPorPreferencia(preferenceId);
+        } catch (error) {
+          console.warn('Erro ao buscar por preference_id:', error);
+        }
+      }
+      
+      if (paymentData) {
+        const paymentStatus = paymentData.status || paymentData.collection_status;
+        
+        if (paymentStatus === 'approved' || paymentStatus === 'authorized') {
+          console.log('✅ Pagamento aprovado detectado! Processando...');
+          
+          await processarCallbackPagamento(
+            paymentData.id?.toString() || 'confirmed',
+            'approved',
+            userId,
+            tipo
+          );
+          
+          setSucesso(true);
+          setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
+          setProcessando(false);
+          return true;
+        }
+      }
+      
+      return false;
+    } catch (error: any) {
+      console.error('Erro ao verificar pagamento:', error);
+      return false;
+    }
+  }, []);
+
   // Verificação periódica quando status é 'waiting' - verificar via API do Mercado Pago
   useEffect(() => {
     // Aguardar um pouco para garantir que o primeiro useEffect terminou
@@ -364,60 +475,25 @@ export default function PagamentoSucesso() {
         }
       }
       
-      console.log('=== DIAGNÓSTICO DE PARÂMETROS ===');
-      console.log('URL completa:', typeof window !== 'undefined' ? window.location.href : 'N/A');
-      console.log('Query string:', typeof window !== 'undefined' ? window.location.search : 'N/A');
-      console.log('Parâmetros da URL:', {
-        payment_id: params.get('payment_id') || 'NÃO ENCONTRADO',
-        collection_id: params.get('collection_id') || 'NÃO ENCONTRADO',
-        preference_id: params.get('preference_id') || 'NÃO ENCONTRADO',
-        external_reference: params.get('external_reference') || 'NÃO ENCONTRADO',
-        collection_status: params.get('collection_status') || 'NÃO ENCONTRADO',
-        status: params.get('status') || 'NÃO ENCONTRADO',
-        user_id: params.get('user_id') || 'NÃO ENCONTRADO'
-      });
-      console.log('Dados finais que serão usados:', {
-        userId,
-        externalReference: finalExternalReference || 'NÃO DISPONÍVEL',
-        preferenceId: finalPreferenceId || 'NÃO DISPONÍVEL',
-        tipo
-      });
-      
       // Verificar se deve iniciar verificação periódica
       // IMPORTANTE: Verificar se status é waiting E se temos userId E (processando OU não temos parâmetros)
-      if (status === 'waiting' && userId && !hasMercadoPagoParams) {
+      if ((status === 'waiting' || !hasMercadoPagoParams) && userId) {
         console.log('⏳ Iniciando verificação periódica via API do Mercado Pago...');
-        console.log('Dados para verificação:', { 
-          externalReference: finalExternalReference, 
-          preferenceId: finalPreferenceId, 
-          userId 
-        });
         
-        // Verificar IMEDIATAMENTE no Firestore primeiro (webhook pode ter processado)
-        try {
-          const assinante = await verificarAssinatura(userId);
-          if (assinante) {
-            console.log('✅ Assinatura já ativada no Firestore! Webhook processou antes da verificação periódica.');
-            setSucesso(true);
-            setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso! Você será redirecionado para o blog em instantes...');
-            setProcessando(false);
-            
-            setTimeout(() => {
-              router.push('/screens/blog_dicas' as any);
-            }, 2000);
-            return;
-          }
-        } catch (error) {
-          console.warn('Erro ao verificar assinatura no Firestore:', error);
+        // Verificar IMEDIATAMENTE primeiro
+        const verificado = await verificarPagamentoCompleto(userId, finalExternalReference, finalPreferenceId, tipo);
+        if (verificado) {
+          return;
         }
         
         // Garantir que processando está true
         setProcessando(true);
+        setMensagem('Aguardando confirmação do pagamento. Verificando automaticamente...');
         
         let tentativas = 0;
-        const maxTentativas = 120; // 10 minutos (120 * 5 segundos)
+        const maxTentativas = 200; // Aumentado para 200 tentativas (16 minutos a cada 5 segundos)
         
-        // Verificar periodicamente via API do Mercado Pago E também no Firestore
+        // Verificar periodicamente - mais frequente agora (a cada 2 segundos)
         const checkInterval = setInterval(async () => {
           tentativas++;
           
@@ -429,133 +505,72 @@ export default function PagamentoSucesso() {
                                 currentParams.get('collection_status');
             
             if (hasUrlParams) {
-              console.log('✅ Parâmetros do Mercado Pago detectados na URL! Recarregando...');
+              console.log('✅ Parâmetros do Mercado Pago detectados na URL durante verificação periódica!');
+              console.log('Parâmetros encontrados:', {
+                payment_id: currentParams.get('payment_id'),
+                collection_id: currentParams.get('collection_id'),
+                collection_status: currentParams.get('collection_status'),
+                status: currentParams.get('status')
+              });
+              
+              // Processar imediatamente sem recarregar
               clearInterval(checkInterval);
               clearTimeout(initTimer);
-              if (typeof window !== 'undefined') {
-                window.location.reload();
+              
+              const paymentIdFromUrl = currentParams.get('payment_id') || currentParams.get('collection_id') || '';
+              const statusFromUrl = currentParams.get('status') || currentParams.get('collection_status') || 'approved';
+              
+              try {
+                // Verificar status via API
+                let statusFinal = statusFromUrl;
+                if (paymentIdFromUrl) {
+                  try {
+                    const paymentData = await verificarStatusPagamento(paymentIdFromUrl);
+                    statusFinal = paymentData.status || paymentData.collection_status || statusFromUrl;
+                    console.log('✅ Status verificado via API:', statusFinal);
+                  } catch (error) {
+                    console.warn('Erro ao verificar via API, usando status da URL');
+                  }
+                }
+                
+                // Processar pagamento
+                await processarCallbackPagamento(
+                  paymentIdFromUrl || 'confirmed',
+                  statusFinal === 'aprovado' || statusFinal === 'approved' ? 'approved' : statusFinal,
+                  userId,
+                  tipo
+                );
+                
+                // Verificar assinatura
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                const assinante = await verificarAssinatura(userId);
+                
+                if (assinante || statusFinal === 'approved' || statusFinal === 'aprovado') {
+                  setSucesso(true);
+                  setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
+                  setProcessando(false);
+                } else {
+                  setMensagem('Pagamento processado. Aguardando confirmação final...');
+                }
+              } catch (error: any) {
+                console.error('Erro ao processar parâmetros do Mercado Pago:', error);
+                // Recarregar como fallback
+                if (typeof window !== 'undefined') {
+                  window.location.reload();
+                }
               }
               return;
             }
             
-            // PRIORIDADE 1: Verificar se assinatura já foi ativada no Firestore (caso webhook tenha processado)
-            // Esta é a verificação mais rápida e confiável - verificar PRIMEIRO
-            try {
-              const assinante = await verificarAssinatura(userId);
-              if (assinante) {
-                console.log('✅ Assinatura já ativada no Firestore! Webhook processou o pagamento.');
-                clearInterval(checkInterval);
-                clearTimeout(initTimer);
-                
-                setSucesso(true);
-                setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
-                setProcessando(false);
-                return;
-              }
-            } catch (error) {
-              console.warn('Erro ao verificar assinatura no Firestore:', error);
+            // Verificar pagamento
+            const verificado = await verificarPagamentoCompleto(userId, finalExternalReference, finalPreferenceId, tipo);
+            if (verificado) {
+              clearInterval(checkInterval);
+              clearTimeout(initTimer);
+              return;
             }
             
-            // FALLBACK 2: Buscar via API usando external_reference ou preference_id
-            let paymentData = null;
-            
-            console.log(`\n🔍 === BUSCA DE PAGAMENTO - TENTATIVA ${tentativas}/${maxTentativas} ===`);
-            
-            if (finalExternalReference) {
-              console.log(`[1/2] Buscando pagamento via API usando external_reference: ${finalExternalReference}`);
-              try {
-                paymentData = await buscarPagamentoPorReferencia(finalExternalReference);
-                if (paymentData) {
-                  console.log('✅ Pagamento encontrado via external_reference!', {
-                    id: paymentData.id,
-                    status: paymentData.status,
-                    external_reference: paymentData.external_reference,
-                    date_created: paymentData.date_created
-                  });
-                } else {
-                  console.log('⏳ Nenhum pagamento encontrado com este external_reference ainda');
-                }
-              } catch (error: any) {
-                console.warn(`⚠️ Erro ao buscar por external_reference (tentativa ${tentativas}):`, error.message);
-                console.error('Detalhes do erro:', error);
-              }
-            } else {
-              console.log('⚠️ External Reference não disponível para busca');
-            }
-            
-            if (!paymentData && finalPreferenceId) {
-              console.log(`[2/2] Buscando pagamento via API usando preference_id: ${finalPreferenceId}`);
-              try {
-                paymentData = await buscarPagamentoPorPreferencia(finalPreferenceId);
-                if (paymentData) {
-                  console.log('✅ Pagamento encontrado via preference_id!', {
-                    id: paymentData.id,
-                    status: paymentData.status,
-                    preference_id: paymentData.preference_id,
-                    date_created: paymentData.date_created
-                  });
-                } else {
-                  console.log('⏳ Nenhum pagamento encontrado com este preference_id ainda');
-                }
-              } catch (error: any) {
-                console.warn(`⚠️ Erro ao buscar por preference_id (tentativa ${tentativas}):`, error.message);
-                console.error('Detalhes do erro:', error);
-              }
-            } else if (!finalPreferenceId) {
-              console.log('⚠️ Preference ID não disponível para busca');
-            }
-            
-            if (!paymentData) {
-              console.log(`⏳ Nenhum pagamento encontrado ainda (tentativa ${tentativas}/${maxTentativas})`);
-            }
-            
-            // Se encontrou um pagamento aprovado, processar
-            if (paymentData) {
-              const paymentStatus = paymentData.status || paymentData.collection_status;
-              console.log('✅ Pagamento encontrado via API!', { 
-                id: paymentData.id, 
-                status: paymentStatus,
-                external_reference: paymentData.external_reference
-              });
-              
-              if (paymentStatus === 'approved' || paymentStatus === 'authorized') {
-                console.log('✅ Pagamento aprovado detectado via API! Processando...');
-                clearInterval(checkInterval);
-                clearTimeout(initTimer);
-                
-                // Processar o pagamento
-                try {
-                  await processarCallbackPagamento(
-                    paymentData.id?.toString() || 'confirmed',
-                    'approved',
-                    userId,
-                    tipo
-                  );
-                  console.log('✅ Assinatura processada com sucesso!');
-                  
-                  setSucesso(true);
-                  setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
-                  setProcessando(false);
-                } catch (error: any) {
-                  console.error('Erro ao processar assinatura:', error);
-                  setMensagem(`Erro ao processar assinatura: ${error.message}`);
-                  setProcessando(false);
-                }
-              } else if (paymentStatus === 'pending') {
-                console.log(`⏳ [Tentativa ${tentativas}] Pagamento ainda pendente...`);
-              } else if (paymentStatus === 'rejected' || paymentStatus === 'cancelled') {
-                console.log(`❌ [Tentativa ${tentativas}] Pagamento rejeitado ou cancelado: ${paymentStatus}`);
-                clearInterval(checkInterval);
-                clearTimeout(initTimer);
-                setProcessando(false);
-                setSucesso(false);
-                setMensagem('Pagamento foi rejeitado ou cancelado. Por favor, tente novamente.');
-              } else {
-                console.log(`⚠️ [Tentativa ${tentativas}] Pagamento com status: ${paymentStatus}`);
-              }
-            } else {
-              console.log(`⏳ [Tentativa ${tentativas}/${maxTentativas}] Ainda aguardando confirmação do pagamento...`);
-            }
+            console.log(`⏳ [Tentativa ${tentativas}/${maxTentativas}] Ainda aguardando confirmação do pagamento...`);
             
             // Limitar número de tentativas
             if (tentativas >= maxTentativas) {
@@ -564,12 +579,12 @@ export default function PagamentoSucesso() {
               clearTimeout(initTimer);
               setProcessando(false);
               setSucesso(false);
-              setMensagem('Tempo de espera esgotado. Se você já completou o pagamento, o Mercado Pago pode estar processando. Verifique sua assinatura na página de assinatura.');
+              setMensagem('Tempo de espera esgotado. Se você já completou o pagamento, verifique sua assinatura na página de assinatura ou entre em contato com o suporte.');
             }
           } catch (error: any) {
             console.error(`Erro na verificação periódica (tentativa ${tentativas}):`, error);
           }
-        }, 3000); // Verificar a cada 3 segundos (mais rápido para melhor UX)
+        }, 2000); // Verificar a cada 2 segundos (mais frequente)
         
         // Limpar intervalos quando o componente desmontar
         return () => {
@@ -578,10 +593,55 @@ export default function PagamentoSucesso() {
           console.log('🛑 Parando verificação periódica via API');
         };
       }
-    }, 2000); // Aguardar 2 segundos antes de iniciar verificação (dar tempo para webhook processar)
+    }, 1000); // Reduzido para 1 segundo para iniciar mais rápido
     
     return () => clearTimeout(initTimer);
-  }, [user]); // Remover dependência de processando para garantir que sempre rode
+  }, [user]);
+
+  // Verificar quando a janela ganha foco (usuário volta da aba do Mercado Pago)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const handleFocus = async () => {
+      console.log('🔄 Janela ganhou foco - verificando pagamento...');
+      
+      const params = getUrlParams();
+      const userId = params.get('user_id') || user?.uid || '';
+      const externalReference = params.get('external_reference') || '';
+      const preferenceId = params.get('preference_id') || '';
+      const tipoParam = params.get('tipo') as 'usuario' | 'profissional' | null;
+      const tipo = tipoParam || 'usuario';
+      
+      // Buscar do localStorage se não estiver na URL
+      let finalExternalReference = externalReference;
+      let finalPreferenceId = preferenceId;
+      
+      if (!finalExternalReference && window.localStorage) {
+        const stored = window.localStorage.getItem('last_external_reference');
+        if (stored) finalExternalReference = stored;
+      }
+      
+      if (!finalPreferenceId && window.localStorage) {
+        const stored = window.localStorage.getItem('last_preference_id');
+        if (stored) finalPreferenceId = stored;
+      }
+      
+      if (userId && (finalExternalReference || finalPreferenceId)) {
+        await verificarPagamentoCompleto(userId, finalExternalReference, finalPreferenceId, tipo);
+      }
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        handleFocus();
+      }
+    });
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [user]);
 
   // Log de debug para verificar se a página está sendo renderizada
   console.log('🔍 PagamentoSucesso renderizando - processando:', processando, 'sucesso:', sucesso);
@@ -596,13 +656,53 @@ export default function PagamentoSucesso() {
             {mensagem || 'Processando pagamento...'}
           </Text>
           {mensagem && mensagem.includes('Aguardando') && (
-            <Text style={styles.textoAguardando}>
-              ⏳ Verificando automaticamente a cada 3 segundos...
-            </Text>
+            <>
+              <Text style={styles.textoAguardando}>
+                ⏳ Verificando automaticamente a cada 2 segundos...
+              </Text>
+              <Text style={styles.textoInstrucao}>
+                💡 Se você já completou o pagamento no Mercado Pago, esta página detectará automaticamente em alguns segundos.
+              </Text>
+              <Text style={styles.textoInstrucao}>
+                Você pode continuar navegando - sua assinatura será ativada automaticamente quando o pagamento for confirmado.
+              </Text>
+            </>
           )}
-          <Text style={styles.textoDebug}>
-            {typeof window !== 'undefined' ? `URL: ${window.location.pathname}${window.location.search}` : 'Carregando...'}
-          </Text>
+          <TouchableOpacity
+            style={[styles.botao, styles.botaoSecundario, { marginTop: 20 }]}
+            onPress={async () => {
+              // Forçar verificação imediata
+              const params = getUrlParams();
+              const userId = params.get('user_id') || user?.uid || '';
+              const externalReference = params.get('external_reference') || '';
+              const preferenceId = params.get('preference_id') || '';
+              const tipoParam = params.get('tipo') as 'usuario' | 'profissional' | null;
+              const tipo = tipoParam || 'usuario';
+              
+              let finalExternalReference = externalReference;
+              let finalPreferenceId = preferenceId;
+              
+              if (!finalExternalReference && typeof window !== 'undefined' && window.localStorage) {
+                const stored = window.localStorage.getItem('last_external_reference');
+                if (stored) finalExternalReference = stored;
+              }
+              
+              if (!finalPreferenceId && typeof window !== 'undefined' && window.localStorage) {
+                const stored = window.localStorage.getItem('last_preference_id');
+                if (stored) finalPreferenceId = stored;
+              }
+              
+              if (userId) {
+                setMensagem('Verificando pagamento agora...');
+                const verificado = await verificarPagamentoCompleto(userId, finalExternalReference, finalPreferenceId, tipo);
+                if (!verificado) {
+                  setMensagem('Pagamento ainda não confirmado. Continue aguardando ou verifique novamente em alguns instantes.');
+                }
+              }
+            }}
+          >
+            <Text style={styles.textoBotaoSecundario}>Verificar Pagamento Agora</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -685,6 +785,15 @@ const styles = StyleSheet.create({
     color: '#336BF7',
     fontStyle: 'italic',
     textAlign: 'center',
+  },
+  textoInstrucao: {
+    marginTop: 12,
+    fontSize: 13,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 20,
+    paddingHorizontal: 20,
+    maxWidth: 500,
   },
   iconeSucesso: {
     fontSize: 64,
