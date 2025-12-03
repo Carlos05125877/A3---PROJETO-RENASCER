@@ -47,13 +47,26 @@ function normalizeUrl(path: string): string | null {
   
   // Verificar rotas que começam com /screens/ e têm case incorreto
   if (lowerPath.startsWith('/screens/')) {
+    // Primeiro, tentar correspondência exata
+    for (const [lowerRoute, correctRoute] of Object.entries(routeMapping)) {
+      if (lowerRoute.toLowerCase() === lowerPath && lowerRoute.startsWith('/screens/')) {
+        return correctRoute;
+      }
+    }
+    
+    // Se não encontrou correspondência exata, tentar correspondência parcial apenas para rotas /screens/
     const parts = lowerPath.split('/');
     if (parts.length >= 3) {
       const screenName = parts[2];
-      // Tentar encontrar correspondência parcial
+      // Tentar encontrar correspondência parcial apenas para rotas /screens/
       for (const [lowerRoute, correctRoute] of Object.entries(routeMapping)) {
-        if (lowerRoute.includes(screenName)) {
-          return correctRoute;
+        // Garantir que a correspondência seja apenas para rotas /screens/ e não /admin/
+        // E que seja uma correspondência exata do nome da tela (não parcial)
+        if (lowerRoute.startsWith('/screens/')) {
+          const routeParts = lowerRoute.toLowerCase().split('/');
+          if (routeParts.length >= 3 && routeParts[2] === screenName) {
+            return correctRoute;
+          }
         }
       }
     }

@@ -101,12 +101,45 @@ export default function Topo() {
             </TouchableOpacity>
           </>
         ) : (
-          <TouchableOpacity 
-            onPress={() => setMenuAberto(!menuAberto)}
-            style={styles.menuHamburguer}
-          >
-            <Ionicons name={menuAberto ? "close" : "menu"} size={28} color="#000" />
-          </TouchableOpacity>
+          <View style={styles.menuHamburguerContainer}>
+            <TouchableOpacity 
+              onPress={() => setMenuAberto(!menuAberto)}
+              style={styles.menuHamburguer}
+            >
+              <Ionicons name={menuAberto ? "close" : "menu"} size={28} color="#000" />
+            </TouchableOpacity>
+            {!logado && (
+              <TouchableOpacity
+                onPress={() => router.push('/screens/login')}
+                style={styles.botaoEntrarMobileInline}
+              >
+                <Text style={styles.textoBotaoAgendamentoEntrar}>
+                  Entrar
+                </Text>
+              </TouchableOpacity>
+            )}
+            {logado && (
+              <TouchableOpacity onPress={() => {
+                const rota = dadosUser.current?.colecao === 'profissionais' 
+                  ? '/screens/agendador_profissional' 
+                  : '/screens/agendador_usuario';
+                router.push(rota as any);
+              }}>
+                {urlImagem ? (
+                  <Image
+                    source={{ uri: urlImagem }}
+                    style={styles.avatarMobile}
+                  />
+                ) : (
+                  <View style={[styles.avatarMobile, { backgroundColor: '#336BF7', justifyContent: 'center', alignItems: 'center' }]}>
+                    <Text style={{ color: '#FFF', fontSize: 14, fontWeight: 'bold' }}>
+                      {user?.email?.charAt(0).toUpperCase() || 'U'}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            )}
+          </View>
         )}
 
       </View>
@@ -161,35 +194,39 @@ export default function Topo() {
           </View>
         )}
 
-        {!logado ? (
-          <TouchableOpacity
-            onPress={() => router.push('/screens/login')}
-            style={[styles.botaoAgendamentoEntrar, isMobile && styles.botaoEntrarMobile]}
-          >
-            <Text style={styles.textoBotaoAgendamentoEntrar}>
-              {isMobile ? 'Entrar' : 'Entrar'}
-            </Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={() => {
-            const rota = dadosUser.current?.colecao === 'profissionais' 
-              ? '/screens/agendador_profissional' 
-              : '/screens/agendador_usuario';
-            router.push(rota as any);
-          }}>
-          {urlImagem ? (
-            <Image
-              source={{ uri: urlImagem }}
-              style={[styles.avatar, isMobile && styles.avatarMobile]}
-            />
-          ) : (
-            <View style={[styles.avatar, isMobile && styles.avatarMobile, { backgroundColor: '#336BF7', justifyContent: 'center', alignItems: 'center' }]}>
-              <Text style={{ color: '#FFF', fontSize: isMobile ? 14 : 16, fontWeight: 'bold' }}>
-                {user?.email?.charAt(0).toUpperCase() || 'U'}
-              </Text>
-            </View>
-          )}
-          </TouchableOpacity>
+        {!isMobile && (
+          <>
+            {!logado ? (
+              <TouchableOpacity
+                onPress={() => router.push('/screens/login')}
+                style={styles.botaoAgendamentoEntrar}
+              >
+                <Text style={styles.textoBotaoAgendamentoEntrar}>
+                  Entrar
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={() => {
+                const rota = dadosUser.current?.colecao === 'profissionais' 
+                  ? '/screens/agendador_profissional' 
+                  : '/screens/agendador_usuario';
+                router.push(rota as any);
+              }}>
+                {urlImagem ? (
+                  <Image
+                    source={{ uri: urlImagem }}
+                    style={styles.avatar}
+                  />
+                ) : (
+                  <View style={[styles.avatar, { backgroundColor: '#336BF7', justifyContent: 'center', alignItems: 'center' }]}>
+                    <Text style={{ color: '#FFF', fontSize: 16, fontWeight: 'bold' }}>
+                      {user?.email?.charAt(0).toUpperCase() || 'U'}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            )}
+          </>
         )}
       </View>
 
@@ -425,8 +462,23 @@ const styles = StyleSheet.create({
     height: 30,
   },
 
+  menuHamburguerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+
   menuHamburguer: {
     padding: 5,
+  },
+
+  botaoEntrarMobileInline: {
+    backgroundColor: '#336BF7',
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   topoPaginaDireitaMobile: {

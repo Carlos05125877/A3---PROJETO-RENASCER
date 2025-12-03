@@ -3,13 +3,15 @@ import { configuracaoUsuario } from '@/back-end/api.cadastroLogin';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Alert, Image, Linking, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Linking, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import Topo from '../../../components/topo';
 import { useCpfInvalido, useEmailInvalido, useImagemLocal, verificarDados } from '../hooks/validaçõesDeUsuario';
 
 
 export default function CadastroProfissional() {
+    const { width } = useWindowDimensions();
+    const isMobile = width < 768;
     const router = useRouter();
     const [nome, setNome] = useState('');
     const [cpf, setCpf] = useState('');
@@ -52,24 +54,24 @@ export default function CadastroProfissional() {
             </View>
 
             <View
-                style={styles.areaCadastroBanner}>
+                style={[styles.areaCadastroBanner, isMobile && styles.areaCadastroBannerMobile]}>
                 <View
-                    style={styles.areaCadastro}>
+                    style={[styles.areaCadastro, isMobile && styles.areaCadastroMobile]}>
                     <Text
-                        style={styles.TextoCadastro}>
+                        style={[styles.TextoCadastro, isMobile && styles.TextoCadastroMobile]}>
                         Cadastro de Profissional
                     </Text>
                     <View
-                        style={styles.inputsCadastro}>
+                        style={[styles.inputsCadastro, isMobile && styles.inputsCadastroMobile]}>
                         <TextInput
-                            style={styles.TextInput}
+                            style={[styles.TextInput, isMobile && styles.TextInputMobile]}
                             value={nome}
                             onChangeText={setNome}
                             placeholder='Nome *'
                             placeholderTextColor={'rgba(0,0,0,0.5)'}
                         />
                         <TextInputMask
-                            style={styles.TextInput}
+                            style={[styles.TextInput, isMobile && styles.TextInputMobile]}
                             type={'cpf'}
                             value={cpf}
                             onChangeText={setCpf}
@@ -85,14 +87,14 @@ export default function CadastroProfissional() {
                                 withDDD: true,
                             }
                             }
-                            style={styles.TextInput}
+                            style={[styles.TextInput, isMobile && styles.TextInputMobile]}
                             value={telefone}
                             onChangeText={setTelefone}
                             placeholder='Telefone'
                             placeholderTextColor={'rgba(0,0,0,0.5)'}
                         />
                         <TextInput
-                            style={styles.TextInput}
+                            style={[styles.TextInput, isMobile && styles.TextInputMobile]}
                             value={email}
                             onChangeText={setEmail}
                             placeholder='E-mail *'
@@ -106,14 +108,14 @@ export default function CadastroProfissional() {
                             </Text>
                         }
                         <View
-                            style={styles.nascimentoCrp}>
+                            style={[styles.nascimentoCrp, isMobile && styles.nascimentoCrpMobile]}>
 
                             <TextInputMask
                                 type={'datetime'}
                                 options={{
                                     format: 'dd/MM/aaaa'
                                 }}
-                                style={[styles.TextInput, styles.TextInputDataCrp]}
+                                style={[styles.TextInput, styles.TextInputDataCrp, isMobile && styles.TextInputDataCrpMobile]}
                                 value={dataNascimento}
                                 onChangeText={setDataNascimento}
                                 placeholder='Data de Nascimento *'
@@ -124,7 +126,7 @@ export default function CadastroProfissional() {
                                 options={{
                                     mask: '99/99999'
                                 }}
-                                style={[styles.TextInput, styles.TextInputDataCrp]}
+                                style={[styles.TextInput, styles.TextInputDataCrp, isMobile && styles.TextInputDataCrpMobile]}
                                 value={crp}
                                 onChangeText={setCrp}
                                 placeholder='CRP *'
@@ -135,16 +137,17 @@ export default function CadastroProfissional() {
                             multiline
                             style={[
                                 styles.TextInput,
-                                styles.TextInputBiografia
+                                styles.TextInputBiografia,
+                                isMobile && styles.TextInputBiografiaMobile
                             ]} value={Biografia}
                             onChangeText={setBiografia}
                             placeholder='Biografia'
                             placeholderTextColor={'rgba(0,0,0,0.5)'}
                         />
                         <View
-                            style={styles.boxTextInput}>
+                            style={[styles.boxTextInput, isMobile && styles.boxTextInputMobile]}>
                             <TextInput
-                                style={[styles.TextInput, styles.TextInputSenha]}
+                                style={[styles.TextInput, styles.TextInputSenha, isMobile && styles.TextInputMobile]}
                                 value={senha}
                                 onChangeText={setSenha}
                                 placeholder='Senha *'
@@ -157,9 +160,9 @@ export default function CadastroProfissional() {
                             </TouchableOpacity>
                         </View>
                         <View
-                            style={styles.boxTextInput}>
+                            style={[styles.boxTextInput, isMobile && styles.boxTextInputMobile]}>
                             <TextInput
-                                style={[styles.TextInput, styles.TextInputSenha]}
+                                style={[styles.TextInput, styles.TextInputSenha, isMobile && styles.TextInputMobile]}
                                 value={confirmarSenha}
                                 onChangeText={setConfirmarSenha}
                                 placeholder='Confirmar Senha *'
@@ -334,12 +337,13 @@ export default function CadastroProfissional() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-                <View
-                    style={styles.areaBanner}>
-                    <Image
-                        style={styles.imagem}
-                        source={require('../../../assets/images/imagemCadastroProfissional.png')} />
-                </View>
+                {!isMobile && (
+                    <View style={styles.areaBanner}>
+                        <Image
+                            style={styles.imagem}
+                            source={require('../../../assets/images/imagemCadastroProfissional.png')} />
+                    </View>
+                )}
             </View>
         </View>
     )
@@ -510,5 +514,41 @@ const styles = StyleSheet.create({
     iconeMostrarSenha: {
         padding: 10,
         opacity: 0.5
-    }
+    },
+    // Estilos Mobile
+    inputsCadastroMobile: {
+        width: '100%',
+        paddingHorizontal: 15,
+    },
+    TextInputMobile: {
+        width: '100%',
+    },
+    boxTextInputMobile: {
+        width: '100%',
+    },
+    nascimentoCrpMobile: {
+        flexDirection: 'column',
+        width: '100%',
+        gap: 10,
+    },
+    TextInputDataCrpMobile: {
+        width: '100%',
+    },
+    TextInputBiografiaMobile: {
+        width: '100%',
+    },
+    areaCadastroBannerMobile: {
+        flexDirection: 'column',
+        paddingHorizontal: 15,
+        paddingTop: 10,
+    },
+    areaCadastroMobile: {
+        flex: 1,
+        width: '100%',
+        paddingVertical: 10,
+    },
+    TextoCadastroMobile: {
+        fontSize: 24,
+        marginBottom: 10,
+    },
 })
