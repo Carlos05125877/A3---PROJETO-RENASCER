@@ -8,7 +8,7 @@ const admin = require('firebase-admin');
 
 // Access Token do Mercado Pago (vem de variável de ambiente ou configuração)
 const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN || 
-  'APP_USR-7288585500067152-112921-8ba2a74447902672df10a77bbc8ad853-3026971470';
+  'APP_USR-28050c52-3a73-4b19-980a-fb8b64e1ff7';
 
 /**
  * Busca detalhes de um pagamento na API do Mercado Pago

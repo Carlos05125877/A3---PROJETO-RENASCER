@@ -26,11 +26,24 @@ export const MERCADO_PAGO_ACCESS_TOKEN_TEST =
 // Token de PRODUÇÃO - Use apenas em produção com pagamentos reais
 export const MERCADO_PAGO_ACCESS_TOKEN_PROD = 
   process.env.REACT_APP_MERCADO_PAGO_ACCESS_TOKEN_PROD || 
-  'APP_USR-7288585500067152-112921-8ba2a74447902672df10a77bbc8ad853-3026971470';
+  'APP_USR-28050c52-3a73-4b19-980a-fb8b64e1ff7';
 
 // Token alternativo (caso precise)
 export const MERCADO_PAGO_ACCESS_TOKEN_ALT = 
-  'APP_USR-271b7d72-ad6b-42c3-afe5-182aea3aeebf';
+  'APP_USR-6937169298715536-112921-1c757958783e5f14612cb2461fe922c3-436192174';
+
+// Credenciais de produção
+export const MERCADO_PAGO_CLIENT_ID = 
+  process.env.REACT_APP_MERCADO_PAGO_CLIENT_ID || 
+  '6937169298715536';
+
+export const MERCADO_PAGO_CLIENT_SECRET = 
+  process.env.REACT_APP_MERCADO_PAGO_CLIENT_SECRET || 
+  'PkAkU4P0lKKWRi0jpeQBmm76xh8o9Vl4';
+
+export const MERCADO_PAGO_PUBLIC_KEY = 
+  process.env.REACT_APP_MERCADO_PAGO_PUBLIC_KEY || 
+  'APP_USR-6937169298715536-112921-1c757958783e5f14612cb2461fe922c3-436192174';
 
 // Seleciona automaticamente o token baseado no ambiente
 // Em desenvolvimento, usa TESTE. Em produção, usa PRODUÇÃO
