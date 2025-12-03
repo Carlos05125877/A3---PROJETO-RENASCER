@@ -30,7 +30,9 @@ export default function LoginAdmin() {
 
   return (
     <View style={styles.container}>
-      <Topo />
+      <View style={{  zIndex: 1 }}>
+            <Topo />
+          </View>
       <View style={styles.content}>
         <Text style={styles.titulo}>Painel Administrativo</Text>
         <Text style={styles.subtitulo}>Faça login para acessar o dashboard</Text>

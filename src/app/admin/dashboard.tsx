@@ -167,7 +167,9 @@ export default function DashboardAdmin() {
 
   return (
     <View style={styles.container}>
-      <Topo />
+      <View style={{  zIndex: 1 }}>
+            <Topo />
+          </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
           <View style={styles.header}>
