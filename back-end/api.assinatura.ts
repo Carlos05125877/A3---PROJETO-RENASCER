@@ -33,11 +33,27 @@ export const verificarAssinatura = async (userId: string): Promise<boolean> => {
         console.log('isAssinante:', isAssinante);
         console.log('status:', status);
         
-        if (isAssinante && status === 'approved') {
-        // Verificar se a assinatura não expirou
-        if (dados.assinatura.dataFim) {
-          const dataFim = new Date(dados.assinatura.dataFim);
-          const hoje = new Date();
+        // Verificar se o status é 'approved' - se for, considerar como assinante ativo
+        // Mesmo que isAssinante não esteja explicitamente como true
+        if (status === 'approved') {
+          // Se o status é approved, garantir que isAssinante seja true
+          if (!isAssinante) {
+            console.log('⚠️ Status é approved mas isAssinante é false. Corrigindo...');
+            // Atualizar o documento para garantir consistência
+            try {
+              await updateDoc(doc(firestore, 'users', userId), {
+                'assinatura.isAssinante': true
+              });
+              console.log('✅ isAssinante corrigido para true');
+            } catch (error) {
+              console.error('Erro ao corrigir isAssinante:', error);
+            }
+          }
+          
+          // Verificar se a assinatura não expirou
+          if (dados.assinatura.dataFim) {
+            const dataFim = new Date(dados.assinatura.dataFim);
+            const hoje = new Date();
             const naoExpirada = dataFim >= hoje;
             console.log('Data fim:', dataFim.toISOString());
             console.log('Data hoje:', hoje.toISOString());
@@ -52,7 +68,21 @@ export const verificarAssinatura = async (userId: string): Promise<boolean> => {
           } else {
             console.log('✅ Assinatura válida encontrada em users (sem dataFim)');
             return true;
-      }
+          }
+        } else if (isAssinante && status === 'approved') {
+          // Fallback: se isAssinante é true e status é approved
+          if (dados.assinatura.dataFim) {
+            const dataFim = new Date(dados.assinatura.dataFim);
+            const hoje = new Date();
+            const naoExpirada = dataFim >= hoje;
+            if (naoExpirada) {
+              console.log('✅ Assinatura válida encontrada em users');
+              return true;
+            }
+          } else {
+            console.log('✅ Assinatura válida encontrada em users (sem dataFim)');
+            return true;
+          }
         } else {
           console.log('❌ Assinatura não está ativa:', { isAssinante, status });
         }
@@ -77,10 +107,27 @@ export const verificarAssinatura = async (userId: string): Promise<boolean> => {
         console.log('isAssinante:', isAssinante);
         console.log('status:', status);
         
-        if (isAssinante && status === 'approved') {
-        if (dados.assinatura.dataFim) {
-          const dataFim = new Date(dados.assinatura.dataFim);
-          const hoje = new Date();
+        // Verificar se o status é 'approved' - se for, considerar como assinante ativo
+        // Mesmo que isAssinante não esteja explicitamente como true
+        if (status === 'approved') {
+          // Se o status é approved, garantir que isAssinante seja true
+          if (!isAssinante) {
+            console.log('⚠️ Status é approved mas isAssinante é false. Corrigindo...');
+            // Atualizar o documento para garantir consistência
+            try {
+              await updateDoc(doc(firestore, 'profissionais', userId), {
+                'assinatura.isAssinante': true
+              });
+              console.log('✅ isAssinante corrigido para true');
+            } catch (error) {
+              console.error('Erro ao corrigir isAssinante:', error);
+            }
+          }
+          
+          // Verificar se a assinatura não expirou
+          if (dados.assinatura.dataFim) {
+            const dataFim = new Date(dados.assinatura.dataFim);
+            const hoje = new Date();
             const naoExpirada = dataFim >= hoje;
             console.log('Data fim:', dataFim.toISOString());
             console.log('Data hoje:', hoje.toISOString());
@@ -95,7 +142,21 @@ export const verificarAssinatura = async (userId: string): Promise<boolean> => {
           } else {
             console.log('✅ Assinatura válida encontrada em profissionais (sem dataFim)');
             return true;
-      }
+          }
+        } else if (isAssinante && status === 'approved') {
+          // Fallback: se isAssinante é true e status é approved
+          if (dados.assinatura.dataFim) {
+            const dataFim = new Date(dados.assinatura.dataFim);
+            const hoje = new Date();
+            const naoExpirada = dataFim >= hoje;
+            if (naoExpirada) {
+              console.log('✅ Assinatura válida encontrada em profissionais');
+              return true;
+            }
+          } else {
+            console.log('✅ Assinatura válida encontrada em profissionais (sem dataFim)');
+            return true;
+          }
         } else {
           console.log('❌ Assinatura não está ativa:', { isAssinante, status });
         }
@@ -150,11 +211,18 @@ export const atualizarAssinatura = async (
       const assinaturaAtual = dadosAtuais?.assinatura || {};
       
       // Mesclar dados existentes com novos dados
+      // IMPORTANTE: Os novos dados devem sempre sobrescrever os antigos
+      // Especialmente isAssinante e status devem ser atualizados
       const assinaturaCompleta = {
         ...assinaturaAtual,
-        ...assinatura,
+        ...assinatura, // Novos dados sobrescrevem os antigos
         atualizadoEm: new Date().toISOString()
       };
+      
+      // Garantir que se o status é 'approved', isAssinante seja true
+      if (assinaturaCompleta.status === 'approved') {
+        assinaturaCompleta.isAssinante = true;
+      }
       
       await updateDoc(userRef, {
         assinatura: assinaturaCompleta
@@ -476,22 +544,35 @@ export const processarCallbackPagamento = async (
     const dataFim = new Date();
     dataFim.setMonth(dataFim.getMonth() + 1); // Assinatura mensal
 
-    // Normalizar o status
-    const statusNormalizado = status.toLowerCase();
-    const isApproved = statusNormalizado === 'approved' || statusNormalizado === 'aprovado';
+    // Normalizar o status - aceitar várias variações
+    const statusNormalizado = status.toLowerCase().trim();
+    const isApproved = statusNormalizado === 'approved' || 
+                      statusNormalizado === 'aprovado' || 
+                      statusNormalizado === 'authorized' ||
+                      statusNormalizado === 'autorizado';
     
+    console.log('Status recebido:', status);
     console.log('Status normalizado:', statusNormalizado, 'isApproved:', isApproved);
 
+    // Determinar o status final (sempre usar 'approved' se o pagamento foi aprovado)
+    let statusFinal: 'pending' | 'approved' | 'rejected' | 'cancelled' = 'pending';
+    if (isApproved) {
+      statusFinal = 'approved';
+    } else if (statusNormalizado === 'rejected' || statusNormalizado === 'rejeitado') {
+      statusFinal = 'rejected';
+    } else if (statusNormalizado === 'cancelled' || statusNormalizado === 'cancelado') {
+      statusFinal = 'cancelled';
+    } else {
+      statusFinal = 'pending';
+    }
+
     const assinatura: Assinatura = {
-      isAssinante: isApproved,
+      isAssinante: isApproved, // Sempre true quando aprovado
       dataInicio: hoje.toISOString(),
       dataFim: dataFim.toISOString(),
       tipoAssinatura,
       paymentId,
-      status: (statusNormalizado === 'approved' ? 'approved' :
-               statusNormalizado === 'pending' ? 'pending' :
-               statusNormalizado === 'rejected' ? 'rejected' :
-               statusNormalizado === 'cancelled' ? 'cancelled' : 'pending') as 'pending' | 'approved' | 'rejected' | 'cancelled'
+      status: statusFinal
     };
 
     console.log('Assinatura a ser salva:', assinatura);
