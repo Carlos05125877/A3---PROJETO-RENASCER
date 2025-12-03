@@ -212,20 +212,39 @@ export default function PagamentoSucesso() {
             }
             
             if (statusFinal === 'approved') {
-              setSucesso(true);
-              setMensagem(verificado 
-                ? 'Pagamento confirmado! Sua assinatura foi ativada com sucesso!'
-                : 'Pagamento aprovado! Processando sua assinatura...');
-              setProcessando(false);
-              
-              // Se não foi verificado ainda, continuar verificando em background
-              if (!verificado) {
+              // Se foi verificado, mostrar sucesso imediatamente
+              if (verificado) {
+                setSucesso(true);
+                setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
+                setProcessando(false);
+              } else {
+                // Se não foi verificado ainda, aguardar um pouco e recarregar para forçar atualização
+                console.log('⏳ Pagamento aprovado mas assinatura ainda não confirmada. Recarregando...');
+                setMensagem('Pagamento aprovado! Processando sua assinatura...');
+                
+                // Recarregar a página após alguns segundos para mostrar a tela de sucesso
                 setTimeout(async () => {
                   const verificadoNovo = await verificarAssinatura(finalUserId);
                   if (verificadoNovo) {
-                    setSucesso(true);
-                    setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
-                    setProcessando(false);
+                    // Recarregar a página com os parâmetros corretos para mostrar tela de sucesso
+                    const currentParams = getUrlParams();
+                    const redirectParams = new URLSearchParams({
+                      user_id: finalUserId,
+                      tipo: tipo,
+                      payment_id: paymentId || currentParams.get('collection_id') || '',
+                      collection_status: 'approved',
+                      status: 'approved',
+                      external_reference: externalReference || ''
+                    });
+                    
+                    if (typeof window !== 'undefined') {
+                      window.location.href = `/screens/pagamento_sucesso?${redirectParams.toString()}`;
+                    }
+                  } else {
+                    // Se ainda não foi verificado, recarregar mesmo assim para tentar novamente
+                    if (typeof window !== 'undefined') {
+                      window.location.reload();
+                    }
                   }
                 }, 3000);
               }
@@ -415,8 +434,9 @@ export default function PagamentoSucesso() {
         const paymentStatus = paymentData.status || paymentData.collection_status;
         
         if (paymentStatus === 'approved' || paymentStatus === 'authorized') {
-          console.log('✅ Pagamento aprovado detectado! Processando...');
+          console.log('✅ Pagamento aprovado detectado! Processando e redirecionando...');
           
+          // Processar o pagamento
           await processarCallbackPagamento(
             paymentData.id?.toString() || 'confirmed',
             'approved',
@@ -424,10 +444,42 @@ export default function PagamentoSucesso() {
             tipo
           );
           
-          setSucesso(true);
-          setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
-          setProcessando(false);
-          return true;
+          // Aguardar um pouco para garantir que foi processado
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          
+          // Verificar se foi salvo
+          const assinanteVerificado = await verificarAssinatura(userId);
+          
+          if (assinanteVerificado) {
+            console.log('✅ Pagamento confirmado e assinatura ativada! Redirecionando para tela de sucesso...');
+            
+            // Redirecionar para a tela de sucesso com os parâmetros do Mercado Pago
+            // Isso força um recarregamento e mostra a tela de sucesso
+            const params = new URLSearchParams({
+              user_id: userId,
+              tipo: tipo,
+              payment_id: paymentData.id?.toString() || '',
+              collection_status: 'approved',
+              status: 'approved',
+              external_reference: externalReference || paymentData.external_reference || ''
+            });
+            
+            if (typeof window !== 'undefined') {
+              // Usar window.location.href para forçar recarregamento completo
+              window.location.href = `/screens/pagamento_sucesso?${params.toString()}`;
+            } else {
+              // Fallback para router
+              router.replace(`/screens/pagamento_sucesso?${params.toString()}` as any);
+            }
+            
+            return true;
+          } else {
+            // Se não foi verificado ainda, mostrar mensagem mas continuar verificando
+            setSucesso(true);
+            setMensagem('Pagamento confirmado! Processando sua assinatura...');
+            setProcessando(false);
+            return true;
+          }
         }
       }
       
@@ -436,7 +488,7 @@ export default function PagamentoSucesso() {
       console.error('Erro ao verificar pagamento:', error);
       return false;
     }
-  }, []);
+  }, [router]);
 
   // Verificação periódica quando status é 'waiting' - verificar via API do Mercado Pago
   useEffect(() => {
@@ -546,9 +598,23 @@ export default function PagamentoSucesso() {
                 const assinante = await verificarAssinatura(userId);
                 
                 if (assinante || statusFinal === 'approved' || statusFinal === 'aprovado') {
-                  setSucesso(true);
-                  setMensagem('Pagamento confirmado! Sua assinatura foi ativada com sucesso!');
-                  setProcessando(false);
+                  console.log('✅ Pagamento confirmado! Redirecionando para tela de sucesso...');
+                  
+                  // Redirecionar para a tela de sucesso com os parâmetros corretos
+                  // Isso força um recarregamento e mostra a tela de sucesso
+                  const params = new URLSearchParams({
+                    user_id: userId,
+                    tipo: tipo,
+                    payment_id: paymentIdFromUrl,
+                    collection_status: 'approved',
+                    status: 'approved',
+                    external_reference: externalReference || ''
+                  });
+                  
+                  if (typeof window !== 'undefined') {
+                    // Usar window.location.href para forçar recarregamento completo
+                    window.location.href = `/screens/pagamento_sucesso?${params.toString()}`;
+                  }
                 } else {
                   setMensagem('Pagamento processado. Aguardando confirmação final...');
                 }
