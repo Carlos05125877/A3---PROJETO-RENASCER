@@ -3,8 +3,21 @@
   command = "npx expo export --platform web"
 
 # Redirecionar rotas com case incorreto para o case correto
+# IMPORTANTE: Os redirecionamentos devem vir ANTES do catch-all
 [[redirects]]
   from = "/screens/blogdicas"
+  to = "/screens/blogDicas"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/BLOGDICAS"
+  to = "/screens/blogDicas"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/BlogDicas"
   to = "/screens/blogDicas"
   status = 301
   force = true
