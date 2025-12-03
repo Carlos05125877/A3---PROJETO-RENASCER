@@ -1,5 +1,6 @@
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { firestore } from './Api';
+import { MERCADO_PAGO_ACCESS_TOKEN, MERCADO_PAGO_CONFIG } from './mercadoPagoConfig';
 
 export interface Assinatura {
   isAssinante: boolean;
@@ -234,12 +235,9 @@ export const criarPreferenciaPagamento = async (
       throw new Error('ID do usuário é obrigatório');
     }
 
-    console.log('Validações passaram, importando Access Token...');
+    console.log('Validações passaram, usando Access Token...');
     
-    // Importar Access Token do arquivo de configuração
-    const { MERCADO_PAGO_ACCESS_TOKEN } = await import('./mercadoPagoConfig');
-    
-    console.log('Access Token importado:', MERCADO_PAGO_ACCESS_TOKEN ? MERCADO_PAGO_ACCESS_TOKEN.substring(0, 20) + '...' : 'VAZIO');
+    console.log('Access Token:', MERCADO_PAGO_ACCESS_TOKEN ? MERCADO_PAGO_ACCESS_TOKEN.substring(0, 20) + '...' : 'VAZIO');
     
     if (!MERCADO_PAGO_ACCESS_TOKEN || MERCADO_PAGO_ACCESS_TOKEN.trim() === '') {
       console.error('Access Token não configurado');
@@ -322,7 +320,6 @@ export const criarPreferenciaPagamento = async (
     
     // Adicionar notification_url para receber webhooks (opcional, mas recomendado)
     // Configurar webhook para receber notificações do Mercado Pago em tempo real
-    const { MERCADO_PAGO_CONFIG } = await import('./mercadoPagoConfig');
     const webhookUrl = MERCADO_PAGO_CONFIG.webhookUrl;
     if (webhookUrl && webhookUrl.trim() !== '') {
       preferenceData.notification_url = webhookUrl;

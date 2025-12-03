@@ -6,7 +6,7 @@
  * que deve ser adaptada para seu backend.
  */
 
-const MERCADO_PAGO_ACCESS_TOKEN = process.env.REACT_APP_MERCADO_PAGO_ACCESS_TOKEN || '';
+import { MERCADO_PAGO_ACCESS_TOKEN } from './mercadoPagoConfig';
 
 /**
  * Cria uma preferência de pagamento no Mercado Pago
@@ -76,8 +76,6 @@ export const criarPreferenciaPagamento = async (
 export const verificarStatusPagamento = async (paymentId: string): Promise<any> => {
   try {
     // Importar Access Token do arquivo de configuração
-    const { MERCADO_PAGO_ACCESS_TOKEN } = await import('./mercadoPagoConfig');
-    
     if (!MERCADO_PAGO_ACCESS_TOKEN || MERCADO_PAGO_ACCESS_TOKEN.trim() === '') {
       throw new Error('Access Token do Mercado Pago não configurado');
     }
@@ -115,8 +113,6 @@ export const verificarStatusPagamento = async (paymentId: string): Promise<any> 
 export const buscarPagamentoPorReferencia = async (externalReference: string): Promise<any> => {
   try {
     // Importar Access Token do arquivo de configuração
-    const { MERCADO_PAGO_ACCESS_TOKEN } = await import('./mercadoPagoConfig');
-    
     if (!MERCADO_PAGO_ACCESS_TOKEN || MERCADO_PAGO_ACCESS_TOKEN.trim() === '') {
       throw new Error('Access Token do Mercado Pago não configurado');
     }
@@ -168,8 +164,6 @@ export const buscarPagamentoPorReferencia = async (externalReference: string): P
 export const buscarPagamentoPorPreferencia = async (preferenceId: string): Promise<any> => {
   try {
     // Importar Access Token do arquivo de configuração
-    const { MERCADO_PAGO_ACCESS_TOKEN } = await import('./mercadoPagoConfig');
-    
     if (!MERCADO_PAGO_ACCESS_TOKEN || MERCADO_PAGO_ACCESS_TOKEN.trim() === '') {
       throw new Error('Access Token do Mercado Pago não configurado');
     }
@@ -221,8 +215,6 @@ export const buscarPagamentoPorPreferencia = async (preferenceId: string): Promi
  */
 export const verificarTodosPagamentosPreferencia = async (preferenceId: string): Promise<any[]> => {
   try {
-    const { MERCADO_PAGO_ACCESS_TOKEN } = await import('./mercadoPagoConfig');
-    
     if (!MERCADO_PAGO_ACCESS_TOKEN || MERCADO_PAGO_ACCESS_TOKEN.trim() === '') {
       throw new Error('Access Token do Mercado Pago não configurado');
     }
@@ -262,8 +254,6 @@ export const verificarTodosPagamentosPreferencia = async (preferenceId: string):
  */
 export const verificarTodosPagamentosReferencia = async (externalReference: string): Promise<any[]> => {
   try {
-    const { MERCADO_PAGO_ACCESS_TOKEN } = await import('./mercadoPagoConfig');
-    
     if (!MERCADO_PAGO_ACCESS_TOKEN || MERCADO_PAGO_ACCESS_TOKEN.trim() === '') {
       throw new Error('Access Token do Mercado Pago não configurado');
     }

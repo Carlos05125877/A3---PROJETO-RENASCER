@@ -5,6 +5,7 @@ import {
     buscarPagamentoPorReferencia,
     diagnosticarConfirmacaoPagamento
 } from '@/back-end/api.mercadoPago';
+import { MERCADO_PAGO_ACCESS_TOKEN } from '@/back-end/mercadoPagoConfig';
 import Topo from '@/components/topo';
 import { useRouter } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -242,7 +243,6 @@ export default function DiagnosticoPagamento() {
       // 10. Verificar configuração do Access Token
       adicionarDiagnostico('Configuração do Token', 'loading', 'Verificando token...');
       try {
-        const { MERCADO_PAGO_ACCESS_TOKEN } = await import('@/back-end/mercadoPagoConfig');
         if (MERCADO_PAGO_ACCESS_TOKEN && MERCADO_PAGO_ACCESS_TOKEN.trim() !== '') {
           const isTest = MERCADO_PAGO_ACCESS_TOKEN.includes('TEST-') || MERCADO_PAGO_ACCESS_TOKEN.startsWith('TEST');
           adicionarDiagnostico(
