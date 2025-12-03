@@ -1,6 +1,6 @@
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { firestore } from './Api';
-import { MERCADO_PAGO_ACCESS_TOKEN, MERCADO_PAGO_CONFIG } from './mercadoPagoConfig';
+import { MERCADO_PAGO_ACCESS_TOKEN, MERCADO_PAGO_ACCESS_TOKEN_ALT, MERCADO_PAGO_CONFIG } from './mercadoPagoConfig';
 
 export interface Assinatura {
   isAssinante: boolean;
@@ -237,7 +237,12 @@ export const criarPreferenciaPagamento = async (
 
     console.log('Validações passaram, usando Access Token...');
     
-    console.log('Access Token:', MERCADO_PAGO_ACCESS_TOKEN ? MERCADO_PAGO_ACCESS_TOKEN.substring(0, 20) + '...' : 'VAZIO');
+    // Log detalhado para diagnóstico
+    console.log('=== DIAGNÓSTICO DE CREDENCIAIS ===');
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('Access Token (primeiros 30 chars):', MERCADO_PAGO_ACCESS_TOKEN ? MERCADO_PAGO_ACCESS_TOKEN.substring(0, 30) + '...' : 'VAZIO');
+    console.log('Access Token completo:', MERCADO_PAGO_ACCESS_TOKEN || 'NÃO CONFIGURADO');
+    console.log('Token começa com APP_USR:', MERCADO_PAGO_ACCESS_TOKEN?.startsWith('APP_USR') ? 'SIM' : 'NÃO');
     
     if (!MERCADO_PAGO_ACCESS_TOKEN || MERCADO_PAGO_ACCESS_TOKEN.trim() === '') {
       console.error('Access Token não configurado');
@@ -341,15 +346,34 @@ export const criarPreferenciaPagamento = async (
     
     console.log('Enviando requisição para Mercado Pago...');
     
-    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${MERCADO_PAGO_ACCESS_TOKEN}`,
-        'X-Idempotency-Key': `${userId}_${Date.now()}`
-      },
-      body: JSON.stringify(preferenceData)
-    });
+    // Função para tentar criar preferência com um token específico
+    const tentarCriarPreferencia = async (token: string, tokenName: string) => {
+      console.log(`Tentando criar preferência com ${tokenName}...`);
+      const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'X-Idempotency-Key': `${userId}_${Date.now()}`
+        },
+        body: JSON.stringify(preferenceData)
+      });
+      return { response, token, tokenName };
+    };
+    
+    // Tentar primeiro com o token principal
+    let { response, token: tokenUsado, tokenName } = await tentarCriarPreferencia(MERCADO_PAGO_ACCESS_TOKEN, 'token principal');
+    
+    // Se falhar com 403, tentar com token alternativo
+    if (!response.ok && response.status === 403) {
+      console.warn('⚠️ Token principal retornou 403, tentando com token alternativo...');
+      if (MERCADO_PAGO_ACCESS_TOKEN_ALT && MERCADO_PAGO_ACCESS_TOKEN_ALT !== MERCADO_PAGO_ACCESS_TOKEN) {
+        const resultadoAlt = await tentarCriarPreferencia(MERCADO_PAGO_ACCESS_TOKEN_ALT, 'token alternativo');
+        response = resultadoAlt.response;
+        tokenUsado = resultadoAlt.token;
+        tokenName = resultadoAlt.tokenName;
+      }
+    }
 
     console.log('Status da resposta:', response.status, response.statusText);
     
@@ -358,6 +382,28 @@ export const criarPreferenciaPagamento = async (
 
     if (!response.ok) {
       console.error('❌ ERRO na resposta do Mercado Pago:', responseData);
+      console.error('Status:', response.status);
+      console.error('Headers da resposta:', Object.fromEntries(response.headers.entries()));
+      
+      // Tratamento específico para erro 403
+      if (response.status === 403) {
+        const errorCode = responseData.code;
+        const errorMessage = responseData.message || 'Acesso negado pelo Mercado Pago';
+        
+        console.error('🔒 Erro 403 - Acesso Negado');
+        console.error('Código do erro:', errorCode);
+        console.error('Mensagem:', errorMessage);
+        console.error('Possíveis causas:');
+        console.error('  1. Access Token incorreto ou expirado');
+        console.error('  2. Token não tem permissões necessárias');
+        console.error('  3. Conta do Mercado Pago precisa ser verificada');
+        console.error('  4. Políticas da conta bloqueiam esta operação');
+        console.error('Access Token usado:', tokenUsado ? tokenUsado.substring(0, 30) + '...' : 'NÃO CONFIGURADO');
+        console.error('Nome do token:', tokenName);
+        
+        throw new Error(`Erro de autorização (403): ${errorMessage}. Verifique o Access Token e as configurações da conta no painel do Mercado Pago.`);
+      }
+      
       const errorMessage = responseData.message || 
                           responseData.error || 
                           responseData.cause?.[0]?.description ||

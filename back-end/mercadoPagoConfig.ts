@@ -47,9 +47,10 @@ export const MERCADO_PAGO_PUBLIC_KEY =
 
 // Seleciona automaticamente o token baseado no ambiente
 // Em desenvolvimento, usa TESTE. Em produção, usa PRODUÇÃO
+// IMPORTANTE: No Netlify, sempre usar produção (NODE_ENV pode não estar definido)
 export const MERCADO_PAGO_ACCESS_TOKEN = 
   process.env.REACT_APP_MERCADO_PAGO_ACCESS_TOKEN || 
-  (process.env.NODE_ENV === 'production' 
+  (process.env.NODE_ENV === 'production' || typeof window !== 'undefined' && window.location.hostname.includes('netlify.app')
     ? MERCADO_PAGO_ACCESS_TOKEN_PROD 
     : MERCADO_PAGO_ACCESS_TOKEN_TEST || MERCADO_PAGO_ACCESS_TOKEN_PROD); // Fallback para produção se teste não estiver configurado
 
