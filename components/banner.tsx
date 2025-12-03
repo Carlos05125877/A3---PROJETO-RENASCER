@@ -22,18 +22,10 @@ export default function Banner() {
                 </Text>
             </View>
             <View style={[styles.containerImagem, isMobile && styles.containerImagemMobile]}>
-                <Image source={require('../assets/images/Baneer.png')}
-                    style={[
-                        styles.imagem,
-                        isMobile && {
-                            width: width * 0.8,
-                            height: width * 1.2,
-                            maxWidth: 300,
-                            maxHeight: 450,
-                            marginRight: 0,
-                            marginBottom: 0,
-                        }
-                    ]} />
+                {!isMobile && (
+                    <Image source={require('../assets/images/Baneer.png')}
+                        style={styles.imagem} />
+                )}
                 <View style={[styles.miniBox, isMobile && styles.miniBoxMobile]}>
                     <Text style={[styles.tituloBox, isMobile && styles.tituloBoxMobile]}>
                         Agendamento de Sessões
@@ -147,42 +139,46 @@ const styles = StyleSheet.create({
         marginTop: '2%',
         paddingHorizontal: 15,
         alignItems: 'center',
+        gap: 0,
     },
 
     conteudoTextoMobile: {
         flex: 0,
-        gap: 20,
+        gap: 15,
         paddingHorizontal: 0,
         width: '100%',
         alignItems: 'center',
+        marginBottom: 25,
     },
 
     tituloMobile: {
         fontSize: 28,
         marginTop: 20,
         paddingHorizontal: 10,
+        lineHeight: 34,
     },
 
     subtituloMobile: {
         fontSize: 16,
         marginHorizontal: 0,
         paddingHorizontal: 10,
+        marginBottom: 0,
+        lineHeight: 22,
     },
 
     containerImagemMobile: {
         width: '100%',
         alignItems: 'center',
-        marginTop: 20,
+        marginTop: 0,
         position: 'relative',
     },
-
 
     miniBoxMobile: {
         width: '90%',
         height: 'auto',
         minHeight: 150,
         position: 'relative',
-        marginTop: -80,
+        marginTop: 0,
         marginLeft: 0,
         paddingVertical: 15,
         paddingHorizontal: 15,

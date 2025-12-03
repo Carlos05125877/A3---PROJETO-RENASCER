@@ -113,7 +113,7 @@ export default function Topo() {
                 onPress={() => router.push('/screens/login')}
                 style={styles.botaoEntrarMobileInline}
               >
-                <Text style={styles.textoBotaoAgendamentoEntrar}>
+                <Text style={[styles.textoBotaoAgendamentoEntrar, styles.textoBotaoEntrarMobile]}>
                   Entrar
                 </Text>
               </TouchableOpacity>
@@ -447,7 +447,8 @@ const styles = StyleSheet.create({
   topoPaginaMobile: {
     flexDirection: 'column',
     padding: 8,
-    minHeight: 60,
+    minHeight: 100,
+
   },
 
   topoPaginaEsquerdaMobile: {
@@ -455,11 +456,12 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
     gap: 0,
+    alignItems: 'center',
   },
 
   logoMobile: {
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
   },
 
   menuHamburguerContainer: {
@@ -474,11 +476,18 @@ const styles = StyleSheet.create({
 
   botaoEntrarMobileInline: {
     backgroundColor: '#336BF7',
-    borderRadius: 20,
+    borderRadius: 10,
     paddingHorizontal: 15,
     paddingVertical: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    minWidth: 70,
+    height: 30,
+  },
+
+  textoBotaoEntrarMobile: {
+    fontSize: 14,
+    fontWeight: '600',
   },
 
   topoPaginaDireitaMobile: {

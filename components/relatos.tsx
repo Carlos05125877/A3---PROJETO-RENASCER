@@ -169,6 +169,8 @@ const styles = StyleSheet.create({
     // Estilos Mobile
     fundoMobile: {
         paddingVertical: 30,
+        minHeight: 400,
+        width: '100%',
     },
 
     boxTituloMobile: {
@@ -187,9 +189,11 @@ const styles = StyleSheet.create({
 
     areaCarroselMobile: {
         width: '100%',
-        height: 300,
+        height: 'auto',
+        minHeight: 300,
         marginTop: 20,
         paddingHorizontal: 10,
+        marginBottom: 20,
     },
 
     caixaCarrosselMobile: {
@@ -198,6 +202,7 @@ const styles = StyleSheet.create({
         minHeight: 250,
         borderRadius: 20,
         paddingVertical: 20,
+        marginHorizontal: 5,
     },
 
     textoRelatoMobile: {

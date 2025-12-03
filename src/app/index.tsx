@@ -26,11 +26,15 @@ export default function Index() {
       <View style={{zIndex: 1}} >
         <Topo />
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
-        <View>
+      <ScrollView 
+        showsVerticalScrollIndicator={false} 
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
+        <View style={{ marginBottom: 20 }}>
           <Banner />
         </View>
-        <View>
+        <View style={{ marginBottom: 20 }}>
           <Relatos />
         </View>
         <View>
