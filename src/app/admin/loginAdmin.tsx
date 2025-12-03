@@ -73,6 +73,7 @@ export default function LoginAdmin() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: '#f3f3f3',
   },
   content: {

@@ -177,14 +177,14 @@ const styles = StyleSheet.create({
 
   topoPagina: {
     display: 'flex',
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 10,
     boxShadow: '0px 3px 8px rgba(100, 100, 100, 0.1)',
-    
-
+    backgroundColor: '#FFF',
+    minHeight: 70,
+    width: '100%',
   },
 
   topoPaginaEsquerda: {
