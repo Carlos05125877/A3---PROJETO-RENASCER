@@ -72,6 +72,7 @@ function normalizeUrl(path: string): string | null {
 
 // Executar normalização ANTES do componente renderizar
 // Isso garante que a URL seja corrigida antes do Expo Router tentar processar
+// IMPORTANTE: Usar sessionStorage para evitar loops infinitos
 if (typeof window !== 'undefined') {
   const routeMapping: Record<string, string> = {
     '/screens/blogdicas': '/screens/blogDicas',
@@ -92,18 +93,42 @@ if (typeof window !== 'undefined') {
   
   const path = window.location.pathname;
   const lowerPath = path.toLowerCase();
+  const normalizedPath = routeMapping[lowerPath];
   
-  if (routeMapping[lowerPath] && routeMapping[lowerPath] !== path) {
-    const search = window.location.search;
-    const hash = window.location.hash;
-    console.log('🔧 [PRE-RENDER] Normalizando URL:', path, '→', routeMapping[lowerPath]);
-    window.location.replace(`${routeMapping[lowerPath]}${search}${hash}`);
+  // Verificar se precisa normalizar
+  if (normalizedPath && normalizedPath !== path) {
+    // Verificar se já tentamos normalizar esta URL para evitar loops
+    const normalizationKey = `normalized_${path}`;
+    const alreadyNormalized = sessionStorage.getItem(normalizationKey);
+    
+    if (!alreadyNormalized) {
+      // Marcar que estamos normalizando
+      sessionStorage.setItem(normalizationKey, 'true');
+      const search = window.location.search;
+      const hash = window.location.hash;
+      console.log('🔧 [PRE-RENDER] Normalizando URL:', path, '→', normalizedPath);
+      window.location.replace(`${normalizedPath}${search}${hash}`);
+    } else {
+      // Se já tentamos normalizar, limpar a flag e deixar o Expo Router processar
+      sessionStorage.removeItem(normalizationKey);
+    }
   }
 }
 
 export default function RootLayout() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    
+    // Verificar se já normalizamos nesta sessão para evitar loops
+    const currentPath = window.location.pathname;
+    const normalizationKey = `normalized_${currentPath}`;
+    const alreadyNormalized = sessionStorage.getItem(normalizationKey);
+    
+    // Se já normalizamos, limpar a flag e não tentar novamente
+    if (alreadyNormalized) {
+      sessionStorage.removeItem(normalizationKey);
+      return; // Não fazer mais normalizações
+    }
     
     let isNormalizing = false;
     let hasNormalized = false;
@@ -120,47 +145,42 @@ export default function RootLayout() {
       const normalizedPath = normalizeUrl(path);
       
       if (normalizedPath && normalizedPath !== path) {
+        // Verificar se já tentamos normalizar para evitar loops
+        const checkKey = `normalized_${path}`;
+        if (sessionStorage.getItem(checkKey)) {
+          return; // Já tentamos, não tentar novamente
+        }
+        
         isNormalizing = true;
         hasNormalized = true;
+        sessionStorage.setItem(checkKey, 'true');
         console.log('🔧 Normalizando URL:', path, '→', normalizedPath);
         
         // Usar replace para não adicionar ao histórico
-        // Forçar recarregamento completo para garantir que o Expo Router reconheça a rota
         window.location.replace(`${normalizedPath}${search}${hash}`);
         return;
       }
     };
     
-    // Normalizar IMEDIATAMENTE na montagem (antes de qualquer renderização)
-    // Executar de forma síncrona se possível
+    // Normalizar IMEDIATAMENTE na montagem apenas se necessário
     const path = window.location.pathname;
     const normalizedPath = normalizeUrl(path);
     if (normalizedPath && normalizedPath !== path) {
-      console.log('🔧 Normalizando URL imediatamente:', path, '→', normalizedPath);
-      const search = window.location.search;
-      const hash = window.location.hash;
-      window.location.replace(`${normalizedPath}${search}${hash}`);
-      return; // Não continuar com a renderização se redirecionou
+      // Verificar se já tentamos normalizar
+      const checkKey = `normalized_${path}`;
+      if (!sessionStorage.getItem(checkKey)) {
+        sessionStorage.setItem(checkKey, 'true');
+        console.log('🔧 Normalizando URL imediatamente:', path, '→', normalizedPath);
+        const search = window.location.search;
+        const hash = window.location.hash;
+        window.location.replace(`${normalizedPath}${search}${hash}`);
+        return; // Não continuar com a renderização se redirecionou
+      }
     }
     
     // Normalizar quando a URL mudar (popstate, hashchange, etc)
     window.addEventListener('popstate', normalizeCurrentUrl);
     window.addEventListener('hashchange', normalizeCurrentUrl);
-    
-    // Também verificar periodicamente por um curto período após o carregamento
-    // Isso ajuda a pegar casos onde a normalização inicial não funcionou
-    const checkInterval = setInterval(() => {
-      if (hasNormalized) {
-        clearInterval(checkInterval);
-        return;
-      }
-      normalizeCurrentUrl();
-    }, 100);
-    
-    // Limpar após 2 segundos
-    setTimeout(() => {
-      clearInterval(checkInterval);
-    }, 2000);
     
     return () => {
       window.removeEventListener('popstate', normalizeCurrentUrl);
