@@ -72,7 +72,7 @@ export default function blogDepressao() {
                     
                                         <View style={styles.cartaoArtigo}>
                                             <Image source={require("../../../assets/images/stress.png")} style={styles.imagemArtigo} />
-                                            <TouchableOpacity onPress={() => (router.push('/screens/blogEstresse'))}>
+                                            <TouchableOpacity onPress={() => (router.push('/screens/blog_estresse' as any))}>
                                             <Text style={styles.tituloArtigo}>
                                                 Estresse: Entenda as causas e como prevenir - Interaja e descubra seu nível de bem-estar
                                             </Text>
@@ -81,7 +81,7 @@ export default function blogDepressao() {
                     
                                         <View style={styles.cartaoArtigo}>
                                             <Image source={require("../../../assets/images/anxiety.png")} style={styles.imagemArtigo} />
-                                            <TouchableOpacity onPress={() => (router.push('/screens/blogAnsiedade'))}>
+                                            <TouchableOpacity onPress={() => (router.push('/screens/blog_ansiedade' as any))}>
                                             <Text style={styles.tituloArtigo}>
                                                 Ansiedade: entendendo suas origens, sintomas e como encontrar o equilíbrio
                                             </Text>

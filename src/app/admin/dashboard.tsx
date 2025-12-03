@@ -43,10 +43,10 @@ export default function DashboardAdmin() {
           } else {
             window.localStorage.removeItem('admin_logged_in');
             window.localStorage.removeItem('admin_timestamp');
-            router.replace('/admin/loginAdmin' as any);
+            router.replace('/admin/login_admin' as any);
           }
         } else {
-          router.replace('/admin/loginAdmin' as any);
+          router.replace('/admin/login_admin' as any);
         }
       }
     };
@@ -150,7 +150,7 @@ export default function DashboardAdmin() {
       window.localStorage.removeItem('admin_logged_in');
       window.localStorage.removeItem('admin_timestamp');
     }
-    router.replace('/admin/loginAdmin' as any);
+    router.replace('/admin/login_admin' as any);
   };
 
   if (!autenticado) {

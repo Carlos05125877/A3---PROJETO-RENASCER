@@ -126,7 +126,7 @@ export default function Login() {
 
                 <TouchableOpacity>
                   <Text style={{ color: '#336BF7' }}
-                    onPress={() => router.push('/screens/cadastroUsuarios')}
+                    onPress={() => router.push('/screens/cadastro_usuarios' as any)}
                   >Criar Conta</Text>
                 </TouchableOpacity>
 

@@ -1,21 +1,35 @@
 import { Stack } from 'expo-router';
 import { useEffect } from 'react';
 
-// Mapeamento de rotas com case correto
+// Mapeamento de rotas antigas (camelCase) para novas (snake_case)
+// Agora todas as rotas usam snake_case para evitar problemas de case sensitivity
 const routeMapping: Record<string, string> = {
-  '/screens/blogdicas': '/screens/blogDicas',
-  '/screens/blogansiedade': '/screens/blogAnsiedade',
-  '/screens/blogdepressao': '/screens/blogDepressao',
-  '/screens/blogestresse': '/screens/blogEstresse',
-  '/screens/pagamentosucesso': '/screens/pagamentoSucesso',
-  '/screens/cadastrousuarios': '/screens/cadastroUsuarios',
-  '/screens/cadastroprofissional': '/screens/cadastroProfissional',
-  '/screens/quemsomos': '/screens/quemSomos',
-  '/screens/emdesenvolvimento': '/screens/emDesenvolvimento',
-  '/screens/listaprofissionais': '/screens/listaProfissionais',
-  '/screens/agendadorusuario': '/screens/agendadorUsuario',
-  '/screens/agendadorprofissional': '/screens/agendadorProfissional',
-  '/admin/loginadmin': '/admin/loginAdmin',
+  '/screens/blogdicas': '/screens/blog_dicas',
+  '/screens/blogDicas': '/screens/blog_dicas',
+  '/screens/blogansiedade': '/screens/blog_ansiedade',
+  '/screens/blogAnsiedade': '/screens/blog_ansiedade',
+  '/screens/blogdepressao': '/screens/blog_depressao',
+  '/screens/blogDepressao': '/screens/blog_depressao',
+  '/screens/blogestresse': '/screens/blog_estresse',
+  '/screens/blogEstresse': '/screens/blog_estresse',
+  '/screens/pagamentosucesso': '/screens/pagamento_sucesso',
+  '/screens/pagamentoSucesso': '/screens/pagamento_sucesso',
+  '/screens/cadastrousuarios': '/screens/cadastro_usuarios',
+  '/screens/cadastroUsuarios': '/screens/cadastro_usuarios',
+  '/screens/cadastroprofissional': '/screens/cadastro_profissional',
+  '/screens/cadastroProfissional': '/screens/cadastro_profissional',
+  '/screens/quemsomos': '/screens/quem_somos',
+  '/screens/quemSomos': '/screens/quem_somos',
+  '/screens/emdesenvolvimento': '/screens/em_desenvolvimento',
+  '/screens/emDesenvolvimento': '/screens/em_desenvolvimento',
+  '/screens/listaprofissionais': '/screens/lista_profissionais',
+  '/screens/listaProfissionais': '/screens/lista_profissionais',
+  '/screens/agendadorusuario': '/screens/agendador_usuario',
+  '/screens/agendadorUsuario': '/screens/agendador_usuario',
+  '/screens/agendadorprofissional': '/screens/agendador_profissional',
+  '/screens/agendadorProfissional': '/screens/agendador_profissional',
+  '/admin/loginadmin': '/admin/login_admin',
+  '/admin/loginAdmin': '/admin/login_admin',
   '/admin/dashboard': '/admin/dashboard',
 };
 
@@ -71,31 +85,14 @@ function normalizeUrl(path: string): string | null {
 }
 
 // Executar normalização ANTES do componente renderizar
-// Isso garante que a URL seja corrigida antes do Expo Router tentar processar
+// Redireciona rotas antigas (camelCase) para novas (snake_case)
 // IMPORTANTE: Usar sessionStorage para evitar loops infinitos
 if (typeof window !== 'undefined') {
-  const routeMapping: Record<string, string> = {
-    '/screens/blogdicas': '/screens/blogDicas',
-    '/screens/blogansiedade': '/screens/blogAnsiedade',
-    '/screens/blogdepressao': '/screens/blogDepressao',
-    '/screens/blogestresse': '/screens/blogEstresse',
-    '/screens/pagamentosucesso': '/screens/pagamentoSucesso',
-    '/screens/cadastrousuarios': '/screens/cadastroUsuarios',
-    '/screens/cadastroprofissional': '/screens/cadastroProfissional',
-    '/screens/quemsomos': '/screens/quemSomos',
-    '/screens/emdesenvolvimento': '/screens/emDesenvolvimento',
-    '/screens/listaprofissionais': '/screens/listaProfissionais',
-    '/screens/agendadorusuario': '/screens/agendadorUsuario',
-    '/screens/agendadorprofissional': '/screens/agendadorProfissional',
-    '/admin/loginadmin': '/admin/loginAdmin',
-    '/admin/dashboard': '/admin/dashboard',
-  };
-  
   const path = window.location.pathname;
   const lowerPath = path.toLowerCase();
-  const normalizedPath = routeMapping[lowerPath];
+  const normalizedPath = routeMapping[lowerPath] || routeMapping[path];
   
-  // Verificar se precisa normalizar
+  // Verificar se precisa normalizar (rotas antigas em camelCase ou minúsculas)
   if (normalizedPath && normalizedPath !== path) {
     // Verificar se já tentamos normalizar esta URL para evitar loops
     const normalizationKey = `normalized_${path}`;

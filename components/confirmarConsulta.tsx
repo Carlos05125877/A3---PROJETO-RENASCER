@@ -96,7 +96,7 @@ export default function ConfirmarConsulta({ tipo, ...resto }: props) {
                                             onPress={() => {
                                                 mudarStatusAgendamento(dados.profissional, dados.cliente,
                                                     dados.dia, dados.hora, 'Confirmado')
-                                                route.push('/screens/agendadorProfissional')
+                                                route.push('/screens/agendador_profissional')
 
                                             }
 
@@ -108,7 +108,7 @@ export default function ConfirmarConsulta({ tipo, ...resto }: props) {
                                             onPress={() => {
                                                 mudarStatusAgendamento(dados.profissional, dados.cliente,
                                                     dados.dia, dados.hora, 'Cancelado')
-                                                route.push('/screens/agendadorProfissional')
+                                                route.push('/screens/agendador_profissional')
 
                                             }} style={styles.estiloBotao}>
                                             <Text

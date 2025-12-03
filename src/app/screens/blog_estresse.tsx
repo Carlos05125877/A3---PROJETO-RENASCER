@@ -139,7 +139,7 @@ export default function blogEstresse() {
                                     <View style={{ flexDirection: "column", gap: 12, alignItems: "flex-start" , width: '64%'}}>
                                         <View style={styles.cartaoArtigo}>
                                             <Image source={require("../../../assets/images/depression.png")} style={styles.imagemArtigo} />
-                                            <TouchableOpacity onPress={() => (router.push('/screens/blogDepressao'))}>
+                                            <TouchableOpacity onPress={() => (router.push('/screens/blog_depressao' as any))}>
                                             <Text style={styles.tituloArtigo}>
                                                 Depressão: entendendo suas causas, sintomas e caminhos de tratamento
                                             </Text>
@@ -148,7 +148,7 @@ export default function blogEstresse() {
                     
                                         <View style={styles.cartaoArtigo}>
                                             <Image source={require("../../../assets/images/anxiety.png")} style={styles.imagemArtigo} />
-                                            <TouchableOpacity onPress={() => (router.push('/screens/blogAnsiedade'))}>
+                                            <TouchableOpacity onPress={() => (router.push('/screens/blog_ansiedade' as any))}>
                                             <Text style={styles.tituloArtigo}>
                                                 Ansiedade: entendendo suas origens, sintomas e como encontrar o equilíbrio
                                             </Text>

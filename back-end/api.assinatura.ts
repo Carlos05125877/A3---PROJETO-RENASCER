@@ -333,7 +333,7 @@ export const criarPreferenciaPagamento = async (
     
     // Preparar URLs de retorno - todas apontam para PagamentoSucesso
     // A tela de sucesso verificará automaticamente o status do pagamento
-    const basePathSucesso = '/screens/pagamentoSucesso';
+    const basePathSucesso = '/screens/pagamento_sucesso';
     
     // Garantir que origin não tenha barra no final
     const originClean = origin.replace(/\/$/, '');

@@ -156,7 +156,7 @@ export default function Assinatura() {
           console.log('✅ Assinatura detectada na verificação imediata! Redirecionando para PagamentoSucesso...');
           setIsAssinante(true);
           // Redirecionar para PagamentoSucesso para mostrar confirmação
-          router.push(`/screens/pagamentoSucesso?user_id=${user.uid}&status=approved`);
+          router.push(`/screens/pagamento_sucesso?user_id=${user.uid}&status=approved`);
         }
       };
       
@@ -173,7 +173,7 @@ export default function Assinatura() {
           clearInterval(interval); // Parar verificação
           
           // Redirecionar para PagamentoSucesso para mostrar confirmação
-          router.push(`/screens/pagamentoSucesso?user_id=${user.uid}&status=approved`);
+          router.push(`/screens/pagamento_sucesso?user_id=${user.uid}&status=approved`);
         }
       }, 3000); // Verificar a cada 3 segundos (mais frequente)
 
@@ -306,9 +306,9 @@ export default function Assinatura() {
             
             console.log('🔄 Redirecionando para PagamentoSucesso para aguardar confirmação...');
             console.log('Parâmetros enviados:', Object.fromEntries(params.entries()));
-            console.log('URL completa:', `/screens/pagamentoSucesso?${params.toString()}`);
+            console.log('URL completa:', `/screens/pagamento_sucesso?${params.toString()}`);
             
-            router.push(`/screens/pagamentoSucesso?${params.toString()}`);
+            router.push(`/screens/pagamento_sucesso?${params.toString()}`);
             return;
           } else {
             console.warn('⚠️ window.open retornou null (pode ser bloqueado por popup blocker)');

@@ -75,18 +75,18 @@ export default function Topo() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => (router.push('/screens/quemSomos'))}>
+        <TouchableOpacity onPress={() => (router.push('/screens/quem_somos' as any))}>
           <Text style={styles.textoComoFuncionaBlog}>
             Quem somos
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => (router.push('/screens/blogDicas'))}>
+        <TouchableOpacity onPress={() => (router.push('/screens/blog_dicas' as any))}>
           <Text style={styles.textoComoFuncionaBlog}>
             Blog
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => (router.push('/screens/emDesenvolvimento'))}>
+          onPress={() => (router.push('/screens/em_desenvolvimento' as any))}>
           <Text style={styles.textoComoFuncionaBlog}>
             Comunidade
           </Text>
@@ -98,7 +98,7 @@ export default function Topo() {
       <View
         style={styles.topoPaginaDireita}>
         <TouchableOpacity style={styles.botaoAgendamentoEntrar} 
-        onPress={() => (router.push('/screens/listaProfissionais'))}>
+        onPress={() => (router.push('/screens/lista_profissionais' as any))}>
           <MaterialCommunityIcons name='calendar' size={24} color='#FFFFFF' />
           <Text style={styles.textoBotaoAgendamentoEntrar}>
             Agendar Consulta
@@ -125,14 +125,14 @@ export default function Topo() {
           {criarConta && (
             <View style={{width: 95, height: 50, gap: 5, position: 'absolute', marginTop: '25%', marginLeft:'0%' }}>
               <TouchableOpacity
-                onPress={() => router.push('/screens/cadastroUsuarios')} 
+                onPress={() => router.push('/screens/cadastro_usuarios' as any)} 
                 style={styles.boxBotoesCriarConta}>
                 <Text style={{color:'#ffff'}}>
                  Usuario
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => router.push('/screens/cadastroProfissional')}
+                onPress={() => router.push('/screens/cadastro_profissional' as any)}
                 style={styles.boxBotoesCriarConta}>
                 <Text style={{color: '#fff'}}>
                   Profissional
@@ -154,8 +154,8 @@ export default function Topo() {
         ) : (
           <TouchableOpacity onPress={() => {
             const rota = dadosUser.current?.colecao === 'profissionais' 
-              ? '/screens/agendadorProfissional' 
-              : '/screens/agendadorUsuario';
+              ? '/screens/agendador_profissional' 
+              : '/screens/agendador_usuario';
             router.push(rota as any);
           }}>
           <Image

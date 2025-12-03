@@ -36,7 +36,7 @@ export default function Banner() {
                         você.
                     </Text>
                     <TouchableOpacity style={styles.botao}
-                    onPress={() => route.push('/screens/listaProfissionais')}>
+                    onPress={() => route.push('/screens/lista_profissionais')}>
                         <AntDesign name="arrow-right" size={24} color="white" />
                     </TouchableOpacity>
                 </View>

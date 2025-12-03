@@ -2,101 +2,161 @@
   publish = "dist"
   command = "npx expo export --platform web"
 
-# Redirecionar rotas com case incorreto para o case correto
+# Redirecionar rotas antigas (camelCase) para novas (snake_case)
 # IMPORTANTE: Os redirecionamentos devem vir ANTES do catch-all
 [[redirects]]
   from = "/screens/blogdicas"
-  to = "/screens/blogDicas"
+  to = "/screens/blog_dicas"
   status = 301
   force = true
 
 [[redirects]]
-  from = "/screens/BLOGDICAS"
-  to = "/screens/blogDicas"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/screens/BlogDicas"
-  to = "/screens/blogDicas"
+  from = "/screens/blogDicas"
+  to = "/screens/blog_dicas"
   status = 301
   force = true
 
 [[redirects]]
   from = "/screens/blogansiedade"
-  to = "/screens/blogAnsiedade"
+  to = "/screens/blog_ansiedade"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/blogAnsiedade"
+  to = "/screens/blog_ansiedade"
   status = 301
   force = true
 
 [[redirects]]
   from = "/screens/blogdepressao"
-  to = "/screens/blogDepressao"
+  to = "/screens/blog_depressao"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/blogDepressao"
+  to = "/screens/blog_depressao"
   status = 301
   force = true
 
 [[redirects]]
   from = "/screens/blogestresse"
-  to = "/screens/blogEstresse"
+  to = "/screens/blog_estresse"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/blogEstresse"
+  to = "/screens/blog_estresse"
   status = 301
   force = true
 
 [[redirects]]
   from = "/screens/pagamentosucesso"
-  to = "/screens/pagamentoSucesso"
+  to = "/screens/pagamento_sucesso"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/pagamentoSucesso"
+  to = "/screens/pagamento_sucesso"
   status = 301
   force = true
 
 [[redirects]]
   from = "/screens/cadastrousuarios"
-  to = "/screens/cadastroUsuarios"
+  to = "/screens/cadastro_usuarios"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/cadastroUsuarios"
+  to = "/screens/cadastro_usuarios"
   status = 301
   force = true
 
 [[redirects]]
   from = "/screens/cadastroprofissional"
-  to = "/screens/cadastroProfissional"
+  to = "/screens/cadastro_profissional"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/cadastroProfissional"
+  to = "/screens/cadastro_profissional"
   status = 301
   force = true
 
 [[redirects]]
   from = "/screens/quemsomos"
-  to = "/screens/quemSomos"
+  to = "/screens/quem_somos"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/quemSomos"
+  to = "/screens/quem_somos"
   status = 301
   force = true
 
 [[redirects]]
   from = "/screens/emdesenvolvimento"
-  to = "/screens/emDesenvolvimento"
+  to = "/screens/em_desenvolvimento"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/emDesenvolvimento"
+  to = "/screens/em_desenvolvimento"
   status = 301
   force = true
 
 [[redirects]]
   from = "/screens/listaprofissionais"
-  to = "/screens/listaProfissionais"
+  to = "/screens/lista_profissionais"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/listaProfissionais"
+  to = "/screens/lista_profissionais"
   status = 301
   force = true
 
 [[redirects]]
   from = "/screens/agendadorusuario"
-  to = "/screens/agendadorUsuario"
+  to = "/screens/agendador_usuario"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/agendadorUsuario"
+  to = "/screens/agendador_usuario"
   status = 301
   force = true
 
 [[redirects]]
   from = "/screens/agendadorprofissional"
-  to = "/screens/agendadorProfissional"
+  to = "/screens/agendador_profissional"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/screens/agendadorProfissional"
+  to = "/screens/agendador_profissional"
   status = 301
   force = true
 
 [[redirects]]
   from = "/admin/loginadmin"
-  to = "/admin/loginAdmin"
+  to = "/admin/login_admin"
   status = 301
   force = true
 
 [[redirects]]
-  from = "/admin/dashboard"
-  to = "/admin/dashboard"
+  from = "/admin/loginAdmin"
+  to = "/admin/login_admin"
   status = 301
   force = true
 

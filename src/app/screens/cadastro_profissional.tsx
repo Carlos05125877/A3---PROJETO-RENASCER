@@ -268,7 +268,7 @@ export default function CadastroProfissional() {
                                             // Redirecionar para tela de pagamentoSucesso na aba atual
                                             // A tela verificará automaticamente quando o pagamento for confirmado
                                             router.push({
-                                                pathname: '/screens/pagamentoSucesso',
+                                                pathname: '/screens/pagamento_sucesso',
                                                 params: {
                                                     user_id: user.uid,
                                                     tipo: 'profissional',
@@ -290,7 +290,7 @@ export default function CadastroProfissional() {
                                                 await Linking.openURL(checkoutUrl);
                                                 // Redirecionar para pagamentoSucesso
                                                 router.push({
-                                                    pathname: '/screens/pagamentoSucesso',
+                                                    pathname: '/screens/pagamento_sucesso',
                                                     params: {
                                                         user_id: user.uid,
                                                         tipo: 'profissional',
