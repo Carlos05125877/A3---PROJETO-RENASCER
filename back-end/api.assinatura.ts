@@ -338,21 +338,10 @@ export const criarPreferenciaPagamento = async (
     // Garantir que origin não tenha barra no final
     const originClean = origin.replace(/\/$/, '');
     
-    // Criar external_reference ANTES de construir as URLs
-    const externalReference = `${userId}_${tipoAssinatura}_${Date.now()}`;
-    
-    // URLs com parâmetros para facilitar identificação quando o usuário retornar
-    // O Mercado Pago adicionará payment_id, collection_id, collection_status, etc.
-    // Nós adicionamos user_id, external_reference e preference_id para facilitar
-    const paramsBase = new URLSearchParams({
-      user_id: userId,
-      tipo: tipoAssinatura,
-      external_reference: externalReference
-    });
-    
-    const successUrl = `${originClean}${basePathSucesso}?${paramsBase.toString()}`;
-    const failureUrl = `${originClean}${basePathSucesso}?${paramsBase.toString()}`;
-    const pendingUrl = `${originClean}${basePathSucesso}?${paramsBase.toString()}`;
+    // URLs simplificadas - a tela de sucesso determinará o status automaticamente
+    const successUrl = `${originClean}${basePathSucesso}`;
+    const failureUrl = `${originClean}${basePathSucesso}`;
+    const pendingUrl = `${originClean}${basePathSucesso}`;
     
     console.log('=== URLs DE RETORNO CONFIGURADAS ===');
     console.log('Origin:', originClean);
@@ -386,7 +375,7 @@ export const criarPreferenciaPagamento = async (
         failure: failureUrl,
         pending: pendingUrl
       },
-      external_reference: externalReference,
+      external_reference: `${userId}_${tipoAssinatura}_${Date.now()}`,
       statement_descriptor: 'RENASCER',
       binary_mode: false,
       // Configurações adicionais para garantir que o checkout funcione corretamente
@@ -511,7 +500,7 @@ export const criarPreferenciaPagamento = async (
     }
 
     const preferenceId = responseData.id;
-    // externalReference já foi declarado anteriormente na linha 342
+    const externalReference = preferenceData.external_reference;
 
     console.log('✅ Preferência criada com sucesso!', {
       preference_id: preferenceId,

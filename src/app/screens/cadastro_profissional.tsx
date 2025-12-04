@@ -3,7 +3,7 @@ import { configuracaoUsuario } from '@/back-end/api.cadastroLogin';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Alert, Image, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { Alert, Image, Linking, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import Topo from '../../../components/topo';
 import { useCpfInvalido, useEmailInvalido, useImagemLocal, verificarDados } from '../hooks/validaçõesDeUsuario';
@@ -53,16 +53,16 @@ export default function CadastroProfissional() {
                 <Topo />
             </View>
 
-            {isMobile ? (
-                <ScrollView 
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={styles.scrollContentMobile}
-                >
-                    <View style={[styles.areaCadastro, styles.areaCadastroMobile]}>
-                        <Text style={[styles.TextoCadastro, styles.TextoCadastroMobile]}>
+            <View
+                style={[styles.areaCadastroBanner, isMobile && styles.areaCadastroBannerMobile]}>
+                <View
+                    style={[styles.areaCadastro, isMobile && styles.areaCadastroMobile]}>
+                    <Text
+                        style={[styles.TextoCadastro, isMobile && styles.TextoCadastroMobile]}>
                         Cadastro de Profissional
                     </Text>
-                        <View style={[styles.inputsCadastro, styles.inputsCadastroMobile]}>
+                    <View
+                        style={[styles.inputsCadastro, isMobile && styles.inputsCadastroMobile]}>
                         <TextInput
                             style={[styles.TextInput, isMobile && styles.TextInputMobile]}
                             value={nome}
@@ -337,290 +337,14 @@ export default function CadastroProfissional() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-                </ScrollView>
-            ) : (
-                <View style={styles.areaCadastroBanner}>
-                    <View style={styles.areaCadastro}>
-                        <Text style={styles.TextoCadastro}>
-                            Cadastro de Profissional
-                        </Text>
-                        <View style={styles.inputsCadastro}>
-                            <TextInput
-                                style={styles.TextInput}
-                                value={nome}
-                                onChangeText={setNome}
-                                placeholder='Nome *'
-                                placeholderTextColor={'rgba(0,0,0,0.5)'}
-                            />
-                            <TextInputMask
-                                style={styles.TextInput}
-                                type={'cpf'}
-                                value={cpf}
-                                onChangeText={setCpf}
-                                placeholder='CPF *'
-                                placeholderTextColor={'rgba(0,0,0,0.5)'}
-                            />
-                            {cpfInvalido && <Text style={styles.mensagemErro}>CPF inválido</Text>}
-                            {cpfCadastrado && <Text style={styles.mensagemErro}>CPF já cadastrado</Text>}
-                            <TextInputMask
-                                type={'cel-phone'}
-                                options={{
-                                    maskType: 'BRL',
-                                    withDDD: true,
-                                }
-                                }
-                                style={styles.TextInput}
-                                value={telefone}
-                                onChangeText={setTelefone}
-                                placeholder='Telefone'
-                                placeholderTextColor={'rgba(0,0,0,0.5)'}
-                            />
-                            <TextInput
-                                style={styles.TextInput}
-                                value={email}
-                                onChangeText={setEmail}
-                                placeholder='E-mail *'
-                                placeholderTextColor={'rgba(0,0,0,0.5)'}
-                            />
-                            {
-                                emailInvalido &&
-                                <Text
-                                    style={styles.mensagemErro}>
-                                    E-mail Invalido
-                                </Text>
-                            }
-                            <View style={styles.nascimentoCrp}>
-                                <TextInputMask
-                                    type={'datetime'}
-                                    options={{
-                                        format: 'dd/MM/aaaa'
-                                    }}
-                                    style={[styles.TextInput, styles.TextInputDataCrp]}
-                                    value={dataNascimento}
-                                    onChangeText={setDataNascimento}
-                                    placeholder='Data de Nascimento *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                />
-                                <TextInputMask
-                                    type={'custom'}
-                                    options={{
-                                        mask: '99/99999'
-                                    }}
-                                    style={[styles.TextInput, styles.TextInputDataCrp]}
-                                    value={crp}
-                                    onChangeText={setCrp}
-                                    placeholder='CRP *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                />
-                            </View>
-                            <TextInput
-                                multiline
-                                style={[
-                                    styles.TextInput,
-                                    styles.TextInputBiografia
-                                ]} value={Biografia}
-                                onChangeText={setBiografia}
-                                placeholder='Biografia'
-                                placeholderTextColor={'rgba(0,0,0,0.5)'}
-                            />
-                            <View style={styles.boxTextInput}>
-                                <TextInput
-                                    style={[styles.TextInput, styles.TextInputSenha]}
-                                    value={senha}
-                                    onChangeText={setSenha}
-                                    placeholder='Senha *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={mostrarSenha}
-                                />
-                                <TouchableOpacity
-                                    onPress={() => { setmostrarSenha(!mostrarSenha) }}>
-                                    {iconeSenha()}
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.boxTextInput}>
-                                <TextInput
-                                    style={[styles.TextInput, styles.TextInputSenha]}
-                                    value={confirmarSenha}
-                                    onChangeText={setConfirmarSenha}
-                                    placeholder='Confirmar Senha *'
-                                    placeholderTextColor={'rgba(0,0,0,0.5)'}
-                                    secureTextEntry={mostrarSenha}
-                                />
-                                <TouchableOpacity
-                                    onPress={() => { setmostrarSenha(!mostrarSenha) }}>
-                                    {iconeSenha()}
-                                </TouchableOpacity>
-                            </View>
-                            <Text
-                                style={styles.mensagemErro}>
-                                {senha != confirmarSenha && 'Senhas não conferem'}
-                            </Text>
-                            <TouchableOpacity
-                                style={styles.botaoInput}
-                                onPress={async () => {
-                                    inputRef.current?.click()
-                                }}>
-                                {!imagem ?
-                                    <Image source={require('../../../assets/images/user.png')}
-                                        style={styles.imagemInput}
-                                    />
-                                    : <Image source={{ uri: url }}
-                                        style={styles.imagemInput}
-
-                                    />}
-                                <input
-                                    ref={inputRef}
-                                    type='file'
-                                    accept='image/*'
-                                    style={{ display: 'none' }}
-                                    onChange={(e) =>
-                                        e.target.files?.[0] && setImagem(e.target.files?.[0])
-                                    }
-                                />
-                            </TouchableOpacity>
-                        </View>
-                        <TouchableOpacity
-                            style={styles.botaoCadastrar}
-                            onPress={async () => {
-                                if (!dadosValidos) {
-                                    alert('Preencha todos os campos obrigatórios corretamente');
-                                    return;
-                                }
-
-                                try {
-                                    // Primeiro, criar o usuário
-                                    const user = await configuracaoUsuario({
-                                        'email': email, 'senha': senha, 'confirmarSenha': confirmarSenha,
-                                        'nome': nome, 'cpf': cpf, 'telefone': telefone, 'dataNascimento': dataNascimento,
-                                        'crp': crp, 'biografia': Biografia, 'colecao': 'profissionais', 
-                                        'horariosAtendimento': []
-                                    }, imagem, 'profissionais');
-
-                                    if (!user) {
-                                        Alert.alert('Erro', 'Não foi possível criar o usuário. Verifique os dados e tente novamente.');
-                                        return;
-                                    }
-
-                                    // Após criar o usuário, redirecionar para pagamento
-                                    try {
-                                        console.log('=== INICIANDO PAGAMENTO PROFISSIONAL ===');
-                                        console.log('UserId:', user.uid);
-                                        
-                                        const resultado = await criarPreferenciaPagamento(
-                                            39.00,
-                                            'Assinatura Profissional - Renascer',
-                                            user.uid,
-                                            'profissional'
-                                        );
-                                        
-                                        const checkoutUrl = resultado.checkoutUrl;
-                                        const preferenceId = resultado.preferenceId;
-                                        const externalReference = resultado.externalReference;
-                                        
-                                        console.log('✅ Preferência criada:', { preferenceId, externalReference });
-                                        
-                                        // Salvar preferenceId e externalReference no localStorage para diagnóstico
-                                        if (typeof window !== 'undefined' && window.localStorage) {
-                                            if (preferenceId) {
-                                                localStorage.setItem('last_preference_id', preferenceId);
-                                                console.log('💾 Preference ID salvo no localStorage:', preferenceId);
-                                            }
-                                            if (externalReference) {
-                                                localStorage.setItem('last_external_reference', externalReference);
-                                                console.log('💾 External Reference salvo no localStorage:', externalReference);
-                                            }
-                                        }
-                                        
-                                        // Para web, abrir checkout em nova aba e redirecionar para pagamentoSucesso
-                                        if (typeof window !== 'undefined') {
-                                            console.log('🌐 Ambiente web detectado - abrindo checkout em nova aba');
-                                            
-                                            // Abrir checkout em nova aba
-                                            const newWindow = window.open(
-                                                checkoutUrl, 
-                                                '_blank',
-                                                'noopener,noreferrer'
-                                            );
-                                            
-                                            if (newWindow) {
-                                                console.log('✅ Nova aba aberta com sucesso!');
-                                                
-                                                // Redirecionar para tela de pagamentoSucesso na aba atual
-                                                // A tela verificará automaticamente quando o pagamento for confirmado
-                                                router.push({
-                                                    pathname: '/screens/pagamento_sucesso',
-                                                    params: {
-                                                        user_id: user.uid,
-                                                        tipo: 'profissional',
-                                                        status: 'waiting',
-                                                        preference_id: preferenceId,
-                                                        external_reference: externalReference
-                                                    }
-                                                } as any);
-                                            } else {
-                                                // Se não conseguiu abrir nova aba, abrir na mesma aba
-                                                console.warn('⚠️ Não foi possível abrir nova aba, redirecionando na mesma aba');
-                                                window.location.href = checkoutUrl;
-                                            }
-                                        } else {
-                                            // Para React Native, usar Linking
-                                            try {
-                                                const canOpen = await Linking.canOpenURL(checkoutUrl);
-                                                if (canOpen) {
-                                                    await Linking.openURL(checkoutUrl);
-                                                    // Redirecionar para pagamentoSucesso
-                                                    router.push({
-                                                        pathname: '/screens/pagamento_sucesso',
-                                                        params: {
-                                                            user_id: user.uid,
-                                                            tipo: 'profissional',
-                                                            status: 'waiting',
-                                                            preference_id: preferenceId,
-                                                            external_reference: externalReference
-                                                        }
-                                                    } as any);
-                                                } else {
-                                                    Alert.alert('Erro', 'Não foi possível abrir o link de pagamento');
-                                                }
-                                            } catch (error: any) {
-                                                console.error('Erro ao abrir link:', error);
-                                                Alert.alert('Erro', 'Não foi possível abrir o link de pagamento');
-                                            }
-                                        }
-                                    } catch (error: any) {
-                                        console.error('❌ Erro ao processar pagamento:', error);
-                                        Alert.alert(
-                                            'Erro', 
-                                            `Não foi possível processar o pagamento: ${error.message || 'Erro desconhecido'}. Você pode fazer o pagamento depois na tela de assinatura.`,
-                                            [
-                                                {
-                                                    text: 'OK',
-                                                    onPress: () => {
-                                                        // Redirecionar para home mesmo com erro
-                                                        router.push('/');
-                                                    }
-                                                }
-                                            ]
-                                        );
-                                    }
-                                } catch (error: any) {
-                                    console.error('Erro ao cadastrar:', error);
-                                    Alert.alert('Erro', 'Não foi possível completar o cadastro. Tente novamente.');
-                                }
-                            }}>
-                            <Text
-                                style={styles.textoBotaoCadastrar}>
-                                Confirmar
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
+                {!isMobile && (
                     <View style={styles.areaBanner}>
-                    <Image
-                        style={styles.imagem}
-                        source={require('../../../assets/images/imagemCadastroProfissional.png')} />
-                </View>
+                        <Image
+                            style={styles.imagem}
+                            source={require('../../../assets/images/imagemCadastroProfissional.png')} />
+                    </View>
+                )}
             </View>
-            )}
         </View>
     )
 
@@ -795,7 +519,6 @@ const styles = StyleSheet.create({
     inputsCadastroMobile: {
         width: '100%',
         paddingHorizontal: 15,
-        alignItems: 'center',
     },
     TextInputMobile: {
         width: '100%',
@@ -827,10 +550,5 @@ const styles = StyleSheet.create({
     TextoCadastroMobile: {
         fontSize: 24,
         marginBottom: 10,
-        textAlign: 'center',
-    },
-
-    scrollContentMobile: {
-        paddingBottom: 30,
     },
 })

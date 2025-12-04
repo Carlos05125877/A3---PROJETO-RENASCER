@@ -139,37 +139,32 @@ const styles = StyleSheet.create({
         marginTop: '2%',
         paddingHorizontal: 15,
         alignItems: 'center',
-        gap: 0,
     },
 
     conteudoTextoMobile: {
         flex: 0,
-        gap: 15,
+        gap: 20,
         paddingHorizontal: 0,
         width: '100%',
         alignItems: 'center',
-        marginBottom: 25,
     },
 
     tituloMobile: {
         fontSize: 28,
         marginTop: 20,
         paddingHorizontal: 10,
-        lineHeight: 34,
     },
 
     subtituloMobile: {
         fontSize: 16,
         marginHorizontal: 0,
         paddingHorizontal: 10,
-        marginBottom: 0,
-        lineHeight: 22,
     },
 
     containerImagemMobile: {
         width: '100%',
         alignItems: 'center',
-        marginTop: 0,
+        marginTop: 20,
         position: 'relative',
     },
 
