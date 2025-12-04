@@ -5,7 +5,7 @@ import { useRef, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import Modal from 'react-native-modal';
 import Topo from '../../..//components/topo';
-import { esqueciMinhaSenha, loginComEmailSenha, loginComGoogle } from '../../../back-end/api.cadastroLogin';
+import { esqueciMinhaSenha, loginComEmailSenha } from '../../../back-end/api.cadastroLogin';
 
 
 {/*-----------------------------------------------------------------------------------*/ }
@@ -111,14 +111,14 @@ export default function Login() {
                   <Text style={[styles.textoBotaoLogin, isMobile && styles.textoBotaoLoginMobile]}>Entrar</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={[styles.botaoGoogle, isMobile && styles.botaoGoogleMobile]}
+                {/*<TouchableOpacity style={[styles.botaoGoogle, isMobile && styles.botaoGoogleMobile]}
                   onPress={async () => {
                     const user = await loginComGoogle(bloquearBotaoGoogle)
                     user && router.push('/')
                   }}>
                   <Image style={{ width: isMobile ? 20 : 25, height: isMobile ? 20 : 25 }} source={require('../../../assets/images/images.png')} />
                 </TouchableOpacity>
-
+                  */}
                 <TouchableOpacity>
                   <Text style={[styles.textoLink, isMobile && styles.textoLinkMobile]}
                     onPress={() => setBotaoEsqueciMinhaSenha(true)

@@ -235,9 +235,9 @@ export default function EditorPerfil() {
                 <View
                     style={[
                         {
-                            flexDirection: 'row',
-                            flexWrap: 'wrap',
-                            justifyContent: 'center',
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        justifyContent: 'center',
                             height: isMobile ? 'auto' : '10%',
                         },
                         isMobile && styles.horariosContainerMobile

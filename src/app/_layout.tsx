@@ -65,7 +65,7 @@ function normalizeUrl(path: string): string | null {
         if (lowerRoute.startsWith('/screens/')) {
           const routeParts = lowerRoute.toLowerCase().split('/');
           if (routeParts.length >= 3 && routeParts[2] === screenName) {
-            return correctRoute;
+          return correctRoute;
           }
         }
       }

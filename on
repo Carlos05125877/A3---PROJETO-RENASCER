@@ -1,0 +1,204 @@
+warning: in the working copy of 'package-lock.json', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/package-lock.json b/package-lock.json[m
+[1mindex d143e68..d98be4a 100644[m
+[1m--- a/package-lock.json[m
+[1m+++ b/package-lock.json[m
+[36m@@ -2128,15 +2128,12 @@[m
+         "@babel/highlight": "^7.10.4"[m
+       }[m
+     },[m
+[31m-<<<<<<< HEAD[m
+     "node_modules/@fastify/busboy": {[m
+       "version": "3.2.0",[m
+       "resolved": "https://registry.npmjs.org/@fastify/busboy/-/busboy-3.2.0.tgz",[m
+       "integrity": "sha512-m9FVDXU3GT2ITSe0UaMA5rU3QkfC/UXtCU8y0gSN/GugTqtVldOBWIB5V6V3sbmenVZUIpU6f+mPEO2+m5iTaA==",[m
+       "license": "MIT"[m
+     },[m
+[31m-=======[m
+[31m->>>>>>> 6dd7b27 (Adicao da confirmação de agendamento)[m
+     "node_modules/@firebase/ai": {[m
+       "version": "2.6.0",[m
+       "resolved": "https://registry.npmjs.org/@firebase/ai/-/ai-2.6.0.tgz",[m
+[36m@@ -4711,7 +4708,6 @@[m
+         "@svgr/core": "*"[m
+       }[m
+     },[m
+[31m-<<<<<<< HEAD[m
+     "node_modules/@tootallnate/once": {[m
+       "version": "2.0.0",[m
+       "resolved": "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz",[m
+[36m@@ -4722,8 +4718,6 @@[m
+         "node": ">= 10"[m
+       }[m
+     },[m
+[31m-=======[m
+[31m->>>>>>> 6dd7b27 (Adicao da confirmação de agendamento)[m
+     "node_modules/@trysound/sax": {[m
+       "version": "0.2.0",[m
+       "resolved": "https://registry.npmjs.org/@trysound/sax/-/sax-0.2.0.tgz",[m
+[36m@@ -4869,7 +4863,6 @@[m
+         "@types/istanbul-lib-report": "*"[m
+       }[m
+     },[m
+[31m-<<<<<<< HEAD[m
+     "node_modules/@types/jsonwebtoken": {[m
+       "version": "9.0.10",[m
+       "resolved": "https://registry.npmjs.org/@types/jsonwebtoken/-/jsonwebtoken-9.0.10.tgz",[m
+[36m@@ -4878,15 +4871,6 @@[m
+       "dependencies": {[m
+         "@types/ms": "*",[m
+         "@types/node": "*"[m
+[31m-=======[m
+[31m-    "node_modules/@types/node": {[m
+[31m-      "version": "24.10.1",[m
+[31m-      "resolved": "https://registry.npmjs.org/@types/node/-/node-24.10.1.tgz",[m
+[31m-      "integrity": "sha512-GNWcUTRBgIRJD5zj+Tq0fKOJ5XZajIiBroOF0yvj2bSU1WvNdYS/dn9UxwsujGW4JX06dnHyjV2y9rRaybH0iQ==",[m
+[31m-      "license": "MIT",[m
+[31m-      "dependencies": {[m
+[31m-        "undici-types": "~7.16.0"[m
+[31m->>>>>>> 6dd7b27 (Adicao da confirmação de agendamento)[m
+       }[m
+     },[m
+     "node_modules/@types/long": {[m
+[36m@@ -5726,7 +5710,6 @@[m
+         "node": ">= 0.8"[m
+       }[m
+     },[m
+[31m-<<<<<<< HEAD[m
+     "node_modules/call-bind-apply-helpers": {[m
+       "version": "1.0.2",[m
+       "resolved": "https://registry.npmjs.org/call-bind-apply-helpers/-/call-bind-apply-helpers-1.0.2.tgz",[m
+[36m@@ -5756,8 +5739,6 @@[m
+         "url": "https://github.com/sponsors/ljharb"[m
+       }[m
+     },[m
+[31m-=======[m
+[31m->>>>>>> 6dd7b27 (Adicao da confirmação de agendamento)[m
+     "node_modules/callsites": {[m
+       "version": "3.1.0",[m
+       "resolved": "https://registry.npmjs.org/callsites/-/callsites-3.1.0.tgz",[m
+[36m@@ -7596,20 +7577,6 @@[m
+       "integrity": "sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==",[m
+       "license": "ISC"[m
+     },[m
+[31m-    "node_modules/fsevents": {[m
+[31m-      "version": "2.3.3",[m
+[31m-      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz",[m
+[31m-      "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",[m
+[31m-      "hasInstallScript": true,[m
+[31m-      "license": "MIT",[m
+[31m-      "optional": true,[m
+[31m-      "os": [[m
+[31m-        "darwin"[m
+[31m-      ],[m
+[31m-      "engines": {[m
+[31m-        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"[m
+[31m-      }[m
+[31m-    },[m
+     "node_modules/function-bind": {[m
+       "version": "1.1.2",[m
+       "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz",[m
+[36m@@ -8616,7 +8583,6 @@[m
+         "node": ">=6"[m
+       }[m
+     },[m
+[31m-<<<<<<< HEAD[m
+     "node_modules/json-bigint": {[m
+       "version": "1.0.0",[m
+       "resolved": "https://registry.npmjs.org/json-bigint/-/json-bigint-1.0.0.tgz",[m
+[36m@@ -8626,8 +8592,6 @@[m
+         "bignumber.js": "^9.0.0"[m
+       }[m
+     },[m
+[31m-=======[m
+[31m->>>>>>> 6dd7b27 (Adicao da confirmação de agendamento)[m
+     "node_modules/json-parse-even-better-errors": {[m
+       "version": "2.3.1",[m
+       "resolved": "https://registry.npmjs.org/json-parse-even-better-errors/-/json-parse-even-better-errors-2.3.1.tgz",[m
+[36m@@ -8820,206 +8784,6 @@[m
+         "lightningcss-win32-x64-msvc": "1.30.2"[m
+       }[m
+     },[m
+[31m-    "node_modules/lightningcss-android-arm64": {[m
+[31m-      "version": "1.30.2",[m
+[31m-      "resolved": "https://registry.npmjs.org/lightningcss-android-arm64/-/lightningcss-android-arm64-1.30.2.tgz",[m
+[31m-      "integrity": "sha512-BH9sEdOCahSgmkVhBLeU7Hc9DWeZ1Eb6wNS6Da8igvUwAe0sqROHddIlvU06q3WyXVEOYDZ6ykBZQnjTbmo4+A==",[m
+[31m-      "cpu": [[m
+[31m-        "arm64"[m
+[31m-      ],[m
+[31m-      "license": "MPL-2.0",[m
+[31m-      "optional": true,[m
+[31m-      "os": [[m
+[31m-        "android"[m
+[31m-      ],[m
+[31m-      "engines": {[m
+[31m-        "node": ">= 12.0.0"[m
+[31m-      },[m
+[31m-      "funding": {[m
+[31m-        "type": "opencollective",[m
+[31m-        "url": "https://opencollective.com/parcel"[m
+[31m-      }[m
+[31m-    },[m
+[31m-    "node_modules/lightningcss-darwin-arm64": {[m
+[31m-      "version": "1.30.2",[m
+[31m-      "resolved": "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.30.2.tgz",[m
+[31m-      "integrity": "sha512-ylTcDJBN3Hp21TdhRT5zBOIi73P6/W0qwvlFEk22fkdXchtNTOU4Qc37SkzV+EKYxLouZ6M4LG9NfZ1qkhhBWA==",[m
+[31m-      "cpu": [[m
+[31m-        "arm64"[m
+[31m-      ],[m
+[31m-      "license": "MPL-2.0",[m
+[31m-      "optional": true,[m
+[31m-      "os": [[m
+[31m-        "darwin"[m
+[31m-      ],[m
+[31m-      "engines": {[m
+[31m-        "node": ">= 12.0.0"[m
+[31m-      },[m
+[31m-      "funding": {[m
+[31m-        "type": "opencollective",[m
+[31m-        "url": "https://opencollective.com/parcel"[m
+[31m-      }[m
+[31m-    },[m
+[31m-    "node_modules/lightningcss-darwin-x64": {[m
+[31m-      "version": "1.30.2",[m
+[31m-      "resolved": "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.30.2.tgz",[m
+[31m-      "integrity": "sha512-oBZgKchomuDYxr7ilwLcyms6BCyLn0z8J0+ZZmfpjwg9fRVZIR5/GMXd7r9RH94iDhld3UmSjBM6nXWM2TfZTQ==",[m
+[31m-      "cpu": [[m
+[31m-        "x64"[m
+[31m-      ],[m
+[31m-      "license": "MPL-2.0",[m
+[31m-      "optional": true,[m
+[31m-      "os": [[m
+[31m-        "darwin"[m
+[31m-      ],[m
+[31m-      "engines": {[m
+[31m-        "node": ">= 12.0.0"[m
+[31m-      },[m
+[31m-      "funding": {[m
+[31m-        "type": "opencollective",[m
+[31m-        "url": "https://opencollective.com/parcel"[m
+[31m-      }[m
+[31m-    },[m
+[31m-    "node_modules/lightningcss-freebsd-x64": {[m
+[31m-      "version": "1.30.2",[m
+[31m-      "resolved": "https://registry.npmjs.org/lightningcss-freebsd-x64/-/lightningcss-freebsd-x64-1.30.2.tgz",[m
+[31m-      "integrity": "sha512-c2bH6xTrf4BDpK8MoGG4Bd6zAMZDAXS569UxCAGcA7IKbHNMlhGQ89eRmvpIUGfKWNVdbhSbkQaWhEoMGmGslA==",[m
+[31m-      "cpu": [[m
+[31m-        "x64"[m
+[31m-      ],[m
+[31m-      "license": "MPL-2.0",[m
+[31m-      "optional": true,[m
+[31m-      "os": [[m
+[31m-        "freebsd"[m
+[31m-      ],[m
+[31m-      "engines": {[m
+[31m-        "node": ">= 12.0.0"[m
+[31m-      },[m
+[31m-      "funding": {[m
+[31m-        "type": "opencollective",[m
+[31m-        "url": "https://opencollective.com/parcel"[m
+[31m-      }[m
+[31m-    },[m
+[31m-    "node_modules/lightningcss-linux-arm-gnueabihf": {[m
+[31m-      "version": "1.30.2",[m
+[31m-      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.30.

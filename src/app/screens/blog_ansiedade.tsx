@@ -79,7 +79,7 @@ export default function blogAnsiedade() {
                                 <Text style={[styles.pausaReflexao, {marginTop: 16}, isMobile && styles.pausaReflexaoMobile]}>Experimente agora: Feche os olhos, inspire profundamente por 4 segundos, segure por 2 e solte lentamente por 6. Repita algumas vezes e observe como seu corpo responde.</Text>
                             </View>
                             {!isMobile && (
-                                <Image source={require("../../../assets/images/ansiedadeAlivio.png")} style={styles.imagemConteudo} />
+                            <Image source={require("../../../assets/images/ansiedadeAlivio.png")} style={styles.imagemConteudo} />
                             )}
                         </View>
                     </View>

@@ -46,7 +46,7 @@ export default function blogEstresse() {
                     <View style={styles.conteudoSegundario}>
                         <View style={[styles.linhaConteudo, isMobile && styles.linhaConteudoMobile]}>
                             {!isMobile && (
-                                <Image source={require("../../../assets/images/estresse2.png")} style={styles.imagemConteudo2} />
+                            <Image source={require("../../../assets/images/estresse2.png")} style={styles.imagemConteudo2} />
                             )}
                             <View style={styles.textoLado}>
                                 <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Principais Causas do Estresse</Text>
@@ -92,7 +92,7 @@ export default function blogEstresse() {
                             </View>
                             
                             {!isMobile && (
-                                <Image source={require("../../../assets/images/estresse3.png")} style={styles.imagemConteudo} />
+                            <Image source={require("../../../assets/images/estresse3.png")} style={styles.imagemConteudo} />
                             )}
                         </View>
                     </View>

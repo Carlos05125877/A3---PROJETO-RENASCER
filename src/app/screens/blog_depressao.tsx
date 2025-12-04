@@ -35,14 +35,14 @@ export default function blogDepressao() {
                                 <Text style={[styles.pausaReflexao, isMobile && styles.pausaReflexaoMobile]}> Algum desses aspectos faz parte da sua vida ou da vida de alguém próximo? Reconhecer os fatores é o primeiro passo para compreender o que está acontecendo. </Text>
                             </View>
                             {!isMobile && (
-                                <Image source={require("../../../assets/images/imagemCausa.png")} style={styles.imagemConteudo} />
+                            <Image source={require("../../../assets/images/imagemCausa.png")} style={styles.imagemConteudo} />
                             )}
                         </View>
                     </View>
                     <View style={styles.conteudoSegundario}>
                         <View style={[styles.linhaConteudo, isMobile && styles.linhaConteudoMobile]}>
                             {!isMobile && (
-                                <Image source={require("../../../assets/images/manifesta.png")} style={styles.imagemConteudo} />
+                            <Image source={require("../../../assets/images/manifesta.png")} style={styles.imagemConteudo} />
                             )}
                             <View style={styles.textoLado}>
                                 <Text style={[styles.subtitulo, isMobile && styles.subtituloMobile]}>Como a depressão se manifesta?</Text>
@@ -65,7 +65,7 @@ export default function blogDepressao() {
                             <Text style={[styles.descricaoCardImportante, isMobile && styles.descricaoCardImportanteMobile]}>Se você ou alguém que você conhece apresenta sintomas persistentes, buscar ajuda não é fraqueza — é coragem.</Text>
                         </View>
                         {!isMobile && (
-                            <Image source={require("../../../assets/images/lembrete.png")} style={styles.imagemCardImportante} />
+                        <Image source={require("../../../assets/images/lembrete.png")} style={styles.imagemCardImportante} />
                         )}
                     </View>
 
